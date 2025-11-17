@@ -1,0 +1,13 @@
+---
+const {class: className, id: id, isHeroHeading, headingText} = Astro.props
+---
+
+{
+  isHeroHeading ? (
+    <header class="text-white text-4xl md:text-6xl">
+      {headingText}
+    </header>
+  ) : (
+    ''
+  )
+}

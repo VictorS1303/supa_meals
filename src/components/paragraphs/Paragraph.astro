@@ -1,0 +1,11 @@
+---
+const {class: className, id: id, isHeroParagraph, paragraphText} = Astro.props
+---
+
+{
+  isHeroParagraph ? (
+    <p class="mt-6 mb-8 text-center text-lg text-white">{paragraphText}</p>
+  ) : (
+    <p class={className}></p>
+  )
+}
