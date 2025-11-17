@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+:root
+{
+    --primary-text-color: #34b27b;
+    --primary-bg-color: #f8f9fa;
+    --secondary-bg-color: #11181c;
+}
+
+@font-face
+{
+    font-family: 'Circular';
+    src: url('../assets/fonts/circular-std-medium-500.ttf') format('truetype');
+}
+
+body
+{
+    font-family: 'Circular';
+}
