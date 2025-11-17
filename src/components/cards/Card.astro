@@ -1,8 +1,18 @@
 ---
-import Button from "../buttons/Button.astro";
-import Heading from "../headings/Heading.astro";
-import Paragraph from "../paragraphs/Paragraph.astro";
-const { class: className, id: id, isMealCard, href, buttonText, paragraphText, isCardParagraph, headingText, src} = Astro.props;
+import Button from "../buttons/Button.astro"
+import Heading from "../headings/Heading.astro"
+import Paragraph from "../paragraphs/Paragraph.astro"
+const {
+  class: className,
+  id: id,
+  isMealCard,
+  href,
+  buttonText,
+  paragraphText,
+  isCardParagraph,
+  headingText,
+  src,
+} = Astro.props
 ---
 
 {
@@ -11,15 +21,12 @@ const { class: className, id: id, isMealCard, href, buttonText, paragraphText, i
       class={`${className} w-full max-w-[300px] p-4 bg-white rounded-md flex flex-col`}
       id={id}
     >
-      <img
-        src={src}
-        class="rounded-tl-md rounded-tr-md"
-      />
+      <img src={src} class="rounded-tl-md rounded-tr-md h-full w-full" />
       <Heading isCardHeading={true} headingText={headingText} />
       <Paragraph paragraphText={paragraphText} isCardParagraph={true} />
       <Button href={href} buttonText={buttonText} class="mt-auto" />
     </article>
   ) : (
-    ''
+    ""
   )
 }
