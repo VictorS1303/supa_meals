@@ -10,7 +10,9 @@ const {
 
 {
   isHeroParagraph ? (
-    <p class="mt-6 mb-8 text-center text-lg text-white">{paragraphText}</p>
+    <p class="mt-6 mb-8 text-center text-lg text-white md:text-xl">
+      {paragraphText}
+    </p>
   ) : isCardParagraph ? (
     <p class="mb-8 line-clamp-4">{paragraphText}</p>
   ) : (

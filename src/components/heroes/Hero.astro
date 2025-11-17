@@ -3,26 +3,40 @@ import Section from "../sections/Section.astro"
 import Overlay from "../overlays/Overlay.astro"
 import landingVideo from "/videos/landing_page/landing_page_video.mp4"
 import Heading from "../headings/Heading.astro"
-import Button from "../Buttons/Button.astro"
+import Button from "../buttons/Button.astro"
 import Paragraph from "../paragraphs/Paragraph.astro"
 
-const { headingText, paragraphText, buttonText, href } = Astro.props
+const { headingText, paragraphText, buttonText, href, src, isLandingHero } =
+  Astro.props
 ---
 
 <Section class="hero-section" id="hero_section">
   <Overlay />
 
-  <video
-    src={landingVideo}
-    class="relative h-screen w-screen object-cover z-5"
-    autoplay
-    muted
-    loop></video>
-  <div
-    class="flex flex-col justify-center items-center hero-desc-container absolute top-[50%] left-[50%] -translate-[50%] z-[100000]"
-  >
-    <Heading headingText={headingText} isHeroHeading={true} />
-    <Paragraph isHeroParagraph={true} paragraphText={paragraphText} />
-    <Button buttonText={buttonText} href={href} />
-  </div>
+  {
+    isLandingHero ? (
+      <>
+        <video
+          src={landingVideo}
+          class="relative h-screen w-screen object-cover z-5"
+          autoplay
+          muted
+          loop
+        />
+        <div class="flex flex-col justify-center items-center hero-desc-container absolute top-[50%] left-[50%] -translate-[50%] z-[100000]">
+          <Heading headingText={headingText} isHeroHeading={true} />
+          <Paragraph isHeroParagraph={true} paragraphText={paragraphText} />
+          <Button buttonText={buttonText} href={href} />
+        </div>
+      </>
+    ) : (
+      <div class="h-screen">
+        <img src={src} class="w-full h-screen object-cover" />
+        <div class="flex flex-col justify-center items-center hero-desc-container absolute top-[50%] left-[50%] -translate-[50%] z-[100000]">
+          <Heading headingText={headingText} isHeroHeading={true} />
+          <Paragraph isHeroParagraph={true} paragraphText={paragraphText} />
+        </div>
+      </div>
+    )
+  }
 </Section>

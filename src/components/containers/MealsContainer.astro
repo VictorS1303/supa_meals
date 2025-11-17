@@ -1,0 +1,31 @@
+---
+import Section from "../sections/Section.astro"
+import Heading from "../headings/Heading.astro"
+import Card from "../cards/Card.astro"
+const {class: className, id: id, mealCards = []} = Astro.props
+
+import { fetchAllMeals } from "../../js/meal_fetching"
+
+const allMeals = await fetchAllMeals()
+---
+
+<div class="meals-container h-screen w-screen flex flex-wrap justify-around gap-8">
+  {
+    allMeals.length > 0 ?
+      allMeals.map((mealCard) => (
+        <Card
+          isMealCard={true}
+          isCardHeading={true}
+          class={mealCard.class}
+          id={mealCard.idMeal}
+          src={`${mealCard.strMealThumb}`}
+          headingText={mealCard.strMeal}
+          paragraphText={mealCard.strInstructions}
+          buttonText="See Recipe"
+          href={`/meal/${mealCard.idMeal}`}
+        />
+      )) : (
+        <p>No meals found</p>
+      )
+  }
+</div>
