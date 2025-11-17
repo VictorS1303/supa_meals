@@ -22,7 +22,7 @@ const allMeals = await fetchAllMeals()
           id={mealCard.idMeal}
           src={`${mealCard.strMealThumb}`}
           headingText={mealCard.strMeal}
-          paragraphText={mealCard.strInstructions}
+          paragraphText={mealCard.strArea}
           buttonText="See Recipe"
           href={`/meal/${mealCard.idMeal}`}
         />
