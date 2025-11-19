@@ -1,0 +1,36 @@
+---
+import Button from '../buttons/Button.astro'
+import PageCounter from '../page_counters/PageCounter.astro'
+
+const {currentPage, totalPages} = Astro.props
+---
+
+<article class="pagination flex justify-center items-center gap-6 pb-6">
+  <Button
+    href={currentPage > 1 ? `/meals?page=${currentPage - 1}#meals_section` : null}
+    class={`prev-btn flex items-center gap-2 px-4 py-2 rounded ${
+      currentPage <= 1
+        ? 'pointer-events-none opacity-25'
+        : 'bg-[var(--btn-background-color)]'
+    }`}
+
+  >
+    <i class="fas fa-arrow-left"></i>
+  </Button>
+
+  <PageCounter currentPage={currentPage} totalPages={totalPages} />
+  
+  <!-- <span class="flex items-center">Page {currentPage} of {totalPages}</span> -->
+
+  <Button
+    href={currentPage < totalPages ? `/meals?page=${currentPage + 1}#meals_section` : null}
+    class={`next-btn flex items-center gap-2 px-4 py-2 rounded ${
+      currentPage >= totalPages
+        ? 'pointer-events-none opacity-25'
+        : 'bg-[var(--btn-background-color)]'
+    }`}
+
+  >
+    <i class="fas fa-arrow-right"></i>
+  </Button>
+</article>

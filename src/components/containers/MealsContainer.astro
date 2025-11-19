@@ -1,26 +1,25 @@
 ---
-import Section from "../sections/Section.astro"
-import Heading from "../headings/Heading.astro"
 import Card from "../cards/Card.astro"
-const { class: className, id: id, mealCards = [] } = Astro.props
+const { class: className, id: id, mealsForPage = [] } = Astro.props
 
-import { fetchAllMeals } from "../../js/meal_fetching"
+// Use the paginated meals passed as props
+const mealsToDisplay = mealsForPage.length > 0 ? mealsForPage : []
 
-const allMeals = await fetchAllMeals()
+console.log("Displaying meals:", mealsToDisplay.length)
 ---
 
 <div
-  class="meals-container h-screen w-screen flex flex-wrap justify-around gap-8"
+  class="meals-container w-full flex flex-wrap justify-center items-stretch px-4 py-10 gap-8"
 >
   {
-    allMeals.length > 0 ? (
-      allMeals.map((mealCard) => (
+    mealsToDisplay.length > 0 ? (
+      mealsToDisplay.map((mealCard) => (
         <Card
           isMealCard={true}
           isCardHeading={true}
           class={mealCard.class}
           id={mealCard.idMeal}
-          src={`${mealCard.strMealThumb}`}
+          src={mealCard.strMealThumb}
           headingText={mealCard.strMeal}
           paragraphText={mealCard.strArea}
           buttonText="See Recipe"

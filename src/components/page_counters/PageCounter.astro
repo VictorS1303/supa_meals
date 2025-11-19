@@ -1,0 +1,7 @@
+---
+const {class: className, id: id, currentPage, totalPages} = Astro.props
+---
+
+<article class=`${className}` id={id}>
+  <h4 class="text-white text-lg">Page <span class="current-page text-[var(--secondary-text-color)] ml-2">{currentPage}</span> / <span class="total-pages text-[var(--secondary-text-color)]">{totalPages}</span></h4>
+</article>

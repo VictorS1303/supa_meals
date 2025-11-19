@@ -1,9 +1,30 @@
 ---
+const { class: className, id: id } = Astro.props
 import Section from "./Section.astro"
 import MealsContainer from "../containers/MealsContainer.astro"
-const { class: className, id: id } = Astro.props
+import Pagination from "../paginations/Pagination.astro"
+import { fetchAllMeals } from "../../js/meal_fetching"
+
+const allMeals = await fetchAllMeals()
+
+const currentPage = +Astro.url.searchParams.get("page")! || 1
+
+const mealsPerPage = 4
+
+const totalPages = Math.ceil(allMeals.length / mealsPerPage)
+
+const mealsForPage = allMeals.slice(
+  (currentPage - 1) * mealsPerPage,
+  currentPage * mealsPerPage,
+)
+
+console.log("Total meals:", allMeals.length)
+console.log("Current page:", currentPage)
+console.log("Meals for this page:", mealsForPage.length)
+console.log("First meal ID:", mealsForPage[0]?.mealId)
 ---
 
 <Section class="meals-section" id="meals_section">
-  <MealsContainer />
+  <MealsContainer mealsForPage={mealsForPage} />
+  <Pagination currentPage={currentPage} totalPages={totalPages} />
 </Section>
