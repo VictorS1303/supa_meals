@@ -1,14 +1,9 @@
 ---
-import { fetchSingleMealById } from "../../js/meal_fetching.js"
 import SingleViewLayout from "../../layouts/SingleViewLayout.astro"
+import { fetchSingleMealById } from "../../js/meal_fetching.js"
 
 const { id } = Astro.params
 const singleMeal = await fetchSingleMealById(id)
-
-// Get the YouTube URL directly from the meal
-const videoURL = singleMeal.strYoutube
-
-console.log("Video URL:", videoURL) // Debug log
 ---
 
 <SingleViewLayout
@@ -16,8 +11,6 @@ console.log("Video URL:", videoURL) // Debug log
   src={singleMeal.strMealThumb}
   headingText={singleMeal.strMeal}
   alt={singleMeal.strMealAlternate || "Meal image is missing"}
-  href={singleMeal.strYoutube}
   target="_blank"
   meal={singleMeal}
-  videoSrc={videoURL}
 />

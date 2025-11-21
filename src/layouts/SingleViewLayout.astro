@@ -1,28 +1,22 @@
 ---
-import Hero from "../components/heroes/Hero.astro"
-import { fetchSingleMealById } from "../js/meal_fetching"
 import Layout from "./Layout.astro"
+import Hero from "../components/heroes/Hero.astro"
+import CookingInstructionSection from "../components/sections/CookingInstructionSection.astro"
+import { getYouTubeId } from "../js/utils/ids_extractors.js"
 
-const { id } = Astro.params
+const { meal, title, src, headingText, alt, target } = Astro.props
 
-const singleMeal = await fetchSingleMealById(id)
+// Extract the YouTube video ID here inside the layout
+const videoId = getYouTubeId(meal.strYoutube)
 ---
 
-<Layout title={singleMeal.strMeal}>
-  <Hero
-    isSingleViewHero={true}
-    src={singleMeal.strMealThumb}
-    alt
-    headingText={singleMeal.strMeal}
+<Layout title={title}>
+  <Hero isSingleViewHero={true} src={src} alt={alt} headingText={headingText} />
+
+  <CookingInstructionSection
+    headingText={`What you need for ${meal.strMeal}`}
+    meal={meal}
+    ingredients={meal.ingredients}
+    videoId={videoId}
   />
 </Layout>
-
-<!-- 
-
-src={singleMeal.strMealThumb}
-  headingText={singleMeal.strMeal}
-  alt={singleMeal.strMealAlternate || "Meal image is missing"}
-  href={singleMeal.strYoutube}
-  target="_blank"
-  meal={singleMeal}
-  -->

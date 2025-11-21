@@ -1,24 +1,18 @@
-export const formatInstructions = (rawCookingInstruction) =>
-{
-    if(!rawCookingInstruction)
-    {
-        return []
+export const formatInstructions = (rawCookingInstruction) => {
+    if (!rawCookingInstruction) {
+        return [];
     }
 
     return rawCookingInstruction
-        .replace(/\s+/g, ' ')
-        .trim()  
-        .split(/\r?\n+/)
+        .trim()
+        .split(/\r?\n+/)  // Split on newlines FIRST
         .map((step) => step.trim())
         .filter(Boolean)
+        .filter(line => !/^step\s*\d+$/i.test(line))  // Remove lines that are ONLY "step 1", "step 2", etc.
         .flatMap((paragraph) =>
             paragraph
-                .split(/(?<=\.)\s+/)
+                .split(/(?<=\.)\s+/)  // Then split sentences
                 .map((string) => string.trim())
                 .filter(Boolean)
-        )
-
-        .filter(
-            sentence => !/^step\s*\d+/i.test(sentence)  // remove sentences like "Step 1" (case-insensitive)
         );
 }

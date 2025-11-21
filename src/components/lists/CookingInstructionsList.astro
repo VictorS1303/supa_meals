@@ -3,22 +3,27 @@ import Section from "../sections/Section.astro"
 import Heading from "../headings/Heading.astro"
 import { formatInstructions } from "../../js/utils/formatters.js"
 
-const {class: className, id: id, meal} = Astro.props
+const { class: className, id: id, meal } = Astro.props
 const steps = formatInstructions(meal.strInstructions)
 ---
 
 <Section class="my-12">
   <Heading isSingleViewSubHeading={true} headingText="How to" />
-  <article class="cooking-instruction-list-wrapper mt-4" id="cooking_instruction_list_wrapper">
+  <article
+    class="cooking-instruction-list-wrapper mt-4 w-[50vw]"
+    id="cooking_instruction_list_wrapper"
+  >
     <ol class="flex flex-col gap-6">
-    {
-      steps.map((step, index) => (
-        <li class="flex gap-3 items-center align-center whitespace-wrap">
-          <span class="text-[var(--secondary-text-color)] text-2xl hidden sm:inline-block">{index + 1}.</span>
-          <span class="text-white text-xl">{step}</span>
-        </li>
-      ))
-    }
+      {
+        steps.map((step, index) => (
+          <li class="flex gap-3 items-center align-center whitespace-wrap">
+            <span class="text-[var(--secondary-text-color)] text-2xl hidden sm:inline-block">
+              {index + 1}.
+            </span>
+            <span class="text-white text-xl">{step}</span>
+          </li>
+        ))
+      }
     </ol>
   </article>
 </Section>

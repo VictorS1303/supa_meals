@@ -1,6 +1,5 @@
 ---
 import "../styles/global.css"
-import "plyr/dist/plyr.css"
 import Card from "../components/cards/Card.astro"
 const { title } = Astro.props
 ---
@@ -10,6 +9,7 @@ const { title } = Astro.props
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/src/styles/global.css" />
     <title>SupaMeals | {title}</title>
     <script
       src="https://kit.fontawesome.com/e05f21b32e.js"
