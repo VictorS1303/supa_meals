@@ -1,0 +1,14 @@
+---
+import Heading from "../headings/Heading.astro"
+import Section from "./Section.astro"
+import IngredientsList from "../lists/IngredientsList.astro"
+import CookingInstructionsList from "../lists/CookingInstructionsList.astro"
+const { class: className, id, headingText, ingredients, meal} = Astro.props
+---
+<Section class={`${className} my-12`} id={id}>
+  <div class="mt-6">
+    <Heading isSingleViewSubHeading={true} headingText={headingText} />
+    <IngredientsList meal={meal} ingredients={ingredients} />
+    <CookingInstructionsList meal={meal} />
+  </div>
+</Section>

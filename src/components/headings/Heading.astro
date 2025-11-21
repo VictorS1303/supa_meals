@@ -5,6 +5,8 @@ const {
   isHeroHeading,
   headingText,
   isCardHeading,
+  isSingleViewHeroHeading,
+  isSingleViewSubHeading,
 } = Astro.props
 ---
 
@@ -15,6 +17,14 @@ const {
     <header class="text-[var(--primary-text-color)] text-lg uppercase font-semibold tracking-wide mt-3 mb-2">
       {headingText}
     </header>
+  ) : isSingleViewHeroHeading ? (
+    <h2 class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-3xl z-[10000] md:text-4xl text-center">
+      {headingText}
+    </h2>
+  ) : isSingleViewSubHeading ? (
+    <h2 class="text-[var(--singleview-subheading-text-color)] text-3xl">
+      {headingText}
+    </h2>
   ) : (
     ""
   )

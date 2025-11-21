@@ -1,0 +1,27 @@
+---
+import Layout from "./Layout.astro";
+import Hero from "../components/heroes/Hero.astro";
+import CookingInstructionSection from "../components/sections/CookingInstructionSection.astro";
+
+const { title, src, alt, headingText, href, target, meal } = Astro.props;
+
+console.log("Current meal: ", meal.strMeal)
+---
+
+<Layout title={title}>
+  <Hero
+    src={src}
+    alt={alt}
+    isSingleViewHero={true}
+    headingText={headingText}
+    buttonIconClass="fa-brands fa-youtube"
+    href={href}
+    target={target}
+  />
+
+  <CookingInstructionSection
+    headingText={`What you need for ${meal.strMeal}`}
+    meal={meal}
+  />
+
+</Layout>

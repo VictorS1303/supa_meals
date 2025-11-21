@@ -5,34 +5,67 @@ import landingVideo from "/videos/landing_page/landing_page_video.mp4"
 import Heading from "../headings/Heading.astro"
 import Button from "../buttons/Button.astro"
 import Paragraph from "../paragraphs/Paragraph.astro"
+import Tooltip from "../tooltips/Tooltip.astro"
 
-const { headingText, paragraphText, buttonText, href, src, isLandingHero } =
-  Astro.props
+const {
+  headingText,
+  paragraphText,
+  buttonText,
+  href,
+  src,
+  isLandingHero,
+  isSingleViewHero,
+  buttonIconClass,
+  target,
+} = Astro.props
 ---
 
 <Section class="hero-section" id="hero_section">
-  <Overlay />
-
   {
     isLandingHero ? (
-      <>
+      <div class="relative h-screen w-screen overflow-hidden">
+        <Overlay />
+
         <video
           src={landingVideo}
-          class="relative h-screen w-screen object-cover z-5"
+          class="h-full w-full object-cover"
           autoplay
           muted
           loop
         />
-        <div class="flex flex-col justify-center items-center hero-desc-container absolute top-[50%] left-[50%] -translate-[50%] z-[100000]">
+
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100000] flex flex-col items-center gap-4">
           <Heading headingText={headingText} isHeroHeading={true} />
           <Paragraph isHeroParagraph={true} paragraphText={paragraphText} />
+
           <Button buttonText={buttonText} href={href} />
         </div>
-      </>
+      </div>
+    ) : isSingleViewHero ? (
+      <div class="relative mb-3 h-[300px] w-full overflow-hidden flex flex-col gap-4 justify-center">
+        <Overlay isSingleViewOverlay={true} />
+
+        <img src={src} class="w-full h-full object-cover" />
+
+        <h2 class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-3xl md:text-4xl z-[10000] text-center">
+          {headingText}
+        </h2>
+      </div>
     ) : (
-      <div class="h-screen">
-        <img src={src} class="w-full h-screen object-cover" />
-        <div class="flex flex-col justify-center items-center hero-desc-container absolute top-[50%] left-[50%] -translate-[50%] z-[100000]">
+      // <Button
+      //   isYouTubeButton={true}
+      //   target={target}
+      //   href={href}
+      //   class="z-[10001] self-end mr-4 -mt-8"
+      // >
+      //   <i class={`${buttonIconClass} text-2xl`} />
+      // </Button>
+      <div class="relative h-screen max-h-[300px] w-full overflow-hidden">
+        <Overlay />
+
+        <img src={src} class="w-full h-full object-cover" />
+
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100000] flex flex-col items-center gap-4">
           <Heading headingText={headingText} isHeroHeading={true} />
           <Paragraph isHeroParagraph={true} paragraphText={paragraphText} />
         </div>

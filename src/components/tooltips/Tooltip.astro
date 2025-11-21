@@ -1,0 +1,12 @@
+---
+const {class: className, id: id, toolTipText, placement, children } = Astro.props
+---
+
+<article
+  class={`${className} relative`}
+  id={id}
+  data-tooltip={toolTipText}
+  data-placement={placement}
+>
+  {children}
+</article>

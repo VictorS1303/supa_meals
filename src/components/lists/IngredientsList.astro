@@ -1,0 +1,38 @@
+---
+import Heading from "../headings/Heading.astro";
+const { class: className, id: id, meal } = Astro.props;
+
+const ingredients = Object.entries(meal)
+  .filter(([key, value]) => key.startsWith("strIngredient") && value)
+  .map(([key, value]) => {
+  const index = key.replace("strIngredient", "");
+  const rawMeasure = meal[`strMeasure${index}`] ?? "";
+  const measure = rawMeasure.trim();
+
+  // If measure is empty → return only the ingredient name
+  if (!measure) {
+    return value;
+  }
+  
+  return `${value} (${measure})`;
+})
+
+---
+
+<article class="ingredients-list mt-8" id="ingredients_list">
+  <Heading isSingleViewSubHeading={true} headingText="Ingredients" />
+  <ol class={`${className} mt-4 flex flex-col gap-4`} id={id}>
+    {
+      ingredients.length > 0
+        ? ingredients.map((ingredient, index) => (
+            <li class="flex gap-3 whitespace-nowrap">
+              <span class="text-[var(--secondary-text-color)] text-2xl hidden sm:inline-block">{index + 1}.</span>
+              <span class="text-white text-xl">{ingredient}</span>
+            </li>
+          ))
+        : (
+            <p>No ingredients listed</p>
+          )
+    }
+  </ol>
+</article>

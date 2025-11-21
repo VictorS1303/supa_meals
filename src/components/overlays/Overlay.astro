@@ -1,6 +1,11 @@
 ---
-const { class: className, id } = Astro.props
+const { class: className, id, isSingleViewOverlay } = Astro.props
 ---
 
-
-<article class="h-screen w-screen absolute bg-black/65 z-[1000]"></article>
+{
+  isSingleViewOverlay ? (
+    <article class="h-full w-full absolute bg-black/50 z-[1000]" />
+  ) : (
+    <article class="h-screen w-screen absolute bg-black/65 z-[1000]" />
+  )
+}

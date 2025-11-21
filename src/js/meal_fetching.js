@@ -18,3 +18,19 @@ export const fetchAllMeals = async () =>
 
     return allMeals
 }
+
+// Fetch meal by ID
+export const fetchSingleMealById = async (mealId) => {
+  const res = await fetch(
+    `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch meal");
+  }
+
+  const data = await res.json();
+
+  
+  return data.meals ? data.meals[0] : null;
+}

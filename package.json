@@ -12,5 +12,10 @@
     "@tailwindcss/vite": "^4.1.17",
     "astro": "^5.15.8",
     "tailwindcss": "^4.1.17"
+  },
+  "devDependencies": {
+    "sass": "^1.90.0",
+    "typescript": "^5.9.2",
+    "webcoreui": "^1.2.0"
   }
 }
