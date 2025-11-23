@@ -1,10 +1,22 @@
 ---
-const { class: className, id, isSingleViewOverlay } = Astro.props
+import Button from "../buttons/Button.astro"
+const {
+  class: className,
+  id,
+  isSingleViewOverlay,
+  isVideoPlayerOverlay,
+} = Astro.props
 ---
 
 {
   isSingleViewOverlay ? (
     <article class="h-full w-full absolute bg-black/50 z-[1000]" />
+  ) : isVideoPlayerOverlay ? (
+    <article class="h-full w-full absolute bg-black/50 z-[1000]">
+      <Button class="plyr__control plyr__control--overlaid z-[1000] absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] cursor-pointer">
+        <i class="fas fa-play" />
+      </Button>
+    </article>
   ) : (
     <article class="h-screen w-screen absolute bg-black/65 z-[1000]" />
   )

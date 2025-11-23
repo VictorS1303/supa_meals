@@ -3,6 +3,11 @@
 
 :root
 {
+    /* FONTS */
+    --primary-font: 'Circular', sans-serif;
+
+    
+    /* COLORS */
     --primary-text-color: #34b27b;
     --primary-bg-color: #f8f9fa;
     --secondary-bg-color: #11181c;
@@ -10,6 +15,7 @@
     --button-bg-color: #34b27b;
     --button-text-color: #f8f9fa;
     --singleview-subheading-text-color: #34b27b;
+    --plyr-button-bg-color: #34b27b;
 }
 
 @font-face
@@ -21,4 +27,66 @@
 body
 {
     font-family: 'Circular';
+}
+
+input[type="range"]::-moz-range-thumb,
+input[type="range"]::-webkit-range-thumb {
+    appearance: none;
+    background-color: var(--range-track-thumb-bg-color);
+    -moz-border: none;
+    height: 15px;
+    width: 15px;
+    border: 2px solid var(--range-track-thumb-border-color);
+    cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb:active,
+input[type="range"]::-webkit-range-thumb:active
+{
+    transform: scale(.80);
+}
+
+select
+{
+    font-family: var(--primary-font);
+    color: white;
+
+    & option
+    {
+        border-radius: none;
+        color: var(--primary-text-color);
+        cursor: pointer;
+
+        &:hover
+        {
+            color: #fff;
+            background-color: var(--secondary-text-color);
+        }
+    }
+}
+
+/* Plyr Video Player */
+.plyr__control.plyr__control--overlaid{
+    background-color: var(--secondary-text-color);
+}
+
+.plyr__control.plyr__control--overlaid:hover {
+    background-color: var(--secondary-text-color) !important;
+    opacity: 0.95; /* optional */
+}
+
+.plyr__controls__item.plyr__control:hover
+{
+    background-color: var(--secondary-text-color) !important;
+}
+
+.plyr__video-wrapper.plyr__video-embed
+{
+    border-radius: 10px;
+    min-width: fit-content;
+}
+
+video
+{
+    border-radius: 10px;
 }

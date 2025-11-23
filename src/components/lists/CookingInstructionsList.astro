@@ -10,14 +10,14 @@ const steps = formatInstructions(meal.strInstructions)
 <Section class="my-12">
   <Heading isSingleViewSubHeading={true} headingText="How to" />
   <article
-    class="cooking-instruction-list-wrapper mt-4 w-[50vw]"
+    class="cooking-instruction-list-wrapper mt-4 w-full md:w-[60%]"
     id="cooking_instruction_list_wrapper"
   >
     <ol class="flex flex-col gap-6">
       {
         steps.map((step, index) => (
-          <li class="flex gap-3 items-center align-center whitespace-wrap">
-            <span class="text-[var(--secondary-text-color)] text-2xl hidden sm:inline-block">
+          <li class="flex gap-3 items-center align-center whitespace-wrap ">
+            <span class="text-[var(--secondary-text-color)] text-2xl self-start hidden sm:inline-block">
               {index + 1}.
             </span>
             <span class="text-white text-xl">{step}</span>

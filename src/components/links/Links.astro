@@ -1,0 +1,20 @@
+---
+const {
+  class: className,
+  id: id,
+  href,
+  buttonText,
+  isYouTubeButton,
+  target,
+} = Astro.props
+---
+
+<a
+  class=`${className} ${isYouTubeButton ? 'bg-transparent text-[var(--button-bg-color)]' : 'bg-[var(--button-bg-color)] text-[var(--button-text-color)] px-4 py-2 w-fit rounded-sm'} cursor-pointer transition-opacity duration-150 ease-in hover:opacity-85 md:text-xl`
+  id={id}
+  href={href}
+  target={target}
+>
+  {buttonText}
+  <slot />
+</a>

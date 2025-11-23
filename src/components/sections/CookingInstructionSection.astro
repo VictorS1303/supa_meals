@@ -4,7 +4,6 @@ import Section from "./Section.astro"
 import IngredientsList from "../lists/IngredientsList.astro"
 import CookingInstructionsList from "../lists/CookingInstructionsList.astro"
 import VideoPlayer from "../video_players/VideoPlayer.astro"
-
 const {
   class: className,
   id,
@@ -15,24 +14,25 @@ const {
 } = Astro.props
 ---
 
-<Section class={`${className} my-12`} id={id}>
+<Section class={className} id={id}>
   <div class="mt-6">
     <Heading isSingleViewSubHeading={true} headingText={headingText} />
-
     <div class="flex flex-col md:flex-row gap-6">
       <!-- Left column: Ingredients + Instructions -->
-      <div class="md:flex-1">
+      <div>
         <IngredientsList meal={meal} ingredients={ingredients} />
         <CookingInstructionsList meal={meal} />
       </div>
-
       <!-- Right column: Video -->
-      <div class="md:flex-1/2">
+      <div class="flex-0 md:flex-1/2">
         {
           videoId && (
-            <div class="video-wrapper">
-              <VideoPlayer videoId={videoId} videoTitle={meal.strMeal} />
-            </div>
+            <VideoPlayer
+              videoId={videoId}
+              videoTitle={meal.strMeal}
+              videoSrc={meal.strYoutube}
+              videoPoster={meal.strMealThumb}
+            />
           )
         }
       </div>

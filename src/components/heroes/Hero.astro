@@ -3,7 +3,7 @@ import Section from "../sections/Section.astro"
 import Overlay from "../overlays/Overlay.astro"
 import landingVideo from "/videos/landing_page/landing_page_video.mp4"
 import Heading from "../headings/Heading.astro"
-import Button from "../buttons/Button.astro"
+import Link from "../links/Links.astro"
 import Paragraph from "../paragraphs/Paragraph.astro"
 import Tooltip from "../tooltips/Tooltip.astro"
 
@@ -38,7 +38,7 @@ const {
           <Heading headingText={headingText} isHeroHeading={true} />
           <Paragraph isHeroParagraph={true} paragraphText={paragraphText} />
 
-          <Button buttonText={buttonText} href={href} />
+          <Link buttonText={buttonText} href={href} />
         </div>
       </div>
     ) : isSingleViewHero ? (

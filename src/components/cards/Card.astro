@@ -1,5 +1,5 @@
 ---
-import Button from "../buttons/Button.astro"
+import Link from "../links/Links.astro"
 import Heading from "../headings/Heading.astro"
 import Paragraph from "../paragraphs/Paragraph.astro"
 const {
@@ -24,7 +24,7 @@ const {
       <img src={src} class="rounded-tl-md rounded-tr-md w-full" />
       <Heading isCardHeading={true} headingText={headingText} />
       <Paragraph paragraphText={paragraphText} isCardParagraph={true} />
-      <Button href={href} buttonText={buttonText} class="mt-auto" />
+      <Link href={href} buttonText={buttonText} class="mt-auto" />
     </article>
   ) : (
     ""
