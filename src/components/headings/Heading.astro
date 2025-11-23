@@ -12,7 +12,9 @@ const {
 
 {
   isHeroHeading ? (
-    <header class="text-white text-4xl md:text-6xl">{headingText}</header>
+    <header class="text-white text-4xl md:text-6xl whitespace-nowrap">
+      {headingText}
+    </header>
   ) : isCardHeading ? (
     <header class="text-[var(--primary-text-color)] text-lg uppercase font-semibold tracking-wide mt-3 mb-2">
       {headingText}

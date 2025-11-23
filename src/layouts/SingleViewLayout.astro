@@ -27,7 +27,14 @@ const mealInteractionButtons = [
 ---
 
 <Layout title={title}>
-  <Hero isSingleViewHero={true} src={src} alt={alt} headingText={headingText} />
+  <Hero
+    isSingleViewHero={true}
+    src={src}
+    alt={alt}
+    href="/meals"
+    isSingleViewHeroLink={true}
+    headingText={headingText}
+  />
   <CookingInstructionSection
     headingText={`What you need for ${meal.strMeal}`}
     meal={meal}

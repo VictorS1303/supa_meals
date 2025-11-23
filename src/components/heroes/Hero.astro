@@ -3,7 +3,7 @@ import Section from "../sections/Section.astro"
 import Overlay from "../overlays/Overlay.astro"
 import landingVideo from "/videos/landing_page/landing_page_video.mp4"
 import Heading from "../headings/Heading.astro"
-import Link from "../links/Links.astro"
+import Link from "../links/Link.astro"
 import Paragraph from "../paragraphs/Paragraph.astro"
 import Tooltip from "../tooltips/Tooltip.astro"
 
@@ -17,6 +17,7 @@ const {
   isSingleViewHero,
   buttonIconClass,
   target,
+  isSingleViewHeroLink,
 } = Astro.props
 ---
 
@@ -34,7 +35,7 @@ const {
           loop
         />
 
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100000] flex flex-col items-center gap-4">
+        <div class="absolute z-[100000] flex flex-col items-center gap-4">
           <Heading headingText={headingText} isHeroHeading={true} />
           <Paragraph isHeroParagraph={true} paragraphText={paragraphText} />
 
@@ -43,6 +44,10 @@ const {
       </div>
     ) : isSingleViewHero ? (
       <div class="relative mb-3 h-[300px] w-full overflow-hidden flex flex-col gap-4 justify-center">
+        <Link isSingleViewHeroLink={isSingleViewHeroLink} href={href}>
+          <i class="fas fa-arrow-left" />
+        </Link>
+
         <Overlay isSingleViewOverlay={true} />
 
         <img src={src} class="w-full h-full object-cover" />
@@ -52,20 +57,12 @@ const {
         </h2>
       </div>
     ) : (
-      // <Button
-      //   isYouTubeButton={true}
-      //   target={target}
-      //   href={href}
-      //   class="z-[10001] self-end mr-4 -mt-8"
-      // >
-      //   <i class={`${buttonIconClass} text-2xl`} />
-      // </Button>
       <div class="relative h-screen max-h-[300px] w-full overflow-hidden">
         <Overlay />
 
         <img src={src} class="w-full h-full object-cover" />
 
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100000] flex flex-col items-center gap-4">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100000] flex flex-col items-center">
           <Heading headingText={headingText} isHeroHeading={true} />
           <Paragraph isHeroParagraph={true} paragraphText={paragraphText} />
         </div>

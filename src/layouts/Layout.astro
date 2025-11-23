@@ -3,6 +3,9 @@ import "../styles/global.css"
 import "plyr/dist/plyr.css"
 import Card from "../components/cards/Card.astro"
 const { title } = Astro.props
+
+const isSingleView = Astro.url.pathname.includes("/meal")
+const mainSingleViewClasses = isSingleView ? "mx-auto px-10 py-10" : ""
 ---
 
 <!doctype html>
@@ -18,7 +21,7 @@ const { title } = Astro.props
     <title>SupaMeals | {title}</title>
   </head>
   <body class="bg-[var(--secondary-bg-color)] min-h-screen">
-    <main class="mx-auto px-10 py-10">
+    <main class={mainSingleViewClasses}>
       <slot />
     </main>
   </body>
