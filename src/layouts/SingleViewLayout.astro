@@ -3,11 +3,27 @@ import Layout from "./Layout.astro"
 import Hero from "../components/heroes/Hero.astro"
 import CookingInstructionSection from "../components/sections/CookingInstructionSection.astro"
 import { getYouTubeId } from "../js/utils/ids_extractors.js"
+import MealInteractionSection from "../components/sections/MealInteractionSection.astro"
 
 const { meal, title, src, headingText, alt, target } = Astro.props
 
 // Extract the YouTube video ID here inside the layout
 const videoId = getYouTubeId(meal.strYoutube)
+
+const mealInteractionButtons = [
+  {
+    iconClass: "fa-solid fa-heart",
+    mealInteractionButtonText: "Like",
+  },
+  {
+    iconClass: "fa-solid fa-comment",
+    mealInteractionButtonText: "Comment",
+  },
+  {
+    iconClass: "fa-solid fa-plus",
+    mealInteractionButtonText: "Meal plan",
+  },
+]
 ---
 
 <Layout title={title}>
@@ -18,4 +34,6 @@ const videoId = getYouTubeId(meal.strYoutube)
     ingredients={meal.ingredients}
     videoId={videoId}
   />
+
+  <MealInteractionSection mealInteractionButtons={mealInteractionButtons} />
 </Layout>

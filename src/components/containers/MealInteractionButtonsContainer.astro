@@ -1,0 +1,27 @@
+---
+import Button from "../buttons/Button.astro"
+
+const {
+  class: className,
+  id: id,
+  mealInteractionButtons = [],
+  mealInteractionButtonText,
+} = Astro.props
+---
+
+<article class="flex items-center gap-12 mt-4">
+  {
+    mealInteractionButtons.length > 0 ? (
+      mealInteractionButtons.map((mealInteractionButton) => (
+       
+        <Button class="flex flex-col text-[var(--secondary-text-color)] cursor-pointer transition-opacity duration-150 ease-in hover:opacity-85">
+          <i class={`${mealInteractionButton.iconClass} text-2xl`} />
+          <span class="text-md">{mealInteractionButton.mealInteractionButtonText}</span>
+        </Button>
+       
+      ))
+    ) : (
+      <p>No available interactions</p>
+    )
+  }
+</article>

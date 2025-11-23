@@ -1,0 +1,10 @@
+---
+import MealInteractionButtonsContainer from "../containers/MealInteractionButtonsContainer.astro"
+import Heading from "../headings/Heading.astro"
+import Section from "./Section.astro";
+const { mealInteractionButtons } = Astro.props
+---
+<Section class="mt-16">
+  <Heading isSingleViewSubHeading={true} headingText="Interact with meal" />
+  <MealInteractionButtonsContainer mealInteractionButtons={mealInteractionButtons} />
+</Section>

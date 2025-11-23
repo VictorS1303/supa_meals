@@ -2,6 +2,6 @@
 const { class: className, id: id } = Astro.props
 ---
 
-<button class=`${className}` id={id}>
+<button class={`${className}`} id={id}>
   <slot />
 </button>
