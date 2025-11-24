@@ -1,20 +1,31 @@
+let cachedMeals = null
+
 export const fetchAllMeals = async () =>
 {
-    const letters = 'abcdefghijklmnopqrstuvwxyz'
-    const splitLetters = letters.split('')
-    let allMeals = []
-
-    for(const letter of splitLetters)
+    if(cachedMeals)
     {
-        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`)
+        return cachedMeals
+    }
 
-        const data = await response.json()
+    const letters = 'abccdefghijklmnopqrstuvwxyz'.split('')
 
-        if(data.meals)
+    const requests = letters.map((letter) => (
+        fetch(`https://www.themealdb.com/api/json/v1/1/search.php?f=${letter}`)
+            .then((res) => res.json())
+    ))
+
+    const results = await Promise.all(requests)
+
+    const allMeals = []
+
+    for(const result of results)
+    {
+        if(result.meals)
         {
-            allMeals.push(...data.meals)
+            allMeals.push(...result.meals)
         }
     }
 
+    cachedMeals = allMeals
     return allMeals
 }

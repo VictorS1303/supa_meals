@@ -17,11 +17,6 @@ const mealsForPage = allMeals.slice(
   (currentPage - 1) * mealsPerPage,
   currentPage * mealsPerPage,
 )
-
-console.log("Total meals:", allMeals.length)
-console.log("Current page:", currentPage)
-console.log("Meals for this page:", mealsForPage.length)
-console.log("First meal ID:", mealsForPage[0]?.mealId)
 ---
 
 <Section class="meals-section" id="meals_section">
