@@ -9,7 +9,7 @@ const allMeals = await fetchAllMeals()
 
 const currentPage = +Astro.url.searchParams.get("page")! || 1
 
-const mealsPerPage = 4
+const mealsPerPage = 18
 
 const totalPages = Math.ceil(allMeals.length / mealsPerPage)
 
