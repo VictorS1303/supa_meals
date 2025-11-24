@@ -1,0 +1,14 @@
+---
+import Select from '../selects/Select.astro'
+const {filterOptions = []} = Astro.props
+---
+<Select class="border-b-2 border-[var(--secondary-text-color)]">
+  {
+    filterOptions.length > 0 ?
+      filterOptions.map((filterOption) => (
+        <option value={filterOption.value}>
+          {filterOption.optionText}
+        </option>
+      )) : null
+  }
+</Select>

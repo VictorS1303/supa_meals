@@ -90,3 +90,10 @@ video
 {
     border-radius: 10px;
 }
+
+/* Utilities */
+.hide-card
+{
+    opacity: 0;
+    transition: opacity .3s ease-in;
+}

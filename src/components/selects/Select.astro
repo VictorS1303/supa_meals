@@ -1,0 +1,7 @@
+---
+const {class: className, id: id, value, optionText} = Astro.props
+---
+
+<select class={`${className} w-fit min-w-[150px] text-right border-b-2 border-[var(--secondary-text-color)]`} id={id}>
+  <slot />
+</select>

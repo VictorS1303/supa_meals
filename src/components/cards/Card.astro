@@ -12,6 +12,7 @@ const {
   isCardParagraph,
   headingText,
   src,
+  meal,
 } = Astro.props
 ---
 
@@ -20,6 +21,7 @@ const {
     <article
       class={`${className} w-full max-w-[300px] p-4 bg-white rounded-md flex flex-col`}
       id={id}
+      data-meal-name={meal?.strMeal || ""}
     >
       <img src={src} class="rounded-tl-md rounded-tr-md w-full" />
       <Heading isCardHeading={true} headingText={headingText} />

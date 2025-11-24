@@ -4,6 +4,7 @@ import Section from "./Section.astro"
 import MealsContainer from "../containers/MealsContainer.astro"
 import Pagination from "../paginations/Pagination.astro"
 import { fetchAllMeals } from "../../js/meal_fetching"
+import MealFilter from "../filters/MealFilter.astro"
 
 const allMeals = await fetchAllMeals()
 

@@ -1,5 +1,6 @@
 ---
 import Card from "../cards/Card.astro"
+import MealFilter from "../filters/MealFilter.astro"
 const { class: className, id: id, mealsForPage = [] } = Astro.props
 
 // Use the paginated meals passed as props
@@ -8,26 +9,29 @@ const mealsToDisplay = mealsForPage.length > 0 ? mealsForPage : []
 console.log("Displaying meals:", mealsToDisplay.length)
 ---
 
-<div
-  class="meals-container w-full flex flex-wrap justify-center items-stretch px-4 py-10 gap-8 md:justify-between"
->
-  {
-    mealsToDisplay.length > 0 ? (
-      mealsToDisplay.map((mealCard) => (
-        <Card
-          isMealCard={true}
-          isCardHeading={true}
-          class={mealCard.class}
-          id={mealCard.idMeal}
-          src={mealCard.strMealThumb}
-          headingText={mealCard.strMeal}
-          paragraphText={mealCard.strArea}
-          buttonText="See Recipe"
-          href={`/meal/${mealCard.idMeal}`}
-        />
-      ))
-    ) : (
-      <p>No meals found</p>
-    )
-  }
+<div class="mt-8">
+  <MealFilter />
+  <div
+    class="meals-container w-full flex flex-wrap justify-center items-stretch py-10 gap-8 md:justify-between"
+  >
+    {
+      mealsToDisplay.length > 0 ? (
+        mealsToDisplay.map((mealCard) => (
+          <Card
+            isMealCard={true}
+            isCardHeading={true}
+            class={mealCard.class}
+            id={mealCard.idMeal}
+            src={mealCard.strMealThumb}
+            headingText={mealCard.strMeal}
+            paragraphText={mealCard.strArea}
+            buttonText="See Recipe"
+            href={`/meal/${mealCard.idMeal}`}
+          />
+        ))
+      ) : (
+        <p>No meals found</p>
+      )
+    }
+  </div>
 </div>

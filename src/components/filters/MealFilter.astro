@@ -1,0 +1,44 @@
+---
+import Input from '../inputs/Input.astro'
+import {filterMealsBySearch} from '../../js/utils/filters.js'
+
+const searchParam = Astro.url.searchParams.get('search') || ''
+
+const filteredMeals = await filterMealsBySearch(searchParam)
+---
+
+<div class="flex justify-between">
+  <Input id="meal_filter_input" placeholder="Search meal name" value={searchParam} />
+</div>
+
+<script>
+  const mealFilterInput = document.querySelector('#meal_filter_input')
+  const mealCards = document.querySelectorAll('.meals-container article')
+  console.log(mealCards)
+
+  mealFilterInput?.addEventListener('input', (e) => handleFilterMeals(e))
+
+  function handleFilterMeals(e)
+  {
+    const searchTerm = e.target.value.trim().toLowerCase() 
+
+    mealCards.forEach((mealCard) => {
+    const text = mealCard?.innerText.toLowerCase() || ''
+
+    if (text.includes(searchTerm)) {
+      mealCard.classList.remove('hide-card')
+
+      setTimeout(() => {
+        mealCard.classList.remove('hidden')
+      }, 300)
+      
+    } else {
+      mealCard.classList.add('hide-card')
+
+      setTimeout(() => {
+        mealCard.classList.add('hidden')
+      }, 300)
+    }
+  })
+  }
+</script>
