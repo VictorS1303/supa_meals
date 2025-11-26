@@ -1,0 +1,49 @@
+---
+import Button from "./Button.astro"
+const { class: className, id: id } = Astro.props
+---
+
+<Button
+  class="h-[30px] w-[30px] fixed top-12 right-12 cursor-pointer group"
+  id="nav_toggle_button"
+>
+  <span
+    class="absolute left-0 right-0 mx-auto block h-[5px] w-full rounded-md bg-[var(--secondary-text-color)]
+         -translate-y-[9px] transform
+         group-[.open]:translate-y-0 group-[.open]:rotate-45
+         transition-all duration-200 ease-in"
+  ></span>
+
+  <span
+    class="absolute left-0 right-0 mx-auto block h-[5px] w-full rounded-md bg-[var(--secondary-text-color)]
+         translate-y-0 transform
+         group-[.open]:opacity-0 group-[.open]:-translate-x-[40px]
+         transition-all duration-150 ease-in delay-100"
+  ></span>
+
+  <span
+    class="absolute left-0 right-0 mx-auto block h-[5px] w-full rounded-md bg-[var(--secondary-text-color)]
+         translate-y-[9px] transform
+         group-[.open]:translate-y-0 group-[.open]:-rotate-45
+         transition-all duration-200 ease-in"
+  ></span>
+</Button>
+
+<script>
+  const navToggleButton = document.querySelector("#nav_toggle_button")
+  const mainNav = document.querySelector("#main_nav")
+  
+
+  navToggleButton?.addEventListener("click", toggleNavbar)
+
+
+  
+  function toggleNavbar() {
+    navToggleButton?.classList.toggle("open")
+    mainNav?.classList.toggle("open")
+
+    mainNav?.classList.contains("open")
+      ? (document.body.style.overflow = "hidden")
+      : (document.body.style.overflow = "scroll")
+  }
+</script>

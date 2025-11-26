@@ -11,6 +11,7 @@
     --primary-text-color: #34b27b;
     --primary-bg-color: #f8f9fa;
     --secondary-bg-color: #11181c;
+    --navigation-bg-color: #11181c;
     --secondary-text-color: #34b27b;
     --button-bg-color: #34b27b;
     --button-text-color: #f8f9fa;
@@ -91,9 +92,25 @@ video
     border-radius: 10px;
 }
 
+/* Navigation Items */
+.nav-list-item
+{
+    -webkit-text-stroke: 2px var(--primary-text-color);
+    -webkit-text-fill-color: transparent;
+    text-shadow: 
+        0 0 0 var(--primary-text-color),
+        0 0 4px var(--primary-text-color);
+}
+
 /* Utilities */
 .hide-card
 {
     opacity: 0;
+    transition: opacity .3s ease-in;
+}
+
+
+.show-nav-bg-text {
+    opacity: 0.4;
     transition: opacity .3s ease-in;
 }

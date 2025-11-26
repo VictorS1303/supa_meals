@@ -1,0 +1,107 @@
+---
+import NavToggleButton from "../buttons/NavToggleButton.astro"
+const {class: className, id: id, navItems = []} = Astro.props 
+---
+
+<nav class={`${className} main-nav fixed bg-transparent inset-0 bg-[var(--navigation-bg-color)] z-[1000000]
+            transition-[clip-path] duration-500 ease-in-out`} id="main_nav">
+  <NavToggleButton />
+
+  <span class="
+        absolute
+        top-1/2
+        left-1/2
+        text-center
+        text-[8vw]
+        px-4
+        uppercase
+        font-bold
+        w-screen
+        whitespace-nowrap
+        tracking-[.2em]
+        opacity-0
+        transition-opacity
+        duration-300
+        pointer-events-none hidden md:block" 
+        style="color: var(--secondary-text-color);"
+        id="navigation_bg_text"></span>
+
+  <ul class="flex flex-col items-center justify-center h-full gap-7 z-[10000]">
+   {
+    navItems.length > 0 ?
+      navItems.map((navItem, index) => (
+        <li key={index} class="nav-list-item uppercase text-4xl">
+          <a href={navItem.href} data-bg-text={navItem.text}>{navItem.text}</a>
+        </li>
+      )) : (
+        ''
+      )
+   }
+  </ul>
+</nav>
+
+<style>
+  #main_nav {
+    /* Increase radius so button fits */
+    clip-path: circle(40px at calc(100% - 32px - 15px) calc(32px + 35px / 2));
+    transition: clip-path 0.5s ease-in-out, background-color 0.3s ease-in-out;
+  }
+
+  /* Open state: full-screen circle with background */
+  #main_nav.open {
+    clip-path: circle(150% at 50% 50%);
+    background-color: var(--navigation-bg-color);
+  }
+
+  .nav-list-item
+  {
+    animation: navItemsFadeIn 2s ease-out forwards var(--delay, 0s)
+  }
+
+</style>
+
+<script>
+  const navigationBackgroundText = document.querySelector<HTMLElement>('#navigation_bg_text')
+  const navItems = document.querySelectorAll('.nav-list-item')
+  const navigationLinksData = document.querySelectorAll('nav ul li [data-bg-text]')
+  
+  /* TOGGLE NAVIGATION BACKGROUND TEXT */
+  navigationLinksData.forEach((navigationLinkData) => {
+    navigationLinkData.addEventListener('mousemove', (e) => moveBackgroundText(e))
+    
+    // Call showNavigationBackgroundText
+    navigationLinkData.addEventListener('mouseenter', () => showNavigationBackgroundText(navigationLinkData))
+    
+    // Call hideNavigationBackgroundText
+    navigationLinkData.addEventListener('mouseleave', () => hideNavigationBackgroundText(navigationBackgroundText))
+
+  })
+
+  // Show Navigation Background Text
+  function showNavigationBackgroundText(navigationLinkData) {
+    if()
+    navigationBackgroundText.textContent = navigationLinkData.dataset.bgText
+    navigationBackgroundText.classList.add('show-nav-bg-text')
+  }
+
+  // Hide Navigation Background Text
+  function hideNavigationBackgroundText(navigationBackgroundText)
+  {
+    navigationBackgroundText.textContent = ''
+    navigationBackgroundText.classList.remove('show-nav-bg-text')
+  }
+  
+  // Move Background Element
+  function moveBackgroundText(e) {
+    const xPosCursor = e.clientX
+    const yPosCursor = e.clientY
+    const viewportXCenter = window.innerWidth / 2
+    const viewportYCenter = window.innerHeight / 2
+    
+    // Calculate offset from center and dampen the movement
+    const xOffset = (xPosCursor - viewportXCenter) / 20
+    const yOffset = (yPosCursor - viewportYCenter) / 20
+    
+    navigationBackgroundText.style.transform = `translate(calc(-50% - ${xOffset}px), calc(-50% - ${yOffset}px))`
+  }
+</script>
