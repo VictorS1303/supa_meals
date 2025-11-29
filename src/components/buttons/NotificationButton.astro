@@ -1,0 +1,33 @@
+---
+import Button from "./Button.astro";
+const {id: id, popovertarget} = Astro.props
+---
+
+<Button isNotificationButton={true} id={id} popovertarget="notifications_list" anchor="notifications-button">
+  <span class="notification-counter grid place-content-center absolute text-xs -right-[5px] -top-[3px] bg-(--notification-button-number-bg-color) h-[20px] w-[20px] p-[5px] rounded-full" id="notification_counter">2</span>
+  <i class="fa-solid fa-bell"></i>
+</Button>
+
+<script>
+  import { createPopper } from '@popperjs/core'
+
+ document.addEventListener('DOMContentLoaded', () => {
+  const notificationsButton = document.querySelector('[popovertarget]');
+  const notificationsListPopover = document.querySelector('.notifications-list-popover');
+
+  const popperInstance = createPopper(notificationsButton, notificationsListPopover, {
+    placement: 'bottom-end',
+    modifiers: [
+      { name: 'offset', options: { offset: [0, 8] } },
+      { name: 'flip', options: { fallbackPlacements: ['bottom-start', 'top-end', 'top-start'] } },
+      { name: 'preventOverflow', options: { padding: 8 } }
+    ]
+  });
+
+  // Toggle popover
+  notificationsButton.addEventListener('click', () => {
+    notificationsListPopover.classList.toggle('hidden');
+    popperInstance.update();
+  });
+});
+</script>

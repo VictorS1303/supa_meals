@@ -7,6 +7,9 @@ const {
   isCardHeading,
   isSingleViewHeroHeading,
   isSingleViewSubHeading,
+  isDashboardHeading,
+  greetingText,
+  username,
 } = Astro.props
 ---
 
@@ -26,6 +29,11 @@ const {
   ) : isSingleViewSubHeading ? (
     <h2 class="text-[var(--singleview-subheading-text-color)] text-3xl">
       {headingText}
+    </h2>
+  ) : isDashboardHeading ? (
+    <h2 class="text-[var(--singleview-subheading-text-color)] text-2xl">
+      <span>{greetingText}, </span>
+      <span>{username}!</span>
     </h2>
   ) : (
     ""

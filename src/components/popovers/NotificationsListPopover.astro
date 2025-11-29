@@ -1,0 +1,77 @@
+---
+const {
+  popovertarget,
+  notifications = [
+    {
+      notificationText: "Sarah liked your comment",
+      notificationTime: "2 minutes ago",
+      resource: "Rock Night — July 14",
+      commentPreview: "I think the venue should add more seating options...",
+      interactionType: "like",
+      isPostLiked: true,
+    },
+    {
+      notificationText: "Sarah liked your comment",
+      notificationTime: "2 minutes ago",
+      resource: "Rock Night — July 14",
+      commentPreview: "I think the venue should add more seating options...",
+      interactionType: "like",
+      isPostLiked: true,
+    },
+  ],
+  isPostLiked,
+} = Astro.props
+
+import Popover from "./Popover.astro"
+---
+
+<Popover popovertarget="notifications_list" class="notifications-list">
+  <ul
+    class="notifications-list-popover bg-(--notifications-list-bg-color) border-2 border-(--secondary-text-color) max-w-[300px] w-full rounded-lg text-white overflow-hidden"
+
+  >
+    {
+      notifications.length > 0 ? (
+        notifications.map((notification, index) => (
+          <li
+            key={index}
+            class="flex items-start gap-3 p-3 cursor-pointer border-b-2 border-(--secondary-text-color) last:border-0 hover:bg-gray-50/10"
+          >
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between mb-3">
+                <p
+                  class={`${isPostLiked ? "text-red-700" : "text-(--secondary-text-color)"} text-sm font-medium mb-3 `}
+                >
+                  {notification.notificationText}
+                </p>
+                <div class="flex flex-col items-start gap-1">
+                  <span class="text-xs text-gray-400">
+                    {notification.notificationTime}
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex justify-between w-full">
+                <div class="flex-1">
+                  <p class="text-xs text-gray-400">
+                    On: {notification.resource}
+                  </p>
+                  <p class="text-sm text-gray-500 truncate overflow-hidden text-ellipsis whitespace-normal mt-2">
+                    <q class="block italic">{notification.commentPreview}</q>
+                  </p>
+                </div>
+
+                {!notification.read && (
+                  <span class="self-center shrink-0 w-2 h-2 bg-(--secondary-text-color) rounded-full"></span>
+                )}
+              </div>
+            </div>
+          </li>
+        )) // <-- closes notifications.map
+      ) : (
+        <li class="p-3 text-center text-sm text-gray-400">No notifications</li>
+      )
+    }
+  </ul>
+</Popover>
+

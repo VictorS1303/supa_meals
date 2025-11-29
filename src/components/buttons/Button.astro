@@ -1,7 +1,32 @@
 ---
-const { class: className, id: id } = Astro.props
+const {
+  class: className,
+  id: id,
+  buttonText,
+  isSignOutButton,
+  isNotificationButton,
+  popovertarget,
+  anchor,
+} = Astro.props
 ---
 
-<button class={`${className}`} id={id}>
-  <slot />
-</button>
+{
+  isSignOutButton ? (
+    <button class="bg-(--secondary-text-color) p-2 text-sm rounded-md text-white w-fit cursor-pointer">
+      {buttonText}
+    </button>
+  ) : isNotificationButton ? (
+    <button
+      class="relative grid place-content-center bg-(--notification-button-bg-color) text-(--notification-button-text-color) shadow-md h-[40px] w-[40px] p-4 rounded-full cursor-pointer"
+      popovertarget={popovertarget}
+      anchor={anchor}
+    >
+      <slot />
+    </button>
+  ) : (
+    <button class={`${className}`} id={id}>
+      {buttonText}
+      <slot />
+    </button>
+  )
+}

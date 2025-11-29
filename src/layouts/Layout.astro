@@ -5,8 +5,12 @@ import Navigation from "../components/navigation/Navigation.astro"
 const { title } = Astro.props
 
 const isDashboardView = Astro.url.pathname.includes("/dashboard")
-const isSingleView = Astro.url.pathname.includes("/meal")
-const mainSingleViewClasses = isSingleView ? "mx-auto px-10 py-10" : ""
+const isSingleView =
+  Astro.url.pathname.includes("/meal") ||
+  Astro.url.pathname.includes("/dashboard")
+const mainSingleViewAndDashboardClasses = isSingleView
+  ? "mx-auto px-10 py-10"
+  : ""
 
 const navItems = [
   {
@@ -39,7 +43,7 @@ const navItems = [
   <body class="bg-[var(--secondary-bg-color)] min-h-screen">
     {!isDashboardView ? <Navigation navItems={navItems} /> : ""}
 
-    <main class={mainSingleViewClasses}>
+    <main class={mainSingleViewAndDashboardClasses}>
       <slot />
     </main>
   </body>

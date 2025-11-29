@@ -16,3 +16,21 @@ export const formatInstructions = (rawCookingInstruction) => {
                 .filter(Boolean)
         );
 }
+
+// Greeting formatter
+export const formatGreeting = (timeOfDay) => {
+  const currentHour = new Date().getHours()
+  
+  if (currentHour >= 0 && currentHour < 9) {
+    return `Good ${timeOfDay || 'morning'}`
+  }
+  else if (currentHour >= 9 && currentHour < 12) {
+    return `Good ${timeOfDay || 'day'}`
+  }
+  else if (currentHour >= 12 && currentHour < 17) {
+    return `Good ${timeOfDay || 'afternoon'}`
+  }
+  else {
+    return `Good ${timeOfDay || 'evening'}`
+  }
+}

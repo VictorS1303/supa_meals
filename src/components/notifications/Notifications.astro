@@ -1,0 +1,18 @@
+---
+import NotificationButton from "../buttons/NotificationButton.astro"
+import NotificationsListPopover from "../popovers/NotificationsListPopover.astro"
+const {
+  class: className,
+  notifications
+} = Astro.props
+---
+<article class={`${className} md:order-1`}>
+  <NotificationButton
+    id="notifications_button"
+    popovertarget="notifications_list"
+  />
+  <NotificationsListPopover
+    popovertarget="notifications_list"
+    notifications={notifications}
+  />
+</article>

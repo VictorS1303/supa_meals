@@ -17,6 +17,10 @@
     --button-text-color: #f8f9fa;
     --singleview-subheading-text-color: #34b27b;
     --plyr-button-bg-color: #34b27b;
+    --notification-button-text-color: #fff;
+    --notification-button-bg-color: #34b27b;
+    --notification-button-number-bg-color: #11181c;
+    --notifications-list-bg-color: #11181c;
 }
 
 @font-face
@@ -113,4 +117,33 @@ video
 .show-nav-bg-text {
     opacity: 0.4;
     transition: opacity .3s ease-in;
+}
+
+
+/* Popover (positioning of the notifications popover) */
+button[popovertarget="notifications_list"]
+{
+    anchor-name: --notifications-button;
+}
+
+.notifications-list-popover
+{
+    position: fixed;
+    position-anchor: --notifications-button;
+    position-try: --bottom-right, --bottom-left;
+
+    inset-area: anchor(block-end) span 8px;
+    transform-origin: anchor(center);
+}
+
+
+/* Position Blocks */
+@position-try --bottom-right
+{
+    position-area: block-end right;
+}
+
+@position-try --bottom-left
+{
+    position-area: block-end left;
 }
