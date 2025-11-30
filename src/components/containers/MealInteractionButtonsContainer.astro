@@ -30,31 +30,21 @@ const { isLoggedIn } = Astro.props
 </article>
 
 <script>
-  import { supabaseClient } from "../../js/supabase/supabase_client"
+  import {initializeAuth} from '../../js/supabase/supabase_methods.js'
 
-  const {
-    data: { user },
-  } = await supabaseClient.auth.getUser()
-
-  let isLoggedIn = !!user
-  updateMealInteractionButtonsUI(isLoggedIn)
   const mealInteractionButtons = document.querySelectorAll(
     ".meal-interaction-button",
   )
-  // Update UI state of the buttons
-  function updateMealInteractionButtonsUI(isLoggedIn) {
-    mealInteractionButtons.forEach((mealInteractionButton) => {
-      if (isLoggedIn) {
-        mealInteractionButton.classList.remove("disabled-interaction-button")
-      } else {
-        mealInteractionButton.classList.add("disabled-interaction-button")
-      }
-    })
-  }
-  // Check auth state change
-  supabaseClient.auth.onAuthStateChange((event, session) => {
-    isLoggedIn = !!session?.user
-    console.log(isLoggedIn)
-    updateMealInteractionButtonsUI(isLoggedIn)
-  })
+   // Update UI state of the buttons
+    function updateMealInteractionButtonsUI(isLoggedIn) {
+      mealInteractionButtons.forEach((mealInteractionButton) => {
+        if (isLoggedIn) {
+          mealInteractionButton.classList.remove("disabled-interaction-button")
+        } else {
+          mealInteractionButton.classList.add("disabled-interaction-button")
+        }
+      })
+    }
+
+    initializeAuth(updateMealInteractionButtonsUI)
 </script>
