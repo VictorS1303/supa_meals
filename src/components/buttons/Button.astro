@@ -8,6 +8,8 @@ const {
   isDislikeMealButton,
   popovertarget,
   anchor,
+  isMealInteractionButton,
+  dataAction,
 } = Astro.props
 ---
 
@@ -33,6 +35,13 @@ const {
       <div class="absolute inset-0 opacity-0 invisible transition-opacity duration-400 ease-in group-hover:opacity-100 group-hover:visible flex items-center justify-center">
         <i class="fa-solid fa-heart-broken text-xl pointer-events-none text-[var(--secondary-text-color)]" />
       </div>
+    </button>
+  ) : isMealInteractionButton ? (
+    <button
+      class="disabled-interaction-button meal-interaction-button flex flex-col text-[var(--secondary-text-color)] cursor-pointer transition-opacity duration-150 ease-in hover:opacity-85"
+      data-action={dataAction}
+    >
+      <slot />
     </button>
   ) : (
     <button class={className} id={id}>

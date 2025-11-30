@@ -6,22 +6,49 @@ const {
   id: id,
   mealInteractionButtons = [],
   mealInteractionButtonText,
+  dataAction,
 } = Astro.props
+
+const { isLoggedIn } = Astro.props
 ---
 
 <article class="flex items-center gap-12 mt-4">
   {
     mealInteractionButtons.length > 0 ? (
       mealInteractionButtons.map((mealInteractionButton) => (
-       
-        <Button class="flex flex-col text-[var(--secondary-text-color)] cursor-pointer transition-opacity duration-150 ease-in hover:opacity-85">
+        <Button
+          isMealInteractionButton={true}
+          dataAction={mealInteractionButton.dataAction}
+        >
           <i class={`${mealInteractionButton.iconClass} text-2xl`} />
-          <span class="text-md">{mealInteractionButton.mealInteractionButtonText}</span>
+          <span class="text-md">
+            {mealInteractionButton.mealInteractionButtonText}
+          </span>
         </Button>
-       
       ))
     ) : (
       <p>No available interactions</p>
     )
   }
 </article>
+
+<script>
+  const mealInteractionButtons = document.querySelectorAll(
+    ".meal-interaction-button",
+  )
+
+  let isLoggedIn = false
+
+  // Update UI state of the buttons
+  function updateMealInteractionButtonsUI() {
+    mealInteractionButtons.forEach((mealInteractionButton) => {
+      if (isLoggedIn) {
+        mealInteractionButton.classList.remove("disabled-interaction-button")
+      } else {
+        mealInteractionButton.classList.add("disabled-interaction-button")
+      }
+    })
+  }
+
+  updateMealInteractionButtonsUI()
+</script>

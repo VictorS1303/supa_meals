@@ -113,10 +113,15 @@ video
     transition: opacity .3s ease-in;
 }
 
-
 .show-nav-bg-text {
     opacity: 0.4;
     transition: opacity .3s ease-in;
+}
+
+.disabled-interaction-button
+{
+    cursor: not-allowed;
+    opacity: .4;
 }
 
 
@@ -146,4 +151,10 @@ button[popovertarget="notifications_list"]
 @position-try --bottom-left
 {
     position-area: block-end left;
+}
+
+/* Icons */
+i
+{
+    pointer-events: none;
 }
