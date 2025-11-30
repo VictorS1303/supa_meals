@@ -4,6 +4,7 @@ import Hero from "../components/heroes/Hero.astro"
 import CookingInstructionSection from "../components/sections/CookingInstructionSection.astro"
 import { getYouTubeId } from "../js/utils/ids_extractors.js"
 import MealInteractionSection from "../components/sections/MealInteractionSection.astro"
+import { supabaseClient } from "../js/supabase/supabase_client"
 
 const { meal, title, src, headingText, alt, target } = Astro.props
 
@@ -27,6 +28,8 @@ const mealInteractionButtons = [
     dataAction: " add this meal to your meal plan",
   },
 ]
+
+console.log("Client: ", supabaseClient)
 ---
 
 <Layout title={title}>

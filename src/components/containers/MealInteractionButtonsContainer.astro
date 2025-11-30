@@ -1,6 +1,5 @@
 ---
 import Button from "../buttons/Button.astro"
-
 const {
   class: className,
   id: id,
@@ -8,10 +7,8 @@ const {
   mealInteractionButtonText,
   dataAction,
 } = Astro.props
-
 const { isLoggedIn } = Astro.props
 ---
-
 <article class="flex items-center gap-12 mt-4">
   {
     mealInteractionButtons.length > 0 ? (
@@ -20,7 +17,7 @@ const { isLoggedIn } = Astro.props
           isMealInteractionButton={true}
           dataAction={mealInteractionButton.dataAction}
         >
-          <i class={`${mealInteractionButton.iconClass} text-2xl`} />
+          <i class=`${mealInteractionButton.iconClass} text-2xl`} />
           <span class="text-md">
             {mealInteractionButton.mealInteractionButtonText}
           </span>
@@ -33,14 +30,19 @@ const { isLoggedIn } = Astro.props
 </article>
 
 <script>
+  import { supabaseClient } from "../../js/supabase/supabase_client"
+
+  const {
+    data: { user },
+  } = await supabaseClient.auth.getUser()
+
+  let isLoggedIn = !!user
+  updateMealInteractionButtonsUI(isLoggedIn)
   const mealInteractionButtons = document.querySelectorAll(
     ".meal-interaction-button",
   )
-
-  let isLoggedIn = false
-
   // Update UI state of the buttons
-  function updateMealInteractionButtonsUI() {
+  function updateMealInteractionButtonsUI(isLoggedIn) {
     mealInteractionButtons.forEach((mealInteractionButton) => {
       if (isLoggedIn) {
         mealInteractionButton.classList.remove("disabled-interaction-button")
@@ -49,6 +51,10 @@ const { isLoggedIn } = Astro.props
       }
     })
   }
-
-  updateMealInteractionButtonsUI()
+  // Check auth state change
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    isLoggedIn = !!session?.user
+    console.log(isLoggedIn)
+    updateMealInteractionButtonsUI(isLoggedIn)
+  })
 </script>
