@@ -2,6 +2,8 @@
 import Link from "../links/Link.astro"
 import Heading from "../headings/Heading.astro"
 import Paragraph from "../paragraphs/Paragraph.astro"
+import Button from "../buttons/Button.astro"
+
 const {
   class: className,
   id: id,
@@ -12,7 +14,9 @@ const {
   isCardParagraph,
   headingText,
   src,
+  alt,
   meal,
+  isLikedMealCard,
 } = Astro.props
 ---
 
@@ -27,6 +31,13 @@ const {
       <Heading isCardHeading={true} headingText={headingText} />
       <Paragraph paragraphText={paragraphText} isCardParagraph={true} />
       <Link href={href} buttonText={buttonText} class="mt-auto" />
+    </article>
+  ) : isLikedMealCard ? (
+    <article class="grid liked-meal-card relative w-[225px] h-[250px] overflow-hidden rounded-md group">
+      <img src={src} alt={alt} class="h-full w-full object-cover" />
+
+      <Heading isLikedMealCardHeading={true} headingText={headingText} />
+      <Button isDislikeMealButton={true} />
     </article>
   ) : (
     ""

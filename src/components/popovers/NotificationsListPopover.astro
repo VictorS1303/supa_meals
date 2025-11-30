@@ -27,8 +27,7 @@ import Popover from "./Popover.astro"
 
 <Popover popovertarget="notifications_list" class="notifications-list">
   <ul
-    class="notifications-list-popover bg-(--notifications-list-bg-color) border-2 border-(--secondary-text-color) max-w-[300px] w-full rounded-lg text-white overflow-hidden"
-
+    class="notifications-list-popover bg-(--notifications-list-bg-color) border-2 border-(--secondary-text-color) max-w-[300px] w-full rounded-lg text-white overflow-scroll hidden z-[10000]"
   >
     {
       notifications.length > 0 ? (
@@ -62,7 +61,7 @@ import Popover from "./Popover.astro"
                 </div>
 
                 {!notification.read && (
-                  <span class="self-center shrink-0 w-2 h-2 bg-(--secondary-text-color) rounded-full"></span>
+                  <span class="self-center shrink-0 w-2 h-2 bg-(--secondary-text-color) rounded-full" />
                 )}
               </div>
             </div>
@@ -74,4 +73,3 @@ import Popover from "./Popover.astro"
     }
   </ul>
 </Popover>
-

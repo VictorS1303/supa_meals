@@ -5,6 +5,7 @@ const {
   buttonText,
   isSignOutButton,
   isNotificationButton,
+  isDislikeMealButton,
   popovertarget,
   anchor,
 } = Astro.props
@@ -12,19 +13,29 @@ const {
 
 {
   isSignOutButton ? (
-    <button class="bg-(--secondary-text-color) p-2 text-sm rounded-md text-white w-fit cursor-pointer">
+    <button class="bg-[var(--secondary-text-color)] p-2 text-sm rounded-md text-white w-fit cursor-pointer">
       {buttonText}
     </button>
   ) : isNotificationButton ? (
     <button
-      class="relative grid place-content-center bg-(--notification-button-bg-color) text-(--notification-button-text-color) shadow-md h-[40px] w-[40px] p-4 rounded-full cursor-pointer"
+      class="relative grid place-content-center bg-[var(--notification-button-bg-color)] text-[var(--notification-button-text-color)] shadow-md h-[40px] w-[40px] p-4 rounded-full cursor-pointer"
       popovertarget={popovertarget}
       anchor={anchor}
     >
       <slot />
     </button>
+  ) : isDislikeMealButton ? (
+    <button class="peer grid place-content-center absolute top-4 right-4 h-10 w-10 bg-white rounded-full cursor-pointer group">
+      <div class="transition-opacity duration-400 ease-in group-hover:opacity-0 group-hover:invisible flex items-center justify-center">
+        <i class="fa-solid fa-heart text-xl pointer-events-none text-[var(--secondary-text-color)]" />
+      </div>
+
+      <div class="absolute inset-0 opacity-0 invisible transition-opacity duration-400 ease-in group-hover:opacity-100 group-hover:visible flex items-center justify-center">
+        <i class="fa-solid fa-heart-broken text-xl pointer-events-none text-[var(--secondary-text-color)]" />
+      </div>
+    </button>
   ) : (
-    <button class={`${className}`} id={id}>
+    <button class={className} id={id}>
       {buttonText}
       <slot />
     </button>

@@ -1,0 +1,20 @@
+---
+import Card from "../cards/Card.astro"
+const {class: className, id: id, likedMeals = []} = Astro.props  
+---
+
+<div class={`${className} liked-meals-container`} id={id}>
+  {
+    likedMeals.length > 0 ?
+      likedMeals.map((likedMeal: any) => (
+        <Card
+          isLikedMealCard={true}
+          src={likedMeal.src}
+          alt={likedMeal.alt}
+          headingText={likedMeal.headingText}
+        />
+      )) : (
+        <p class="text-(--secondary-text-color)">No liked meals</p>
+      )
+  }
+</div>

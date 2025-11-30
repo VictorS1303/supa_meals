@@ -10,6 +10,9 @@ const {
   isDashboardHeading,
   greetingText,
   username,
+  isDashboardSectionHeading,
+  isLikedMealCardHeading,
+  href,
 } = Astro.props
 ---
 
@@ -35,6 +38,20 @@ const {
       <span>{greetingText}, </span>
       <span>{username}!</span>
     </h2>
+  ) : isDashboardSectionHeading ? (
+    <h2 class="text-[var(--singleview-subheading-text-color)] mb-3 text-3xl">
+      {headingText}
+    </h2>
+  ) : isLikedMealCardHeading ? (
+    <h3 class="absolute -bottom-[210px] h-full w-full text-center bg-white text-var(--secondary-text-color) px-2 py-2 transition-all duration-200 ease-in-out group-hover:-bottom-[80px]">
+      <a
+        href={href}
+        class="text-[var(--secondary-text-color)] block truncate transition-all duration-200 ease-in-out
+         group-hover:whitespace-normal hover:underline hover:decoration-2 cursor-pointer"
+      >
+        {headingText}
+      </a>
+    </h3>
   ) : (
     ""
   )

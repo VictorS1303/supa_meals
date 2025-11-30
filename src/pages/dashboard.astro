@@ -1,8 +1,23 @@
 ---
 import UserInfoAndNotificationSection from "../components/sections/UserInfoAndNotificationSection.astro"
+import LikedMealsSection from "../components/sections/LikedMealsSection.astro"
+
 import Layout from "../layouts/Layout.astro"
+
+const likedMeals = [
+  {
+    src: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg",
+    href: "#",
+    headingText: "Something",
+  },
+]
 ---
 
 <Layout title="Dashboard">
   <UserInfoAndNotificationSection />
+
+  <!-- Liked Meals & Comments -->
+  <div class="mt-12 flex flex-col gap-20">
+    <LikedMealsSection likedMeals={likedMeals} />
+  </div>
 </Layout>
