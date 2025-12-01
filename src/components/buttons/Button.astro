@@ -7,9 +7,10 @@ const {
   isNotificationButton,
   isDislikeMealButton,
   popovertarget,
-  anchor,
   isMealInteractionButton,
   dataAction,
+  isFormButton,
+  type,
 } = Astro.props
 ---
 
@@ -22,7 +23,6 @@ const {
     <button
       class="relative grid place-content-center bg-[var(--notification-button-bg-color)] text-[var(--notification-button-text-color)] shadow-md h-[40px] w-[40px] p-4 rounded-full cursor-pointer"
       popovertarget={popovertarget}
-      anchor={anchor}
     >
       <slot />
     </button>
@@ -43,6 +43,13 @@ const {
     >
       <slot />
     </button>
+  ) : isFormButton ? (
+    <button
+      class="bg-(--secondary-text-color) h-fit w-full text-center text-white py-1 uppercase rounded-md my-2 cursor-pointer transition-opacity duration-150 ease-in hover:opacity-95"
+      type={type}
+    >
+      {buttonText}
+    </button>
   ) : (
     <button class={className} id={id}>
       {buttonText}
@@ -50,3 +57,9 @@ const {
     </button>
   )
 }
+
+<script>
+  const form = document.querySelector("form")
+
+  form?.addEventListener("submit", (e) => e.preventDefault())
+</script>

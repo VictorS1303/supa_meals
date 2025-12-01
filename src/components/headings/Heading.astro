@@ -8,6 +8,7 @@ const {
   isSingleViewHeroHeading,
   isSingleViewSubHeading,
   isDashboardHeading,
+  isFormHeading,
   greetingText,
   username,
   isDashboardSectionHeading,
@@ -52,6 +53,10 @@ const {
         {headingText}
       </a>
     </h3>
+  ) : isFormHeading ? (
+    <header class="mt-4 mb-8 text-center text-(--secondary-text-color) text-2xl uppercase">
+      <h2>{headingText}</h2>
+    </header>
   ) : (
     ""
   )
