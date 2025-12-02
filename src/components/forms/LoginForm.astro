@@ -1,0 +1,51 @@
+---
+import Form from "./Form.astro";
+
+const loginInputs = [
+  {
+    type: 'email',
+    labelText: 'E-mail',
+    placeholder: 'Enter e-mail',
+    name: 'email_input',
+  },
+  {
+    type: 'password',
+    labelText: 'Password',
+    placeholder: 'Enter password',
+    name: 'password_input',
+  },
+]
+---
+
+<Form
+  headingText="Login"
+  inputs={loginInputs}
+  buttonText="Log In"
+  id="login_form"
+/>
+
+<script>
+import { login } from "../../js/supabase/supabase_methods"
+
+  const loginForm = document.querySelector('#login_form')
+
+  loginForm?.addEventListener('submit', (e) => handleLogin(e))
+
+  async function handleLogin(e)
+  {
+    const formData = new FormData(loginForm)
+
+    const emailInput = formData.get('email_input')
+    const passwordInput = formData.get('password_input')
+
+    const loginResult = await login(emailInput, passwordInput)
+
+     if (loginResult.success) {
+      window.location.href = '/dashboard'
+    } else {
+      console.error('Login failed:', loginResult.error)
+      // Optionally show an error message to the user
+    }
+    
+  }
+</script>

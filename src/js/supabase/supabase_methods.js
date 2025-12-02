@@ -18,25 +18,6 @@ export const initializeAuth = async (onAuthChange) =>
    })
 }
 
-// Sign in
-export const signIn = async (email, password) =>
-{
-    const { data: signInData, error: signInError } = await supabaseClient.auth
-        .signInWithPassword({
-            email,
-            password
-        })
-
-    if(signInError)
-    {
-        console.log('Sign in error: ', signInError.hint, signInError.message)
-    }
-    else
-    {
-        console.log('Successfully signed in', signInData)
-    }
-}
-
 // Register and login
 export const registerAndLogin = async (name, email, password, profileImage = null) => {
   // 1. Sign up user
@@ -108,7 +89,60 @@ if (profileImage) {
 
   // 4. Return consistent result
   return { success: true, user: sessionUser, avatarUrl };
-};
+}
+
+// Sign in
+export const signIn = async (email, password) =>
+{
+    const { data: signInData, error: signInError } = await supabaseClient.auth
+        .signInWithPassword({
+            email,
+            password
+        })
+
+    if(signInError)
+    {
+        console.log('Sign in error: ', signInError.hint, signInError.message)
+    }
+    else
+    {
+        console.log('Successfully signed in', signInData)
+    }
+}
+
+// Login
+export const login = async (email, password) =>
+{
+  try
+  {
+    const { data: loginData, error: loginError } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+  if (loginError) 
+  {
+    console.error('Error logging in: ', loginError.message, loginError.hint);
+    return { success: false, error: loginError.message };
+  }
+
+  if (!loginData.session) 
+  {
+    console.warn('No returned session after login - something is wrong');
+    return { success: false, error: 'No returned session!' };
+  }
+
+  return { success: true, user: loginData.user, session: loginData.session };
+
+}
+    catch (err)
+    {
+      console.error('Unexpected error during login:', err);
+      return { success: false, error: err.message || 'Unknown error' };
+    }
+}
+
+
 
 // Store user data in user table
 export const storeUsersInUsersTable = async (name, email, password, profileImage) =>

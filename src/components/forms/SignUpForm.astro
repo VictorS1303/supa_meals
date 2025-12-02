@@ -34,7 +34,12 @@ const registerInputs = [
 ]
 ---
 
-<Form headingText="Sign up" inputs={registerInputs} id="sign_up_form" />
+<Form
+  headingText="Sign up"
+  inputs={registerInputs}
+  buttonText="Sign up"
+  id="sign_up_form"
+/>
 <script>
   import { registerAndLogin } from "../../js/supabase/supabase_methods"
   import { storeUsersInUsersTable } from "../../js/supabase/supabase_methods"
@@ -43,8 +48,6 @@ const registerInputs = [
   signUpForm?.addEventListener("submit", (e) => handleRegisterAndLogin(e))
 
   async function handleRegisterAndLogin(e) {
-    e.preventDefault()
-
     const formData = new FormData(signUpForm)
     const emailInput = formData.get("email_input")
     const fullNameInput = formData.get("full_name_input")

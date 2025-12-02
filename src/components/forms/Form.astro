@@ -10,6 +10,7 @@ const {
   labelText,
   headingText,
   isSubmitButton,
+  buttonText,
 } = Astro.props
 ---
 
@@ -51,7 +52,7 @@ const {
   }
   {
     isSubmitButton ?? (
-      <Button type="submit" buttonText="Sign up" isFormButton={true} />
+      <Button type="submit" buttonText={buttonText} isFormButton={true} />
     )
   }
 </form>
