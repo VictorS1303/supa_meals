@@ -1,17 +1,22 @@
 ---
-import {formatGreeting} from '../../js/utils/formatters.js'
+import { formatGreeting } from "../../js/utils/formatters.js"
 import Heading from "../headings/Heading.astro"
-import Button from '../buttons/Button.astro'
+import Button from "../buttons/Button.astro"
 
-const {class: className, id: id} = Astro.props
+const { class: className, id: id, src } = Astro.props
 
 const greetingText = formatGreeting()
 ---
+
 <article class={`${className}`} id={id}>
   <div class="flex items-center gap-6">
-    <img src="https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg" class="h-[100px] w-[100px] object-cover rounded-full" />
+    <img
+      src={src}
+      class="h-[100px] w-[100px] object-cover rounded-full"
+      id="user_profile_image"
+    />
     <div class="flex flex-col gap-3">
-      <Heading isDashboardHeading={true} greetingText={greetingText} username="Victor Schweitz" />
+      <Heading isDashboardHeading={true} id="dashboard_heading" />
       <Button isSignOutButton={true} buttonText="Sign out" id="sign_out_btn" />
     </div>
   </div>

@@ -21,14 +21,11 @@ export const initializeAuth = async (onAuthChange) =>
 // Sign in
 export const signIn = async (email, password) =>
 {
-    const {data: signInData, error: signInError} = await supabaseClient
-        .signInWithPassword(
-            {
-                email: email,
-                password: password
-            }
-        )
-
+    const { data: signInData, error: signInError } = await supabaseClient.auth
+        .signInWithPassword({
+            email,
+            password
+        })
 
     if(signInError)
     {
@@ -41,100 +38,77 @@ export const signIn = async (email, password) =>
 }
 
 // Register and login
-export const registerAndLogin = async (name, email, password, profileImage = null) =>
-{
-    // 1. Sign up user
-    const {data: signUpUserData, error: signUpUserError} = await supabaseClient.auth.signUp({
-        email,
-        password,
-        // Setting the username to be the user's actual name
-        options: {data: {username: name}}
-    })
-    
-    if(signUpUserError)
-    {
-        console.error('Sign-up error',  signUpUserError.hint, signUpUserError.message)
-        return {success: false, signUpError: signUpUserError.message} // <- Also fixed 'error' to 'signUpUserError'
-    }
-    
-    // 2. Force login if no session is returned
-    let sessionUser
+export const registerAndLogin = async (name, email, password, profileImage = null) => {
+  // 1. Sign up user
+  const { data: signUpUserData, error: signUpUserError } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: { data: { username: name } }
+  });
 
-    // Check if session was created during sign up (email confirmation has been disabled)
-    if(signUpUserData.session)
-    {
-        /*
-            Session exists, and user is already logged in, why it is extracted from session
-        */
-        sessionUser = signUpUserData.session.user
-    }
-    else
-    {
-        /*
-            No session is returned. E-mail confirmation is required, so the user is being manually logged in
-        */
-        const {data: loginData, error: loginError} = await supabaseClient.auth.signInWithPassword({email, password})
+  if (signUpUserError) {
+    console.error("Sign-up error:", signUpUserError.message);
+    return { success: false, signUpError: signUpUserError.message };
+  }
 
+  // 2. Force login if no session returned
+  let sessionUser;
+  if (signUpUserData.session) {
+    sessionUser = signUpUserData.session.user;
+  } else {
+    const { data: loginData, error: loginError } =
+      await supabaseClient.auth.signInWithPassword({ email, password });
 
-        // Check if login failed and return error
-        if(loginError)
-        {
-            console.error('Login error: ', loginError.message)
-            return {success: false, signUpError: loginError.message}
-        }
-
-        // Set user session to the data of the logged in user
-        sessionUser = loginData.user
+    if (loginError) {
+      console.error("Login error:", loginError.message);
+      return { success: false, signUpError: loginError.message };
     }
 
-    // 3. Upload avatar if provided
-    let avatarUrl = null
+    sessionUser = loginData.user;
+  }
 
-    if(profileImage)
-    {
-        try
-        {
-            // Splitting the file name by the period before the extension and removes the extension
-            const fileExtension = profileImage.name.split('.').pop()
+ // 3. Upload avatar if provided
+let avatarUrl = null;
 
-            // Creating unique file name from user ID to prevent naming conflicts
-            const fileName = `${sessionUser.id}/profile.${fileExtension}`
+if (profileImage) {
+  try {
+    const fileExtension = profileImage.name.split(".").pop();
+    const fileName = `${sessionUser.id}/profile.${fileExtension}`;
 
-            // Upload image to Supabase storage
-            const {error: uploadError} = await supabaseClient
-                .storage
-                .from('avatar_images')
-                .upload(fileName, profileImage, {cacheControl: '3000', upsert: false})
-            
+    const { error: uploadError } = await supabaseClient
+      .storage
+      .from("avatar_images")
+      .upload(fileName, profileImage, {
+        cacheControl: "3600",
+        upsert: false
+      });
 
-            // If uploaded succesfully, get the public URL and update the user metadata
-            if(!uploadError)
-            {
-                const {data: {publicUrl}} = await supabaseClient
-                    .storage
-                    .from('avatar_images')
-                    .getPublicUrl(fileName)
-                
+    if (uploadError) {
+      console.error("Upload failed:", uploadError.message);
+    } else {
+      const { data: { publicUrl } } = supabaseClient
+        .storage
+        .from("avatar_images")
+        .getPublicUrl(fileName);
 
-                // Set the avatar URL to its public URL
-                avatarUrl = publicUrl
+      avatarUrl = publicUrl;
 
-                // Update user's metadata with avatar URL
-                await supabaseClient.auth.updateUser({data: {avatar_url: avatarUrl}})
-                
-            }
-        }
-        catch(error)
-        {
-            // Log upload erros but don't fail registration
-            console.error('Avatar upload error: ', error)
-        }
+      await supabaseClient.auth.updateUser({
+        data: { avatar_url: avatarUrl }
+      });
+
+      // refresh user metadata
+      const { data: { user: updatedUser } } = await supabaseClient.auth.getUser();
+      sessionUser = updatedUser;
     }
-    
-
-    // 4. Return user and avatar
-    return {success: true, user: sessionUser, avatarUrl}
+  } catch (err) {
+    console.error("Avatar upload error:", err);
+  }
 }
+
+  // 4. Return consistent result
+  return { success: true, user: sessionUser, avatarUrl };
+};
 
 // Store user data in user table
 export const storeUsersInUsersTable = async (name, email, password, profileImage) =>

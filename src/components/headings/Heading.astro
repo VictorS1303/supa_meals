@@ -35,9 +35,8 @@ const {
       {headingText}
     </h2>
   ) : isDashboardHeading ? (
-    <h2 class="text-[var(--singleview-subheading-text-color)] text-2xl">
-      <span>{greetingText}, </span>
-      <span>{username}!</span>
+    <h2 class="text-[var(--singleview-subheading-text-color)] text-2xl" id={id}>
+      <slot />
     </h2>
   ) : isDashboardSectionHeading ? (
     <h2 class="text-[var(--singleview-subheading-text-color)] mb-3 text-3xl">

@@ -21,3 +21,26 @@ const likedMeals = [
     <LikedMealsSection likedMeals={likedMeals} />
   </div>
 </Layout>
+
+<script>
+  import { supabaseClient } from "../js/supabase/supabase_client"
+  import { formatGreeting } from "../js/utils/formatters"
+
+  const dashboardHeading = document.querySelector("#dashboard_heading")
+  const userProfileImage = document.querySelector("#user_profile_image")
+
+  // Auth handling
+  const {
+    data: { user },
+  } = await supabaseClient.auth.getUser()
+
+  const username = user?.user_metadata.username || "User"
+
+  if (username) {
+    document.title =
+      `${formatGreeting()}, ${username}!` || "Login to access your dashboard!"
+
+    dashboardHeading.textContent = `${formatGreeting()}, ${username}!`
+    userProfileImage.src = user?.user_metadata.avatar_url
+  }
+</script>
