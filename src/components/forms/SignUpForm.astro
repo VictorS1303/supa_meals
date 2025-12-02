@@ -1,28 +1,95 @@
 ---
 import Form from "../../components/forms/Form.astro"
-
 const registerInputs = [
   {
     type: "email",
     labelText: "E-mail",
     placeholder: "Enter e-mail",
+    name: "email_input",
   },
   {
     type: "text",
     labelText: "Name",
     placeholder: "Enter full name",
+    name: "full_name_input",
   },
   {
     type: "password",
     labelText: "Password",
     placeholder: "Enter password",
+    name: "password_input",
   },
   {
     type: "password",
     labelText: "Repeat Password",
     placeholder: "Repeat password",
+    name: "repeat_password_input",
+  },
+  {
+    type: "file",
+    labelText: "Profile image",
+    id: "avatar_image_upload",
+    name: "avatar_image_upload_input",
   },
 ]
 ---
 
-<Form headingText="Sign up" inputs={registerInputs} />
+<Form headingText="Sign up" inputs={registerInputs} id="sign_up_form" />
+<script>
+  import { registerAndLogin } from "../../js/supabase/supabase_methods"
+  import { storeUsersInUsersTable } from "../../js/supabase/supabase_methods"
+
+  const signUpForm = document.querySelector("#sign_up_form")
+  signUpForm?.addEventListener("submit", (e) => handleRegisterAndLogin(e))
+
+  async function handleRegisterAndLogin(e) {
+    e.preventDefault()
+
+    const formData = new FormData(signUpForm)
+    const emailInput = formData.get("email_input")
+    const fullNameInput = formData.get("full_name_input")
+    const passwordInput = formData.get("password_input")
+    const repeatPasswordInput = formData.get("repeat_password_input")
+    const profileImageInput =
+      signUpForm.elements["avatar_image_upload_input"]?.files[0]
+
+    if (passwordInput !== repeatPasswordInput) {
+      alert("Passwords do not match!")
+      return
+    }
+
+    const result = await registerAndLogin(
+      fullNameInput,
+      emailInput,
+      passwordInput,
+      profileImageInput,
+    )
+
+    // Handle result
+    if (result.success) {
+      alert(
+        `Registration successful for ${result.user?.user_metadata.username}`,
+      )
+
+      // IMPORTANT: Await the database insert before redirecting
+      const storeResult = await storeUsersInUsersTable(
+        result.user?.id,
+        result.user?.user_metadata.username,
+        result.user?.email,
+        result.user?.user_metadata.avatar_url,
+      )
+
+      if (storeResult?.success) {
+        console.log("User stored in database successfully")
+      } else {
+        console.error("Failed to store user in database:", storeResult?.error)
+      }
+
+      // Redirect after everything is complete
+      window.location.href = "/meal/53158"
+    } else {
+      console.log("Registration failed: ", result.signUpError)
+      alert(`Registration failed: ${result.signUpError}`)
+    }
+  }
+</script>

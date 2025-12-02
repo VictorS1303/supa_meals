@@ -15,9 +15,9 @@ const {
 
 <form
   class={`${className} border-2 border-(--secondary-text-color) min-h-[350px] h-fit min-w-[300px] w-fit p-4 rounded-md`}
+  id={id}
 >
   <Heading isFormHeading={true} headingText={headingText || "No heading"} />
-
   {
     inputs.length > 0 ? (
       inputs.map((input) => (
@@ -33,6 +33,14 @@ const {
               id={input.id}
               type={input.type}
               placeholder={input.placeholder}
+              name={input.name}
+            />
+          ) : input.type === "file" ? (
+            <input
+              type="file"
+              id={input.id}
+              class="block w-full mb-6 text-(--secondary-text-color) file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:bg-(--secondary-text-color) file:text-white file:cursor-pointer hover:file:opacity-85"
+              name={input.name}
             />
           ) : null}
         </div>
@@ -41,7 +49,6 @@ const {
       <p>No inputs</p>
     )
   }
-
   {
     isSubmitButton ?? (
       <Button type="submit" buttonText="Sign up" isFormButton={true} />

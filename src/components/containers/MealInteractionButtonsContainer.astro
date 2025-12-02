@@ -9,6 +9,7 @@ const {
 } = Astro.props
 const { isLoggedIn } = Astro.props
 ---
+
 <article class="flex items-center gap-12 mt-4">
   {
     mealInteractionButtons.length > 0 ? (
@@ -17,7 +18,7 @@ const { isLoggedIn } = Astro.props
           isMealInteractionButton={true}
           dataAction={mealInteractionButton.dataAction}
         >
-          <i class=`${mealInteractionButton.iconClass} text-2xl`} />
+          <i class={`${mealInteractionButton.iconClass} text-2xl`} />
           <span class="text-md">
             {mealInteractionButton.mealInteractionButtonText}
           </span>
@@ -28,23 +29,37 @@ const { isLoggedIn } = Astro.props
     )
   }
 </article>
-
 <script>
-  import {initializeAuth} from '../../js/supabase/supabase_methods.js'
+  import { supabaseClient } from "../../js/supabase/supabase_client"
 
   const mealInteractionButtons = document.querySelectorAll(
     ".meal-interaction-button",
   )
-   // Update UI state of the buttons
-    function updateMealInteractionButtonsUI(isLoggedIn) {
-      mealInteractionButtons.forEach((mealInteractionButton) => {
-        if (isLoggedIn) {
-          mealInteractionButton.classList.remove("disabled-interaction-button")
-        } else {
-          mealInteractionButton.classList.add("disabled-interaction-button")
-        }
-      })
-    }
 
-    initializeAuth(updateMealInteractionButtonsUI)
+  // Update UI state of the buttons based on login status
+  function updateMealInteractionButtonsUI(isLoggedIn) {
+    mealInteractionButtons.forEach((mealInteractionButton) => {
+      if (isLoggedIn) {
+        mealInteractionButton.classList.remove("disabled-interaction-button")
+      } else {
+        mealInteractionButton.classList.add("disabled-interaction-button")
+      }
+    })
+  }
+
+  // Check if user is logged in on page load
+  async function checkAuthStatus() {
+    const {
+      data: { session },
+    } = await supabaseClient.auth.getSession()
+    updateMealInteractionButtonsUI(!!session)
+  }
+
+  // Listen for auth state changes
+  supabaseClient.auth.onAuthStateChange((event, session) => {
+    updateMealInteractionButtonsUI(!!session)
+  })
+
+  // Initialize on page load
+  checkAuthStatus()
 </script>
