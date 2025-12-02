@@ -1,10 +1,20 @@
 ---
 import Layout from "../../layouts/Layout.astro"
 import SignUpForm from "../../components/forms/SignUpForm.astro"
+import Link from "../../components/links/Link.astro"
 ---
 
 <Layout title="Sign up">
   <div class="flex items-center justify-center min-h-screen">
-    <SignUpForm />
+    <div>
+      <SignUpForm />
+      <h4 class="text-(--secondary-text-color) mt-4 text-center">
+        Already a user? Log in <Link
+          href="/login"
+          isRegisterLink={true}
+          buttonText="here"
+        />.
+      </h4>
+    </div>
   </div>
 </Layout>

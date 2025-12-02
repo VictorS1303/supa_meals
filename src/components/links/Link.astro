@@ -1,30 +1,32 @@
 ---
 const {
   class: className,
-  id: id,
+  id,
   href,
   buttonText,
   isYouTubeButton,
   target,
-  isSingleViewHeroLink
+  isSingleViewHeroLink,
+  isRegisterLink,
 } = Astro.props
 ---
 
 {
   isSingleViewHeroLink ? (
-    <a class="absolute top-3 left-3 text-[var(--secondary-text-color)] text-2xl text-white z-[100001] cursor-pointer transition-text duration-150 ease-in hover:text-[var(--secondary-text-color)]" href={href}>
+    <a
+      class="absolute top-3 left-3 text-[var(--secondary-text-color)] text-2xl text-white z-[100001] cursor-pointer transition-text duration-150 ease-in hover:text-[var(--secondary-text-color)]"
+      href={href}
+    >
       <slot />
     </a>
-  ) : (
+  ) : isRegisterLink ? (
     <a
-  class=`${className} ${isYouTubeButton ? 'bg-transparent text-[var(--button-bg-color)]' : 'bg-[var(--button-bg-color)] text-[var(--button-text-color)] px-4 py-2 w-fit rounded-sm'} cursor-pointer transition-opacity duration-150 ease-in hover:opacity-85 md:text-xl`
-  id={id}
-  href={href}
-  target={target}
->
-  {buttonText}
-  <slot />
-</a>
+      class="text-white border-b-2 border-white transition-all duration-100 ease-in hover:text-(--secondary-text-color) hover:border-(--secondary-text-color)"
+      href={href}
+    >
+      {buttonText}
+    </a>
+  ) : (
+    ""
   )
 }
-
