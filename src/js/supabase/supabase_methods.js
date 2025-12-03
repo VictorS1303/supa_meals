@@ -142,6 +142,12 @@ export const login = async (email, password) =>
     }
 }
 
+// Sign Out
+export const signOutUser = async () =>
+{
+  await supabaseClient.auth.signOut()
+}
+
 
 
 // Store user data in user table

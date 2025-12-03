@@ -21,3 +21,10 @@ const greetingText = formatGreeting()
     </div>
   </div>
 </article>
+
+<script>
+  import { signOutUser } from "../../js/supabase/supabase_methods"
+
+  const signOutButton = document.querySelector("#sign_out_btn")
+  signOutButton?.addEventListener("click", signOutUser)
+</script>
