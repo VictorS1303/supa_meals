@@ -1,6 +1,7 @@
 ---
 import UserInfoAndNotificationSection from "../components/sections/UserInfoAndNotificationSection.astro"
 import LikedMealsSection from "../components/sections/LikedMealsSection.astro"
+import Link from "../components/links/Link.astro"
 
 import Layout from "../layouts/Layout.astro"
 
@@ -14,6 +15,7 @@ const likedMeals = [
 ---
 
 <Layout title="Dashboard">
+  <Link isBackLink={true} href="/meals" />
   <UserInfoAndNotificationSection />
 
   <!-- Liked Meals & Comments -->

@@ -2,14 +2,16 @@
 import "../styles/global.css"
 import "plyr/dist/plyr.css"
 import Navigation from "../components/navigation/Navigation.astro"
+
 const { title } = Astro.props
 
+const isSingleMealView = /^\/meals\/[^/]+$/.test(Astro.url.pathname)
+const isDashboardView = Astro.url.pathname.startsWith("/dashboard")
 const isAuthView =
   Astro.url.pathname.startsWith("/register/sign-up") ||
   Astro.url.pathname.startsWith("/register/login")
 
-const isSingleMealView = /^\/meals\/[^/]+$/.test(Astro.url.pathname)
-const isDashboardView = Astro.url.pathname.startsWith("/dashboard")
+const showToggleButton = !isAuthView && !isSingleMealView && !isDashboardView
 
 const mainSingleViewAndDashboardClasses =
   isSingleMealView || isDashboardView ? "mx-auto px-10 py-10" : "p-6"
@@ -41,13 +43,7 @@ const navItems = [
     <title>SupaMeals | {title}</title>
   </head>
   <body class="bg-[var(--secondary-bg-color)] min-h-screen">
-    {
-      !isAuthView && !isSingleMealView && !isDashboardView ? (
-        <Navigation navItems={navItems} />
-      ) : (
-        ""
-      )
-    }
+    <Navigation navItems={navItems} showToggleButton={showToggleButton} />
 
     <main class={mainSingleViewAndDashboardClasses}>
       <slot />

@@ -1,6 +1,12 @@
 ---
 import NavToggleButton from "../buttons/NavToggleButton.astro"
-const { class: className, id: id, navItems = [], isLoggedIn } = Astro.props
+const {
+  class: className,
+  id: id,
+  navItems = [],
+  isLoggedIn,
+  showToggleButton,
+} = Astro.props
 ---
 
 <nav
@@ -8,7 +14,7 @@ const { class: className, id: id, navItems = [], isLoggedIn } = Astro.props
             transition-[clip-path] duration-500 ease-in-out`}
   id="main_nav"
 >
-  <NavToggleButton />
+  {showToggleButton ? <NavToggleButton /> : null}
 
   <span
     class="absolute

@@ -9,6 +9,8 @@ const {
   isSingleViewHeroLink,
   isRegisterLink,
   isMealCardLink,
+  isPaginationLink,
+  isBackLink,
 } = Astro.props
 ---
 
@@ -33,6 +35,20 @@ const {
       href={href}
     >
       {buttonText}
+    </a>
+  ) : isPaginationLink ? (
+    <a
+      class={`${className} prev-btn flex items-center gap-2 px-4 py-2 bg-[#333] text-white rounded-md`}
+      href={href}
+    >
+      <slot />
+    </a>
+  ) : isBackLink ? (
+    <a
+      class="absolute top-3 left-3 text-(--secondary-text-color) text-2xl cursor-pointer"
+      href={href}
+    >
+      <i class="fas fa-arrow-left" />
     </a>
   ) : (
     ""

@@ -7,8 +7,9 @@ const { currentPage, totalPages } = Astro.props
 
 <article class="pagination flex justify-center items-center gap-6 pb-6">
   <Link
+    isPaginationLink={true}
     href={currentPage > 1 ? `/meals?page=${currentPage - 1}` : null}
-    class={`prev-btn flex items-center gap-2 px-4 py-2 rounded ${
+    class={`prev-btn ${
       currentPage <= 1
         ? "pointer-events-none opacity-25"
         : "bg-[var(--btn-background-color)]"
@@ -22,8 +23,9 @@ const { currentPage, totalPages } = Astro.props
   <!-- <span class="flex items-center">Page {currentPage} of {totalPages}</span> -->
 
   <Link
+    isPaginationLink={true}
     href={currentPage < totalPages ? `/meals?page=${currentPage + 1}` : null}
-    class={`next-btn flex items-center gap-2 px-4 py-2 rounded ${
+    class={`next-btn ${
       currentPage >= totalPages
         ? "pointer-events-none opacity-25"
         : "bg-[var(--btn-background-color)]"

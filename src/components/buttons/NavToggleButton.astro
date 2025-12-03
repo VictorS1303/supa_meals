@@ -1,10 +1,17 @@
 ---
 import Button from "./Button.astro"
 const { class: className, id: id } = Astro.props
+
+const hideOnRoutes = [/^\/meals\/[^/]+$/, /^\/dashboard/]
+const pathname =
+  typeof window !== "undefined" ? window.location.pathname : Astro.url.pathname
+const hiddenClass = hideOnRoutes.some((reg) => reg.test(pathname))
+  ? "hidden"
+  : ""
 ---
 
 <Button
-  class="h-[30px] w-[30px] fixed top-12 right-12 cursor-pointer group"
+  class={`h-[30px] w-[30px] fixed top-12 right-12 cursor-pointer group ${hiddenClass}`}
   id="nav_toggle_button"
 >
   <span
@@ -32,12 +39,9 @@ const { class: className, id: id } = Astro.props
 <script>
   const navToggleButton = document.querySelector("#nav_toggle_button")
   const mainNav = document.querySelector("#main_nav")
-  
 
   navToggleButton?.addEventListener("click", toggleNavbar)
 
-
-  
   function toggleNavbar() {
     navToggleButton?.classList.toggle("open")
     mainNav?.classList.toggle("open")
