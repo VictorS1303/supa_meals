@@ -4,11 +4,14 @@ import "plyr/dist/plyr.css"
 import Navigation from "../components/navigation/Navigation.astro"
 const { title } = Astro.props
 
-const isDashboardView = Astro.url.pathname.includes("/dashboard")
-const isSingleView =
-  Astro.url.pathname.includes("/meal") ||
-  Astro.url.pathname.includes("/dashboard")
-const mainSingleViewAndDashboardClasses = isSingleView
+const isAuthView =
+  Astro.url.pathname.startsWith("/register/sign-up") ||
+  Astro.url.pathname.startsWith("/register/login")
+
+const isSingleMealView = /^\/meals\/[^/]+$/.test(Astro.url.pathname)
+const isDashboardView = Astro.url.pathname.startsWith("/dashboard")
+
+const mainSingleViewAndDashboardClasses = isSingleMealView
   ? "mx-auto px-10 py-10"
   : ""
 
@@ -16,15 +19,18 @@ const navItems = [
   {
     href: "/meals",
     text: "Meals",
+    isRequiringAuth: false,
   },
   {
     href: "/meal-planner",
     text: "Meal Planner",
+    isRequiringAuth: true,
   },
-  {
-    href: "/dashboard",
-    text: "Dashboard",
-  },
+  // {
+  //   href: "/dashboard",
+  //   text: "Dashboard",
+  //   isRequiringAuth: true,
+  // },
 ]
 ---
 
@@ -41,7 +47,13 @@ const navItems = [
     <title>SupaMeals | {title}</title>
   </head>
   <body class="bg-[var(--secondary-bg-color)] min-h-screen">
-    {!isDashboardView ? <Navigation navItems={navItems} /> : ""}
+    {
+      !isAuthView && !isSingleMealView && !isDashboardView ? (
+        <Navigation navItems={navItems} />
+      ) : (
+        ""
+      )
+    }
 
     <main class={mainSingleViewAndDashboardClasses}>
       <slot />

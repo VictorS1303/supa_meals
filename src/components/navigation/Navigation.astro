@@ -1,11 +1,11 @@
 ---
 import NavToggleButton from "../buttons/NavToggleButton.astro"
-const { class: className, id: id, navItems = [] } = Astro.props
+const { class: className, id: id, navItems = [], isLoggedIn } = Astro.props
 ---
 
 <nav
   class={`${className} main-nav fixed bg-transparent inset-0 bg-[var(--navigation-bg-color)] z-[1000000]
-            transition-[clip-path] duration-500 ease-in-out`}
+            transition-[clip-path] duration-500 ease-in-out open`}
   id="main_nav"
 >
   <NavToggleButton />
@@ -31,16 +31,25 @@ const { class: className, id: id, navItems = [] } = Astro.props
 
   <ul class="flex flex-col items-center justify-center h-full gap-7 z-[10000]">
     {
-      navItems.length > 0
-        ? navItems.map((navItem, index) => (
-            <li key={index} class="nav-list-item uppercase text-4xl">
-              <a href={navItem.href} data-bg-text={navItem.text}>
-                {navItem.text}
-              </a>
-            </li>
-          ))
-        : ""
+      navItems.map((navItem, index) => (
+        <li key={index} class="nav-list-item uppercase text-4xl">
+          <a
+            href={navItem.href}
+            data-bg-text={navItem.text}
+            data-requires-auth={navItem.isRequiringAuth ? "true" : "false"}
+          >
+            {navItem.text}
+          </a>
+        </li>
+      ))
     }
+
+    <a href="/dashboard">
+      <img
+        class="absolute bottom-5 left-[50%] -translate-x-[50%] h-[60px] w-[60px] object-cover rounded-full border-2 border-(--secondary-text-color) cursor-pointer transition-opacity duration-100 ease-in hover:opacity-90"
+        id="user_nav_avatar"
+      />
+    </a>
   </ul>
 </nav>
 
@@ -65,6 +74,8 @@ const { class: className, id: id, navItems = [] } = Astro.props
 </style>
 
 <script>
+  import { supabaseClient } from "../../js/supabase/supabase_client"
+
   const navigationBackgroundText = document.querySelector<HTMLElement>(
     "#navigation_bg_text",
   )
@@ -72,6 +83,10 @@ const { class: className, id: id, navItems = [] } = Astro.props
   const navigationLinksData = document.querySelectorAll(
     "nav ul li [data-bg-text]",
   )
+
+  const session = (await supabaseClient.auth.getSession()).data.session
+  const isLoggedIn = !!session
+  const avatar = document.querySelector<HTMLElement>("#user_nav_avatar")
 
   /* TOGGLE NAVIGATION BACKGROUND TEXT */
   navigationLinksData.forEach((navigationLinkData) => {
@@ -115,4 +130,56 @@ const { class: className, id: id, navItems = [] } = Astro.props
 
     navigationBackgroundText.style.transform = `translate(calc(-50% - ${xOffset}px), calc(-50% - ${yOffset}px))`
   }
+
+  // Display links based on login state
+  async function displayLinksBasedOnLoginState() {
+    // 2. Select all auth-required links
+    const links = document.querySelectorAll("[data-requires-auth]")
+
+    // 3. Show/hide items
+    links.forEach((link) => {
+      const requiresAuth = link.dataset.requiresAuth === "true"
+      const li = link.closest(".nav-list-item")
+
+      if (requiresAuth && !isLoggedIn) {
+        li.style.display = "none"
+      } else {
+        li.style.display = ""
+      }
+    })
+  }
+
+  // Handle avatar
+  async function handleAvatarDisplay() {
+    const {
+      data: { session },
+    } = await supabaseClient.auth.getSession()
+    const isLoggedIn = !!session
+    const avatar = document.querySelector<HTMLImageElement>("#user_nav_avatar")
+
+    if (!avatar) return
+
+    if (isLoggedIn) {
+      const avatarUrl = session.user.user_metadata?.avatar_url
+
+      if (avatarUrl) {
+        avatar.src = avatarUrl
+      } else {
+        // fallback if no avatar in metadata
+        avatar.src =
+          "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg"
+      }
+
+      avatar.style.display = ""
+    } else {
+      avatar.style.display = "none"
+    }
+  }
+  displayLinksBasedOnLoginState()
+  handleAvatarDisplay()
+
+  supabaseClient.auth.onAuthStateChange(() => {
+    displayLinksBasedOnLoginState()
+    handleAvatarDisplay()
+  })
 </script>
