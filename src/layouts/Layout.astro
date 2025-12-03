@@ -12,7 +12,7 @@ const isSingleMealView = /^\/meals\/[^/]+$/.test(Astro.url.pathname)
 const isDashboardView = Astro.url.pathname.startsWith("/dashboard")
 
 const mainSingleViewAndDashboardClasses =
-  isSingleMealView || isDashboardView ? "mx-auto px-10 py-10" : ""
+  isSingleMealView || isDashboardView ? "mx-auto px-10 py-10" : "p-6"
 
 const navItems = [
   {

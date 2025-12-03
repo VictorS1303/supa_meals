@@ -8,6 +8,7 @@ const {
   target,
   isSingleViewHeroLink,
   isRegisterLink,
+  isMealCardLink,
 } = Astro.props
 ---
 
@@ -22,6 +23,13 @@ const {
   ) : isRegisterLink ? (
     <a
       class="text-white border-b-2 border-white transition-all duration-100 ease-in hover:text-(--secondary-text-color) hover:border-(--secondary-text-color)"
+      href={href}
+    >
+      {buttonText}
+    </a>
+  ) : isMealCardLink ? (
+    <a
+      class="bg-(--secondary-text-color) mt-auto w-fit py-2 px-4 text-white rounded-md transition-opacity duration-150 hover:opacity-90"
       href={href}
     >
       {buttonText}
