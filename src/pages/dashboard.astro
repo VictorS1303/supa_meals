@@ -1,9 +1,17 @@
 ---
+import { supabaseClient } from "../js/supabase/supabase_client"
 import UserInfoAndNotificationSection from "../components/sections/UserInfoAndNotificationSection.astro"
 import LikedMealsSection from "../components/sections/LikedMealsSection.astro"
 import Link from "../components/links/Link.astro"
-
 import Layout from "../layouts/Layout.astro"
+import AuthenticateLockOverlayLayout from "../layouts/AuthenticateLockOverlayLayout.astro"
+
+const {
+  data: { session },
+} = await supabaseClient.auth.getSession()
+
+const user = session?.user
+const isUserAuthenticated = !!user
 
 const likedMeals = [
   {
@@ -12,37 +20,50 @@ const likedMeals = [
     headingText: "Something",
   },
 ]
+
+const authOptionLinks = [
+  { buttonText: "Sign up", href: "/register/sign-up" },
+  { buttonText: "Login", href: "/register/login" },
+]
 ---
-
 <Layout title="Dashboard">
-  <Link isBackLink={true} href="/meals" />
-  <UserInfoAndNotificationSection />
+  <!-- HIDDEN BY DEFAULT — JS will decide -->
+  <div id="dashboard_content_wrapper" style="display:none;">
+      <Link isBackLink={true} href="/meals" />
+      <UserInfoAndNotificationSection />
+      <div class="mt-12 flex flex-col gap-20">
+        <LikedMealsSection likedMeals={likedMeals} />
+      </div>
+  </div>
 
-  <!-- Liked Meals & Comments -->
-  <div class="mt-12 flex flex-col gap-20">
-    <LikedMealsSection likedMeals={likedMeals} />
+  <!-- VISIBLE BY DEFAULT — JS will hide if user is logged in -->
+  <div id="dashboard_lock_overlay_wrapper" style="display:block;">
+    <AuthenticateLockOverlayLayout
+      slot="dashboard-lock"
+      id="dashboard_authenticate_overlay_layout"
+      authOptionLinks={authOptionLinks}
+    />
   </div>
 </Layout>
 
 <script>
   import { supabaseClient } from "../js/supabase/supabase_client"
+  import { updateAuthOverlayDisplayState } from '../js/utils/auth_overlay_display.js'
   import { formatGreeting } from "../js/utils/formatters"
 
-  const dashboardHeading = document.querySelector("#dashboard_heading")
-  const userProfileImage = document.querySelector("#user_profile_image")
+  const pageTitle = document.querySelector("#page_title")
+  const dashboardContentWrapper = document.querySelector("#dashboard_content_wrapper")
+  const dashboardLockOverlayWrapper = document.querySelector("#dashboard_lock_overlay_wrapper")
 
-  // Auth handling
   const {
-    data: { user },
-  } = await supabaseClient.auth.getUser()
+    data: { session }
+  } = await supabaseClient.auth.getSession()
 
-  const username = user?.user_metadata.username || "User"
-
-  if (username) {
-    document.title =
-      `${formatGreeting()}, ${username}!` || "Login to access your dashboard!"
-
-    dashboardHeading.textContent = `${formatGreeting()}, ${username}!`
-    userProfileImage.src = user?.user_metadata.avatar_url
-  }
+  updateAuthOverlayDisplayState({
+    user: session?.user,
+    pageTitleElement: pageTitle,
+    contentWrapperElement: dashboardContentWrapper,
+    overlayWrapperElement: dashboardLockOverlayWrapper,
+    formatGreeting
+  })
 </script>

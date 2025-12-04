@@ -1,0 +1,10 @@
+---
+import AuthOptionLinksContainer from "./AuthOptionLinksContainer.astro"
+
+const {class: className, id: id, authOptionLinks = []} = Astro.props
+
+---
+
+<div class="auth-options-container flex flex-wrap gap-4 justify-center" id="auth_options_container">
+  <AuthOptionLinksContainer authOptionLinks={authOptionLinks} />  
+</div>

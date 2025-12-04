@@ -169,3 +169,4 @@ export const storeUsersInUsersTable = async (name, email, password, profileImage
 
     return insertUserData || []
 }
+

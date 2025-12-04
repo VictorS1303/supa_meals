@@ -3,8 +3,10 @@ import "../styles/global.css"
 import "plyr/dist/plyr.css"
 import Navigation from "../components/navigation/Navigation.astro"
 
-const { title } = Astro.props
+const { title, isDashboardLockVisible = false } = Astro.props
 
+const isLandingView = Astro.url.pathname === "/"
+const isMealsView = Astro.url.pathname.startsWith("/meals")
 const isSingleMealView = /^\/meals\/[^/]+$/.test(Astro.url.pathname)
 const isDashboardView = Astro.url.pathname.startsWith("/dashboard")
 const isAuthView =
@@ -13,8 +15,11 @@ const isAuthView =
 
 const showToggleButton = !isAuthView && !isSingleMealView && !isDashboardView
 
-const mainSingleViewAndDashboardClasses =
-  isSingleMealView || isDashboardView ? "mx-auto px-10 py-10" : "p-6"
+const mainClasses = isLandingView
+  ? "p-0"
+  : isSingleMealView || isDashboardView || isMealsView
+    ? "mx-auto p-6"
+    : ""
 
 const navItems = [
   {
@@ -40,13 +45,15 @@ const navItems = [
     <script
       src="https://kit.fontawesome.com/e05f21b32e.js"
       crossorigin="anonymous"></script>
-    <title>SupaMeals | {title}</title>
+    <title id="page_title">SupaMeals | {title}</title>
   </head>
   <body class="bg-[var(--secondary-bg-color)] min-h-screen">
     <Navigation navItems={navItems} showToggleButton={showToggleButton} />
 
-    <main class={mainSingleViewAndDashboardClasses}>
+    <main class={mainClasses}>
       <slot />
     </main>
+
+    {isDashboardLockVisible && <slot name="dashboard-lock" />}
   </body>
 </html>

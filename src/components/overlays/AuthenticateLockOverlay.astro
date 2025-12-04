@@ -1,0 +1,11 @@
+---
+import DashboardLockOverlayLayout from "../../layouts/DashboardLockOverlayLayout.astro";
+
+const {class: className, id: id, authOptionLinks = []} = Astro.props
+---
+
+<DashboardLockOverlayLayout
+  class={className}
+  id={id}
+  authOptionLinks={authOptionLinks}
+/>

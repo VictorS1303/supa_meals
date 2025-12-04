@@ -1,0 +1,16 @@
+---
+const {authOptionLinks = []} = Astro.props
+
+import Link from "../links/Link.astro"
+---
+
+<div class="flex gap-6">
+  {
+    authOptionLinks.length > 0 ?
+      authOptionLinks.map((authOptionLink: any) => (
+        <Link isDashboardOverlayLink={true} href={authOptionLink.href} buttonText={authOptionLink.buttonText} />
+      )) : (
+        <p class="text-white">No auth links available</p>
+      )
+  }
+</div>
