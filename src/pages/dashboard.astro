@@ -5,6 +5,7 @@ import LikedMealsSection from "../components/sections/LikedMealsSection.astro"
 import Link from "../components/links/Link.astro"
 import Layout from "../layouts/Layout.astro"
 import AuthenticateLockOverlayLayout from "../layouts/AuthenticateLockOverlayLayout.astro"
+// import Dialog from "../components/dialogs/Dialog.astro"
 
 const {
   data: { session },
@@ -26,14 +27,15 @@ const authOptionLinks = [
   { buttonText: "Login", href: "/register/login" },
 ]
 ---
+
 <Layout title="Dashboard">
   <!-- HIDDEN BY DEFAULT — JS will decide -->
   <div id="dashboard_content_wrapper" style="display:none;">
-      <Link isBackLink={true} href="/meals" />
-      <UserInfoAndNotificationSection />
-      <div class="mt-12 flex flex-col gap-20">
-        <LikedMealsSection likedMeals={likedMeals} />
-      </div>
+    <Link isBackLink={true} href="/meals" />
+    <UserInfoAndNotificationSection />
+    <div class="mt-12 flex flex-col gap-20">
+      <LikedMealsSection likedMeals={likedMeals} />
+    </div>
   </div>
 
   <!-- VISIBLE BY DEFAULT — JS will hide if user is logged in -->
@@ -48,15 +50,19 @@ const authOptionLinks = [
 
 <script>
   import { supabaseClient } from "../js/supabase/supabase_client"
-  import { updateAuthOverlayDisplayState } from '../js/utils/auth_overlay_display.js'
+  import { updateAuthOverlayDisplayState } from "../js/utils/auth_overlay_display.js"
   import { formatGreeting } from "../js/utils/formatters"
 
   const pageTitle = document.querySelector("#page_title")
-  const dashboardContentWrapper = document.querySelector("#dashboard_content_wrapper")
-  const dashboardLockOverlayWrapper = document.querySelector("#dashboard_lock_overlay_wrapper")
+  const dashboardContentWrapper = document.querySelector(
+    "#dashboard_content_wrapper",
+  )
+  const dashboardLockOverlayWrapper = document.querySelector(
+    "#dashboard_lock_overlay_wrapper",
+  )
 
   const {
-    data: { session }
+    data: { session },
   } = await supabaseClient.auth.getSession()
 
   updateAuthOverlayDisplayState({
@@ -64,6 +70,6 @@ const authOptionLinks = [
     pageTitleElement: pageTitle,
     contentWrapperElement: dashboardContentWrapper,
     overlayWrapperElement: dashboardLockOverlayWrapper,
-    formatGreeting
+    formatGreeting,
   })
 </script>
