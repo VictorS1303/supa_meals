@@ -1,0 +1,56 @@
+---
+const { class: className = "" } = Astro.props;
+---
+
+<article class={`auth-bar ${className} absolute inset-0 bg-[var(--auth-bar-bg-color)]/30 z-10 pointer-events-none transition-all duration-300`}></article>
+
+<script is:client>
+import { supabaseClient } from "../../js/supabase/supabase_client";
+
+document.querySelectorAll('.form-button').forEach((formButton) => {
+  formButton.addEventListener('click', async () => {
+    const form = formButton.closest('form');
+    if (!form) return;
+
+    const authBar = form.querySelector('.auth-bar');
+    if (!authBar) return;
+
+    const formAction = formButton.dataset.action;
+    const emailInput = form.querySelector('input[type="email"]');
+    const passwordInput = form.querySelector('input[type="password"]');
+    if (!emailInput || !passwordInput) return;
+
+    const email = emailInput.value;
+    const password = passwordInput.value;
+
+    let response;
+
+    // --- Animation start ---
+    authBar.style.width = '0%';
+    requestAnimationFrame(() => (authBar.style.width = '60%'));
+    formButton.disabled = true;
+    formButton.classList.add('form-button-disabled');
+
+    // --- Supabase auth ---
+    if (formAction === 'login') {
+      response = await supabaseClient.auth.signInWithPassword({ email, password });
+    } else if (formAction === 'sign-up') {
+      response = await supabaseClient.auth.signUp({ email, password });
+    }
+
+    // --- Error handling ---
+    if (response.error) {
+      authBar.style.width = '0%';
+      formButton.disabled = false;
+      formButton.classList.remove('form-button-disabled');
+      return;
+    }
+
+    // --- Success ---
+    authBar.style.width = '100%';
+
+    setTimeout(() => {
+      window.location.href = '/account';
+    }, 1200);
+  });
+</script>

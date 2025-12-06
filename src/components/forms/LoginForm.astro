@@ -1,18 +1,19 @@
 ---
-import Form from "./Form.astro";
+import Form from "./Form.astro"
+import Dialog from "../dialogs/Dialog.astro"
 
 const loginInputs = [
   {
-    type: 'email',
-    labelText: 'E-mail',
-    placeholder: 'Enter e-mail',
-    name: 'email_input',
+    type: "email",
+    labelText: "E-mail",
+    placeholder: "Enter e-mail",
+    name: "email_input",
   },
   {
-    type: 'password',
-    labelText: 'Password',
-    placeholder: 'Enter password',
-    name: 'password_input',
+    type: "password",
+    labelText: "Password",
+    placeholder: "Enter password",
+    name: "password_input",
   },
 ]
 ---
@@ -22,30 +23,74 @@ const loginInputs = [
   inputs={loginInputs}
   buttonText="Log In"
   id="login_form"
+  action="login"
+/>
+
+<!-- Login Success Dialog -->
+<Dialog
+  dialogMessageId="login_dialog_message"
+  id="login_success_dialog"
+  headingText="Registration Successful"
+  isSuccess={true}
+/>
+
+<!-- Login Failed Dialog -->
+<Dialog
+  id="login_failed_dialog"
+  dialogMessageId="login_failed_dialog"
+  headingText="Login Failed"
+  isClosableDialog={true}
+  isSuccess={false}
 />
 
 <script>
-import { login } from "../../js/supabase/supabase_methods"
+  import { supabaseClient } from "../../js/supabase/supabase_client"
+  import { login } from "../../js/supabase/supabase_methods"
 
-  const loginForm = document.querySelector('#login_form')
+  const loginForm = document.querySelector("#login_form")
 
-  loginForm?.addEventListener('submit', (e) => handleLogin(e))
+  const loginSuccessDialog = document.querySelector<HTMLDialogElement>(
+    "#login_success_dialog",
+  )
+  const loginSuccessDialogParagraph = loginSuccessDialog?.querySelector(
+    ".dialog-message-text",
+  )
 
-  async function handleLogin(e)
-  {
+  const loginFailedDialog = document.querySelector<HTMLElement>(
+    "#login_failed_dialog",
+  )
+  const loginFailedDialogParagraph = loginFailedDialog?.querySelector(
+    ".dialog-message-text",
+  )
+
+  console.log(loginFailedDialogParagraph)
+
+  loginForm?.addEventListener("submit", (e) => handleLogin(e))
+
+  async function handleLogin(e) {
     const formData = new FormData(loginForm)
 
-    const emailInput = formData.get('email_input')
-    const passwordInput = formData.get('password_input')
+    const emailInput = formData.get("email_input")
+    const passwordInput = formData.get("password_input")
 
     const loginResult = await login(emailInput, passwordInput)
 
-     if (loginResult.success) {
-      window.location.href = '/dashboard'
+    if (loginResult.success) {
+      const {
+        data: { user },
+      } = await supabaseClient.auth.getUser()
+
+      loginSuccessDialog?.showModal()
+      loginSuccessDialogParagraph.textContent = `${user?.user_metadata.username} successfully logged in!`
+
+      setTimeout(() => {
+        window.location.href = "/dashboard"
+      }, 2000)
     } else {
-      console.error('Login failed:', loginResult.error)
-      // Optionally show an error message to the user
+      console.error("Login failed:", loginResult.error)
+      loginFailedDialog?.showModal()
+      loginFailedDialogParagraph.textContent =
+        "Your credentials don't match. Please try again"
     }
-    
   }
 </script>

@@ -1,0 +1,42 @@
+---
+import Button from "../buttons/Button.astro"
+import Heading from "../headings/Heading.astro"
+import DialogMessageParagraph from "../popovers/DialogMessageParagraph.astro"
+const {
+  class: className,
+  id: id,
+  isClosableDialog,
+  dialogMessageText = "",
+  headingText,
+  dialogMessageId,
+  isSuccess,
+} = Astro.props
+
+const dialogBorder = isSuccess
+  ? "border-(--secondary-text-color)"
+  : "border-red-400"
+---
+
+<dialog
+  id={id}
+  class={`fixed top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2
+         bg-(--modal-bg-color) h-[300px] min-w-[40vw] max-w-[500px]
+         px-8 py-4 z-[10000000] rounded-md border-2
+         ${isSuccess ? 'border-(--secondary-text-color)' : 'border-red-400'}
+         ${isClosableDialog === ''}`} 
+>
+  {isClosableDialog && <Button isDialogCloseButton={true} />}
+  <Heading isDialogHeading={true} headingText={headingText} />
+  <DialogMessageParagraph dialogMessageText={dialogMessageText} id={dialogMessageId} />
+</dialog>
+
+<style>
+  dialog[open]::backdrop {
+    backdrop-filter: blur(5px);
+  }
+</style>
+
+<!-- <script>
+  const dialog = document.querySelector('dialog')
+  dialog?.showModal()
+</script> -->
