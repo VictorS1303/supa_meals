@@ -1,0 +1,26 @@
+---
+const {class: className, id: id, countdownNumber = 3} = Astro.props
+---
+<article class={`${className} text-white outline-2 outline-white`} id={id}>
+  <h3>Redirecting in: <span class="countdown-number-el" id="countdown_number_el">{countdownNumber}</span></h3>
+</article>
+<script>
+  const countdownNumberEl = document.querySelector('#countdown_number_el')
+
+  console.log(countdownNumberEl)
+  
+  if(countdownNumberEl)
+  {
+    let countdownNumber = parseInt(countdownNumberEl.textContent || '3')
+    const countingInterval = setInterval(() => {
+      countdownNumber--
+      countdownNumberEl.textContent = countdownNumber.toString()
+      if(countdownNumber <= 0)
+      {
+        clearInterval(countingInterval)
+        // You can add redirect logic here or dispatch an event
+        window.location.href = '/dashboard'
+      }
+    }, 1000)
+  }
+</script>

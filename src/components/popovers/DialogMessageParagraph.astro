@@ -1,0 +1,7 @@
+---
+const {class: className, id: id, dialogMessageText, dialogMessageId} = Astro.props
+---
+
+<p class="dialog-message-text absolute top-[50%] left-[50%] -translate-[50%] w-full text-center text-white text-xl mt-8 px-4" id={dialogMessageId}>
+  {dialogMessageText}
+</p>

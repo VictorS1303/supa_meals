@@ -1,5 +1,6 @@
 ---
 import Form from "../../components/forms/Form.astro"
+import Dialog from "../dialogs/Dialog.astro"
 const registerInputs = [
   {
     type: "email",
@@ -39,12 +40,47 @@ const registerInputs = [
   inputs={registerInputs}
   buttonText="Sign up"
   id="sign_up_form"
+  action="sign-up"
 />
+
+<!-- Sign Up Success Message -->
+<Dialog
+  dialogMessageId="sign_up_dialog_message"
+  id="sign_up_success_dialog"
+  headingText="Registration Successful"
+  isSuccess={true}
+/>
+
+<!-- Sign Up Failed Message -->
+<Dialog
+  id="sign_up_failed_dialog"
+  headingText="Registration Failed"
+  isSuccess={false}
+/>
+
 <script>
   import { registerAndLogin } from "../../js/supabase/supabase_methods"
   import { storeUsersInUsersTable } from "../../js/supabase/supabase_methods"
+  import { openDialog } from "../../js/utils/animations.js"
 
   const signUpForm = document.querySelector("#sign_up_form")
+  const signUpSuccessDialog = document.querySelector<HTMLDialogElement>(
+    "#sign_up_success_dialog",
+  )
+  const signUpSuccessDialogParagraph = signUpSuccessDialog?.querySelector(
+    ".dialog-message-text",
+  )
+
+  const signUpFailedDialog = document.querySelector<HTMLDialogElement>(
+    "#sign_up_failed_dialog",
+  )
+
+  const signUpFailedDialogParagraph = signUpFailedDialog?.querySelector(
+    ".dialog-message-text",
+  )
+
+  console.log(signUpFailedDialog)
+
   signUpForm?.addEventListener("submit", (e) => handleRegisterAndLogin(e))
 
   async function handleRegisterAndLogin(e) {
@@ -70,10 +106,6 @@ const registerInputs = [
 
     // Handle result
     if (result.success) {
-      alert(
-        `Registration successful for ${result.user?.user_metadata.username}`,
-      )
-
       // IMPORTANT: Await the database insert before redirecting
       const storeResult = await storeUsersInUsersTable(
         result.user?.id,
@@ -82,6 +114,10 @@ const registerInputs = [
         result.user?.user_metadata.avatar_url,
       )
 
+      // Show modal
+      signUpSuccessDialog?.showModal()
+      signUpSuccessDialogParagraph.textContent = `Successful registration for ${result.user?.user_metadata.username}!`
+
       if (storeResult?.success) {
         console.log("User stored in database successfully")
       } else {
@@ -89,10 +125,14 @@ const registerInputs = [
       }
 
       // Redirect after everything is complete
-      window.location.href = "/dashboard"
+      setTimeout(() => {
+        window.location.href = "/dashboard"
+      }, 2000)
     } else {
       console.log("Registration failed: ", result.signUpError)
-      alert(`Registration failed: ${result.signUpError}`)
+
+      signUpFailedDialog?.showModal()
+      signUpFailedDialogParagraph.textContent = `Registration failed: ${result.signUpError}`
     }
   }
 </script>
