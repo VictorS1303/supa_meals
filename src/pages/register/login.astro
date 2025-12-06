@@ -1,16 +1,16 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import LoginForm from "../../components/forms/LoginForm.astro";
-import Link from "../../components/links/Link.astro";
+import Layout from "../../layouts/Layout.astro"
+import LoginForm from "../../components/forms/LoginForm.astro"
+import Link from "../../components/links/Link.astro"
 ---
 
 <Layout title="Log In">
-    <div class="flex items-center justify-center min-h-screen">
+  <div class="flex items-center justify-center min-h-screen">
     <div>
       <LoginForm />
       <h4 class="text-(--secondary-text-color) mt-4 text-center">
-        Already a user? Log in <Link
-          href="/register/login"
+        Not already a user? Log in <Link
+          href="/register/sign-up"
           isRegisterLink={true}
           buttonText="here"
         />.
