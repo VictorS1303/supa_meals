@@ -27,6 +27,7 @@ console.log("Displaying meals:", mealsToDisplay.length)
             paragraphText={mealCard.strArea}
             buttonText="See Recipe"
             href={`/meal/${mealCard.idMeal}`}
+            data-meal-id={mealCard.idMeal}
           />
         ))
       ) : (

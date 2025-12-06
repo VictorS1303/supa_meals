@@ -13,24 +13,35 @@ const { isLoggedIn } = Astro.props
 <article class="flex items-center gap-12 mt-4">
   {
     mealInteractionButtons.length > 0 ? (
-      mealInteractionButtons.map((mealInteractionButton) => (
-        <Button
-          isMealInteractionButton={true}
-          dataAction={mealInteractionButton.dataAction}
-        >
-          <i class={`${mealInteractionButton.iconClass} text-2xl`} />
-          <span class="text-md">
-            {mealInteractionButton.mealInteractionButtonText}
-          </span>
-        </Button>
-      ))
+      mealInteractionButtons.map((mealInteractionButton) => {
+        console.log("Button config:", mealInteractionButton) // DEBUG
+        return (
+          <Button
+            isMealInteractionButton={true}
+            dataAction={mealInteractionButton.dataAction}
+          >
+            <i class={`${mealInteractionButton.iconClass} text-2xl`} />
+            <span class="text-md">
+              {mealInteractionButton.mealInteractionButtonText}
+            </span>
+          </Button>
+        )
+      })
     ) : (
       <p>No available interactions</p>
     )
   }
 </article>
+
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
+  import { fetchLikedMealData } from "../../js/supabase/supabase_methods"
+  import { likeMeal } from "../../js/supabase/supabase_methods.js"
+
+  // Get mea ID from URL path
+  const singleViewPath = window.location.pathname.split("/")
+  const mealIdFromURL = singleViewPath[singleViewPath.length - 1]
+  console.log("Meal ID from URL:", mealIdFromURL)
 
   const mealInteractionButtons = document.querySelectorAll(
     ".meal-interaction-button",
@@ -45,6 +56,82 @@ const { isLoggedIn } = Astro.props
         mealInteractionButton.classList.add("disabled-interaction-button")
       }
     })
+  }
+
+  // Handle meal interactions
+  mealInteractionButtons.forEach((mealInteractionButton) => {
+    console.log(
+      "Attaching listener to mealInteractionButton:",
+      mealInteractionButton,
+    ) // DEBUG
+    mealInteractionButton.addEventListener("click", async (e) => {
+      console.log("Button clicked!") // DEBUG
+      await handleMealInteraction(e.currentTarget)
+    })
+  })
+
+  // Meal interaction handler
+  async function handleMealInteraction(mealInteractionButtonElement) {
+    const mealInteractionAction =
+      mealInteractionButtonElement.getAttribute("data-action")
+
+    const {
+      data: { session },
+    } = await supabaseClient.auth.getSession()
+
+    if (!session) {
+      alert("You must be logged in to interact with meals")
+      return
+    }
+
+    if (mealInteractionAction === "like") {
+      const mealId = mealIdFromURL
+
+      if (!mealId) {
+        console.log("Meal ID not found")
+        return
+      }
+
+      try {
+        console.log("Liking meal with ID:", mealId)
+
+        // Get or create meal from database
+        const mealData = await fetchLikedMealData(mealId)
+        console.log("Meal data fetched: ", mealData)
+
+        const userId = session?.user?.id
+        // Create like relationship
+        const likeResult = await likeMeal(userId, mealData.id)
+
+        console.log("Like result: ", likeResult)
+
+        if (likeResult.alreadyLiked) {
+          alert("Meal already liked")
+        } else {
+          alert("Meal liked successfully")
+        }
+      } catch (likeMealError) {
+        console.error("Error liking meal: ", likeMealError)
+      }
+    }
+
+    // if (mealInteractionAction === "like") {
+    //   const mealId = mealIdFromURL
+
+    //   if (!mealId) {
+    //     console.log("Meal ID not found in URL")
+    //     return
+    //   }
+
+    //   try {
+
+    //     console.log("Liking meal with ID: ", mealId)
+    //     const mealData = await fetchLikedMealData(mealId)
+    //     console.log("Meal data fetched: ", mealData)
+    //   } catch (error) {
+    //     console.log("Error liking meal: ", error)
+    //   }
+    // }
   }
 
   // Check if user is logged in on page load

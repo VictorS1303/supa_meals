@@ -1,6 +1,5 @@
 ---
 import AuthBar from "../auth_animations/AuthBar.astro"
-
 const {
   class: className,
   id: id,
@@ -16,7 +15,6 @@ const {
   type,
 } = Astro.props
 ---
-
 {
   isSignOutButton ? (
     <button
@@ -37,7 +35,6 @@ const {
       <div class="transition-opacity duration-400 ease-in group-hover:opacity-0 group-hover:invisible flex items-center justify-center">
         <i class="fa-solid fa-heart text-xl pointer-events-none text-[var(--secondary-text-color)]" />
       </div>
-
       <div class="absolute inset-0 opacity-0 invisible transition-opacity duration-400 ease-in group-hover:opacity-100 group-hover:visible flex items-center justify-center">
         <i class="fa-solid fa-heart-broken text-xl pointer-events-none text-[var(--secondary-text-color)]" />
       </div>
@@ -55,12 +52,11 @@ const {
       type={type}
     >
       {/* <AuthBar class="w-0" id="auth_bar"/> */}
-
       <span class="relative z-20">{buttonText}</span>
     </button>
   ) : isDialogCloseButton ? (
     <button
-      class={`${className} dialog-close-button absolute top-3 right-3 text-white cursor-pointer text-2xl focus:outline-0 focus:ring-0`}
+      class=`${className} dialog-close-button absolute top-3 right-3 text-white cursor-pointer text-2xl focus:outline-0 focus:ring-0`}
       id={id}
     >
       <i class="fas fa-times" />
@@ -72,12 +68,9 @@ const {
     </button>
   )
 }
-
 <script>
   const dialogCloseButton = document.querySelector(".dialog-close-button")
-
   dialogCloseButton?.addEventListener("click", (e) => closeDialog(e))
-
   function closeDialog(e) {
     e.target.closest("dialog").close()
   }

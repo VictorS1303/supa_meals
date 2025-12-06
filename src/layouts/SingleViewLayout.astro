@@ -15,17 +15,17 @@ const mealInteractionButtons = [
   {
     iconClass: "fa-solid fa-heart",
     mealInteractionButtonText: "Like",
-    dataAction: " like this meal",
+    dataAction: "like",
   },
   {
     iconClass: "fa-solid fa-comment",
     mealInteractionButtonText: "Comment",
-    dataAction: " comment this meal",
+    dataAction: "comment",
   },
   {
     iconClass: "fa-solid fa-plus",
     mealInteractionButtonText: "Meal plan",
-    dataAction: " add this meal to your meal plan",
+    dataAction: "add",
   },
 ]
 
@@ -33,7 +33,6 @@ console.log("Client: ", supabaseClient)
 ---
 
 <Layout title={title}>
-  
   <Hero
     isSingleViewHero={true}
     src={src}
