@@ -1,20 +1,208 @@
 ---
+import { fetchLikedMealsData as likedMealsData } from "../../js/supabase/supabase_methods"
 import Card from "../cards/Card.astro"
-const {class: className, id: id, likedMeals = []} = Astro.props  
+const { class: className, id: id, likedMeals = [] } = Astro.props
 ---
 
 <div class={`${className} liked-meals-container`} id={id}>
-  {
-    likedMeals.length > 0 ?
-      likedMeals.map((likedMeal: any) => (
+  <!-- {
+    likedMealsData.length > 0 ? (
+      likedMealsData.map((likedMeal: any) => (
         <Card
           isLikedMealCard={true}
           src={likedMeal.src}
           alt={likedMeal.alt}
           headingText={likedMeal.headingText}
         />
-      )) : (
-        <p class="text-(--secondary-text-color)">No liked meals</p>
-      )
-  }
+      ))
+    ) : (
+      <p class="text-(--secondary-text-color)">No liked meals</p>
+    )
+  } -->
 </div>
+
+<script>
+  import { fetchLikedMealsData as likedMealsData } from "../../js/supabase/supabase_methods"
+
+  // CREATE LIKED MEAL CARD //
+  async function createLikedMealCard() {
+    const likedMeals = await likedMealsData()
+    const likedMealsContainer = document.querySelector(".liked-meals-container")
+
+    likedMeals.forEach((likedMeal) => {
+      // Liked Meal Card Wrapper
+      const likedMealCardWrapper = createlikedMealCardWrapper(
+        "relative grid liked-meal-card relative w-[225px] h-[250px] bg-white overflow-hidden rounded-md group",
+      )
+
+      // Liked Meal Card Image
+      const likedMealCardImage = createLikedMealCardImage(
+        "h-full w-full object-cover",
+        "https://www.themealdb.com/images/media/meals/04axct1763793018.jpg",
+      )
+
+      // Liked Meal Card Overlay
+      const likedMealCardOverlay = createLikedMealCardOverlay(
+        "absolute top-0 left-0 h-full w-full bg-black/50 pointer-events-none",
+      )
+
+      // Liked Meal Card Heading Wrapper
+      const likedMealCardHeadingWrapper = createLikedMealCardHeadingWrapper()
+
+      // Liked Meal Card Heading (empty text as before)
+      const likedMealCardHeading = createLikedMealHeading(
+        "absolute -bottom-[210px] h-full w-full text-center bg-white text-var(--secondary-text-color) px-2 py-2 transition-all duration-200 ease-in-out group-hover:-bottom-[80px]",
+        "",
+      )
+
+      // Liked Meal Card Link
+      const likedMealCardLink = createLikedMealCardLink(
+        "text-[var(--secondary-text-color)] block truncate transition-all duration-200 ease-in-out group-hover:whitespace-normal hover:underline hover:decoration-2 cursor-pointer",
+        "Adana Kebab",
+        "/meals/53262",
+      )
+
+      // Dislike Meal Button
+      const dislikeMealButton = createDislikeMealButton(
+        "absolute grid place-content-center absolute top-4 right-4 h-10 w-10 bg-white rounded-full cursor-pointer z-10",
+      )
+
+      // Dislike Meal Button Icon Wrapper (unbroken heart)
+      const dislikeMealButtonIconWrapper = createDislikeMealButtonIconWrapper(
+        "transition-opacity duration-300 ease-in-out flex items-center justify-center",
+      )
+
+      // Dislike Meal Button Broken Icon Wrapper
+      const dislikeMealButtonBrokenIconWrapper =
+        createDislikeMealButtonIconWrapper(
+          "absolute top-0 left-0 w-full h-full transition-opacity duration-300 ease-in-out opacity-0 flex items-center justify-center",
+        )
+
+      // Dislike Meal Button Icon
+      const dislikeMealButtonIcon = createDislikeMealButtonIcon(
+        "fa-solid fa-heart text-xl pointer-events-none text-[var(--secondary-text-color)]",
+      )
+
+      // Dislike Meal Button Broken Icon
+      const dislikeMealButtonBrokenIcon = createDislikeMealButtonIcon(
+        "fa-solid fa-heart-crack text-xl pointer-events-none text-[var(--secondary-text-color)]",
+      )
+
+      // Append Card Wrapper to likedMealsContainer
+      likedMealsContainer?.appendChild(likedMealCardWrapper)
+
+      // Append Card Elements to likedMealCardWrapper
+      likedMealCardWrapper.append(
+        likedMealCardImage,
+        likedMealCardOverlay,
+        likedMealCardHeadingWrapper,
+        dislikeMealButton,
+      )
+
+      // Put the link inside the h3
+      likedMealCardHeading.append(likedMealCardLink)
+      likedMealCardHeadingWrapper.append(likedMealCardHeading)
+
+      // Append icons to their respective wrappers
+      dislikeMealButtonIconWrapper.append(dislikeMealButtonIcon)
+      dislikeMealButtonBrokenIconWrapper.append(dislikeMealButtonBrokenIcon)
+
+      // Append both wrappers to button
+      dislikeMealButton.append(
+        dislikeMealButtonIconWrapper,
+        dislikeMealButtonBrokenIconWrapper,
+      )
+
+      dislikeMealButton.addEventListener("mouseenter", () => {
+        dislikeMealButtonIconWrapper.style.opacity = "0"
+        dislikeMealButtonBrokenIconWrapper.style.opacity = "1"
+      })
+      dislikeMealButton.addEventListener("mouseleave", () => {
+        dislikeMealButtonIconWrapper.style.opacity = "1"
+        dislikeMealButtonBrokenIconWrapper.style.opacity = "0"
+      })
+    })
+  }
+
+  // Create Liked Meal Card Wrapper
+  function createlikedMealCardWrapper(likedMealCardClasses) {
+    const likedMealCardWrapper = document.createElement("article")
+    likedMealCardWrapper.className = likedMealCardClasses
+    return likedMealCardWrapper
+  }
+
+  // Create Liked Meal Card Image
+  function createLikedMealCardImage(likedMealCardImageClasses, src) {
+    const likedMealCardImage = document.createElement("img")
+    likedMealCardImage.className = likedMealCardImageClasses
+    likedMealCardImage.src = src
+    return likedMealCardImage
+  }
+
+  // Create Liked Meal Card Heading Wrapper
+  function createLikedMealCardHeadingWrapper() {
+    const likedMealCardHeadingWrapper = document.createElement("header")
+    return likedMealCardHeadingWrapper
+  }
+
+  // Create Liked Meal Card Heading
+  function createLikedMealHeading(
+    likedMealCardHeadingClasses,
+    likedMealHeadingText,
+  ) {
+    const likedMealHeading = document.createElement("h3")
+    likedMealHeading.className = likedMealCardHeadingClasses
+    likedMealHeading.textContent = likedMealHeadingText
+    return likedMealHeading
+  }
+
+  // Create Liked Meal Card Link
+  function createLikedMealCardLink(
+    likedMealLinkClasses,
+    likedMealLinkText,
+    likedMealHref,
+  ) {
+    const likedMealCardLink = document.createElement("a")
+    likedMealCardLink.className = likedMealLinkClasses
+    likedMealCardLink.textContent = likedMealLinkText
+    likedMealCardLink.href = likedMealHref
+
+    return likedMealCardLink
+  }
+
+  // Create Dislike Meal Button
+  function createDislikeMealButton(dislikeMealButtonClasses) {
+    const dislikeMealButton = document.createElement("button")
+    dislikeMealButton.className = dislikeMealButtonClasses
+
+    return dislikeMealButton
+  }
+
+  // Create Dislike Meal Button Icon Wrapper
+  function createDislikeMealButtonIconWrapper(
+    dislikeMealButtonIconWrapperClasses,
+  ) {
+    const dislikeMealButtonIconWrapper = document.createElement("div")
+    dislikeMealButtonIconWrapper.className = dislikeMealButtonIconWrapperClasses
+
+    return dislikeMealButtonIconWrapper
+  }
+
+  // Create Dislike Meal Button Icon
+  function createDislikeMealButtonIcon(dislikeMealButtonIconClasses) {
+    const dislikeMealButtonIcon = document.createElement("i")
+    dislikeMealButtonIcon.className = dislikeMealButtonIconClasses
+
+    return dislikeMealButtonIcon
+  }
+
+  // Create Liked Meal Card Overlay
+  function createLikedMealCardOverlay(likedMealCardOverlayClasses) {
+    const likedMealCardOverlay = document.createElement("div")
+    likedMealCardOverlay.className = likedMealCardOverlayClasses
+
+    return likedMealCardOverlay
+  }
+
+  createLikedMealCard()
+</script>

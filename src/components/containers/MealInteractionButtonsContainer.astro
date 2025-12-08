@@ -85,53 +85,19 @@ const { isLoggedIn } = Astro.props
     }
 
     if (mealInteractionAction === "like") {
-      const mealId = mealIdFromURL
+      const mealId = mealIdFromURL // API ID from URL
 
-      if (!mealId) {
-        console.log("Meal ID not found")
-        return
-      }
+      if (!mealId) return
 
       try {
-        console.log("Liking meal with ID:", mealId)
-
-        // Get or create meal from database
-        const mealData = await fetchLikedMealData(mealId)
-        console.log("Meal data fetched: ", mealData)
-
         const userId = session?.user?.id
-        // Create like relationship
-        const likeResult = await likeMeal(userId, mealData.id)
-
-        console.log("Like result: ", likeResult)
-
-        if (likeResult.alreadyLiked) {
-          alert("Meal already liked")
-        } else {
-          alert("Meal liked successfully")
-        }
+        const likeResult = await likeMeal(userId, mealId) // ✅ API ID, function resolves DB ID
+        if (likeResult.alreadyLiked) alert("Meal already liked")
+        else alert("Meal liked successfully")
       } catch (likeMealError) {
-        console.error("Error liking meal: ", likeMealError)
+        console.error("Error liking meal:", likeMealError)
       }
     }
-
-    // if (mealInteractionAction === "like") {
-    //   const mealId = mealIdFromURL
-
-    //   if (!mealId) {
-    //     console.log("Meal ID not found in URL")
-    //     return
-    //   }
-
-    //   try {
-
-    //     console.log("Liking meal with ID: ", mealId)
-    //     const mealData = await fetchLikedMealData(mealId)
-    //     console.log("Meal data fetched: ", mealData)
-    //   } catch (error) {
-    //     console.log("Error liking meal: ", error)
-    //   }
-    // }
   }
 
   // Check if user is logged in on page load

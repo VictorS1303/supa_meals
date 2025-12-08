@@ -34,3 +34,12 @@ export const formatGreeting = (timeOfDay) => {
     return `Good ${timeOfDay || 'evening'}`
   }
 }
+
+// Slugify
+export function slugify(title)
+{
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+}

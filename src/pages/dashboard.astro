@@ -1,11 +1,11 @@
 ---
 import { supabaseClient } from "../js/supabase/supabase_client"
+
 import UserInfoAndNotificationSection from "../components/sections/UserInfoAndNotificationSection.astro"
 import LikedMealsSection from "../components/sections/LikedMealsSection.astro"
 import Link from "../components/links/Link.astro"
 import Layout from "../layouts/Layout.astro"
 import AuthenticateLockOverlayLayout from "../layouts/AuthenticateLockOverlayLayout.astro"
-// import Dialog from "../components/dialogs/Dialog.astro"
 
 const {
   data: { session },

@@ -1,4 +1,6 @@
 import { supabaseClient } from "./supabase_client"
+import { slugify } from "../utils/formatters"
+import { fetchLikedMealData } from "../../js/supabase/supabase_methods"
 
 // Initialize user
 export const initializeAuth = async (onAuthChange) =>
@@ -171,91 +173,140 @@ export const storeUsersInUsersTable = async (name, email, password, profileImage
 }
 
 // Like meal
-export const likeMeal = async (userId, mealId) =>
+export const likeMeal = async (userId, apiMealId) =>
 {
-    console.log('Create relationship: ', { userId, mealId })
-
-    const {data: likeMealData, error: likeMealError} = await supabaseClient
+  // Ensure meal does exist in database and get full meal info
+  const meal = await fetchLikedMealData(apiMealId)
+  
+  const {data: likedMealData, error: likedMealError} = await supabaseClient
     .from('liked_meals')
     .insert({
-        user_id: userId,
-        meal_id: mealId,
-        created_at: new Date().toISOString()
+      user_id: userId,
+      api_meal_id: meal.api_meal_id,
+      meal_name: meal.meal_name,
+      meal_thumb: meal.meal_thumb,
     })
     .select()
     .single()
 
-    if(likeMealError)
+    if(likedMealError)
     {
-      // Handle duplicate likes
-      if(likeMealError.code === '23505')
+      // Unique constraint violation
+      if(likedMealError.code === '23505')
       {
-        console.log('Meal already liked')
-        return {alreadyLiked: true}
+        return {alreadyLiked: true} 
       }
-      throw new Error(`Failed to like meal: ${likeMealError.message}`)
+
+      throw new Error(`Failed to like meal: ${likedMealError.message}`)
     }
 
-    console.log('Like inserted: ', likeMealData)
-    return likeMealData
+    console.log("Meal liked:", likedMealData)
+
+    return likedMealData
 }
+
+
+
+// export const likeMeal = async (userId, apiMealId) => {
+//   // Get or insert meal into DB
+//   const mealData = await fetchLikedMealData(apiMealId); // ✅ returns local DB row
+
+//   const { data: likeMealData, error: likeMealError } = await supabaseClient
+//     .from('liked_meals')
+//     .insert({
+//       user_id: userId,
+//       meal_id: mealData.id,
+//       meal_name: slugify(mealData.title),
+//       meal_thumb: mealData.image_url, 
+//       created_at: new Date().toISOString()
+//     })
+//     .select()
+//     .single();
+
+//   if (likeMealError) {
+//     if (likeMealError.code === '23505') {
+//       console.log('Meal already liked');
+//       return { alreadyLiked: true };
+//     }
+//     throw new Error(`Failed to like meal: ${likeMealError.message}`);
+//   }
+
+//   return likeMealData;
+// };
 
 // Fetch liked meal data to store in database
 import { fetchSingleMealById } from "../meal_fetching"
 
-export const fetchLikedMealData = async (apiMealId) => {
-  console.log("fetchLikedMealData called with ID:", apiMealId)  // Changed id to apiMealId
-  
-  const { data: existingMealData, error: existingMealError } = await supabaseClient
-    .from('meals')
-    .select('*')
-    .eq('api_meal_id', apiMealId)
-    .single();
+alData = async (apiMealId) =>
+{
+    const {data: likedMealExistingData, error: likedMealExistingError} = await supabaseClient
+      .from('meals')
+      .select('*')
+      .eq('api_meal_id', apiMealId)
+      .single()
 
-  console.log("Existing meal data:", existingMealData)
-  console.log("Existing meal error:", existingMealError)
-  
-  // If meal exists, return it
-  if (existingMealError && existingMealError.code !== 'PGRST116') {
-    throw new Error(`Database error: ${existingMealError.message}`)  // Fixed template literal
+    if(likedMealExistingError && likedMealExistingError.code !== 'PGRST116')
+    {
+      throw new Error(`Database error: ${likedMealExistingError.message}`)
+    }
+
+    if(likedMealExistingData)
+    {
+      return likedMealExistingData
+    }
+
+    // Fetch from API
+    const mealApiData = await fetchSingleMealById(apiMealId)
+
+    if(!mealApiData)
+    {
+      throw new Error(`Meal with API ID ${apiMealId} not found`)
+    }
+
+    // Meal Payload Object
+    const mealPayloadObject =
+    {
+      api_meal_id: mealApiData.idMeal,
+      meal_name: mealApiData.strMeal,
+      meal_thumb: mealApiData.strMealThumb,
+    }
+
+    // Insert into database
+    const {data: insertedMealData, error: insertedMealError} = await supabaseClient
+      .from('meals')
+      .insert(mealPayloadObject)
+      .select()
+      .single()
+
+    if(insertedMealError)
+    {
+      throw new Error(`Failed to insert meal ${insertedMealError.message}`)
+    }
+
+    return insertedMealData
+}
+
+// Fetch liked meals
+export const fetchLikedMealsData = async () =>
+{
+  const {data: {user}, error: userError} = await supabaseClient.auth.getUser()
+
+  if(userError || !user)
+  {
+    console.log(`No logged in user or error fetch user: ${userError.hint, userError.message}`) 
+    return []
   }
-  
-  if (existingMealData) {
-    console.log("Meal found in database, returning it")
-    return existingMealData
-  }
-  
-  console.log("Meal not found in database, fetching from API...")
-  
-  // If meal doesn't exist, fetch it from the API
-  const mealFromAPI = await fetchSingleMealById(apiMealId)
-  
-  console.log("Meal from API:", mealFromAPI)
-  
-  if (!mealFromAPI) {
-    throw new Error(`Meal with ID ${apiMealId} not found in the API`)  // Fixed template literal
-  }
-  
-  console.log("Inserting meal into database...")
-  
-  // Insert meal into database
-  const { data: insertedMealData, error: insertedMealError } = await supabaseClient
-    .from('meals')
-    .insert({
-      api_meal_id: mealFromAPI.idMeal,
-      title: mealFromAPI.strMeal,
-      image_url: mealFromAPI.strMealThumb,
-      created_at: new Date().toISOString()
-    })
-    .select()
-    .single()
-    
-  console.log("Inserted meal data:", insertedMealData)
-  console.log("Insert error:", insertedMealError)
-    
-  if (insertedMealError) {  // Changed insertMealError to insertedMealError
-    throw new Error(`Failed to insert meal: ${insertedMealError.message}`)  // Fixed template literal and variable name
-  }
-  
-  return insertedMealData
+
+  // Fetch liked meals with meal details
+  const {data: likedMealData, error: likedMealError} = await supabaseClient
+    .from('liked_meals')
+    .select('id, meal_id, meal_name, meal_thumb, created_at, user_id')
+    .eq('user_id', user.id)
+
+    if(likedMealError)
+    {
+      console.log(`Error fetching the liked meal: ${likedMealError.hint, likedMealError.message}`)
+    }
+
+    return likedMealData || []
 }
