@@ -1,24 +1,20 @@
 ---
 import Heading from "../headings/Heading.astro"
 import Button from "../buttons/Button.astro"
-
 const {
   class: className,
   id,
-  type,
   inputs = [],
-  labelText,
   headingText,
-  isSubmitButton,
   buttonText,
   action,
 } = Astro.props
 ---
-
 <form
-  class={`${className} border-2 border-(--secondary-text-color) min-h-[350px] h-fit min-w-[300px] w-fit p-4 rounded-md`}
+  class=`${className} border-2 border-(--secondary-text-color) min-h-[350px] h-fit min-w-[300px] w-fit p-4 rounded-md`
   id={id}
-  data-action={action}
+  action="#"
+  method="post"
 >
   <Heading isFormHeading={true} headingText={headingText || "No heading"} />
   {
@@ -32,7 +28,7 @@ const {
           input.type === "email" ||
           input.type === "password" ? (
             <input
-              class={`${input.class} block indent-[5px] border-b-2 border-(--secondary-text-color) text-(--secondary-text-color) w-full mb-6 focus:ring-0 focus:outline-0`}
+              class=`${input.class} block indent-[5px] border-b-2 border-(--secondary-text-color) text-(--secondary-text-color) w-full mb-6 focus:ring-0 focus:outline-0`}
               id={input.id}
               type={input.type}
               placeholder={input.placeholder}
@@ -52,15 +48,11 @@ const {
       <p>No inputs</p>
     )
   }
-  {
-    isSubmitButton ?? (
-      <Button type="submit" buttonText={buttonText} isFormButton={true} />
-    )
-  }
+  <Button type="submit" buttonText={buttonText} isFormButton={true} />
 </form>
 
 <script>
-  const form = document.querySelector("form")
+  const form = document.querySelector('form')
 
-  form?.addEventListener("submit", (e) => e.preventDefault())
+  form?.addEventListener('submit', (e) => e.preventDefault())
 </script>

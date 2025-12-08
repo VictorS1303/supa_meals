@@ -68,6 +68,8 @@ const loginInputs = [
   loginForm?.addEventListener("submit", (e) => handleLogin(e))
 
   async function handleLogin(e) {
+    e.preventDefault()
+
     const formData = new FormData(loginForm)
 
     const emailInput = formData.get("email_input")

@@ -35,12 +35,14 @@ const { isLoggedIn } = Astro.props
 
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
-  import { fetchLikedMealData } from "../../js/supabase/supabase_methods"
-  import { likeMeal } from "../../js/supabase/supabase_methods.js"
+  import {
+    fetchLikedMealData,
+    likeMeal,
+    storeUsersInUsersTable,
+  } from "../../js/supabase/supabase_methods.js"
 
-  // Get mea ID from URL path
-  const singleViewPath = window.location.pathname.split("/")
-  const mealIdFromURL = singleViewPath[singleViewPath.length - 1]
+  // Get meal ID from URL path
+  const mealIdFromURL = window.location.pathname.split("/").pop()
   console.log("Meal ID from URL:", mealIdFromURL)
 
   const mealInteractionButtons = document.querySelectorAll(
@@ -49,58 +51,79 @@ const { isLoggedIn } = Astro.props
 
   // Update UI state of the buttons based on login status
   function updateMealInteractionButtonsUI(isLoggedIn) {
-    mealInteractionButtons.forEach((mealInteractionButton) => {
+    mealInteractionButtons.forEach((btn) => {
       if (isLoggedIn) {
-        mealInteractionButton.classList.remove("disabled-interaction-button")
+        btn.classList.remove("disabled-interaction-button")
       } else {
-        mealInteractionButton.classList.add("disabled-interaction-button")
+        btn.classList.add("disabled-interaction-button")
       }
     })
   }
 
-  // Handle meal interactions
-  mealInteractionButtons.forEach((mealInteractionButton) => {
-    console.log(
-      "Attaching listener to mealInteractionButton:",
-      mealInteractionButton,
-    ) // DEBUG
-    mealInteractionButton.addEventListener("click", async (e) => {
-      console.log("Button clicked!") // DEBUG
+  // Attach click handlers
+  mealInteractionButtons.forEach((btn) => {
+    console.log("Attaching listener to mealInteractionButton:", btn)
+    btn.addEventListener("click", async (e) => {
+      console.log("Button clicked!")
       await handleMealInteraction(e.currentTarget)
     })
   })
 
   // Meal interaction handler
-  async function handleMealInteraction(mealInteractionButtonElement) {
-    const mealInteractionAction =
-      mealInteractionButtonElement.getAttribute("data-action")
+  async function handleMealInteraction(btnElement) {
+    const action = btnElement.getAttribute("data-action")
 
     const {
       data: { session },
     } = await supabaseClient.auth.getSession()
 
-    if (!session) {
+    if (!session?.user) {
       alert("You must be logged in to interact with meals")
       return
     }
 
-    if (mealInteractionAction === "like") {
-      const mealId = mealIdFromURL // API ID from URL
+    const userId = session.user.id
+    if (!userId) {
+      alert("Could not determine your user ID. Please log in again.")
+      return
+    }
 
-      if (!mealId) return
+    // Ensure user exists in users table
+    try {
+      await storeUsersInUsersTable(
+        session.user.user_metadata?.username || "",
+        session.user.email,
+        session.user.user_metadata?.avatar_url || null,
+      )
+    } catch (err) {
+      console.error("Failed to store user in users table:", err)
+      alert(
+        "Could not prepare your account for liking meals. Please try again.",
+      )
+      return
+    }
+
+    if (action === "like") {
+      if (!mealIdFromURL) {
+        alert("Invalid meal ID. Cannot like this meal.")
+        return
+      }
 
       try {
-        const userId = session?.user?.id
-        const likeResult = await likeMeal(userId, mealId) // ✅ API ID, function resolves DB ID
-        if (likeResult.alreadyLiked) alert("Meal already liked")
-        else alert("Meal liked successfully")
-      } catch (likeMealError) {
-        console.error("Error liking meal:", likeMealError)
+        const likeResult = await likeMeal(userId, mealIdFromURL)
+        if (likeResult?.alreadyLiked) {
+          alert("Meal already liked")
+        } else {
+          alert("Meal liked successfully")
+        }
+      } catch (err) {
+        console.error("Error liking meal:", err)
+        alert("Failed to like meal. Please try again.")
       }
     }
   }
 
-  // Check if user is logged in on page load
+  // Check auth status on page load
   async function checkAuthStatus() {
     const {
       data: { session },
@@ -113,6 +136,5 @@ const { isLoggedIn } = Astro.props
     updateMealInteractionButtonsUI(!!session)
   })
 
-  // Initialize on page load
   checkAuthStatus()
 </script>

@@ -1,6 +1,5 @@
 import { supabaseClient } from "./supabase_client"
 import { slugify } from "../utils/formatters"
-import { fetchLikedMealData } from "../../js/supabase/supabase_methods"
 
 // Initialize user
 export const initializeAuth = async (onAuthChange) =>
@@ -153,91 +152,76 @@ export const signOutUser = async () =>
 
 
 // Store user data in user table
-export const storeUsersInUsersTable = async (name, email, password, profileImage) =>
-{
-    const {data: insertUserData, error: insertUserError} = await supabaseClient
+export const storeUsersInUsersTable = async (name, email, profileImage) => {
+  // Get current session
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session?.user?.id) throw new Error("Cannot determine logged-in user ID");
+
+  const userId = session.user.id;
+
+  // Insert user into table using Auth ID
+  const { data: insertUserData, error: insertUserError } = await supabaseClient
     .from('users')
-    .insert({
-        user_name: name,
-        user_email: email,
-        user_password: password,
-        user_profile_image: profileImage,        
-    })
+    .upsert({
+      id: userId,             // ✅ Must match Auth user ID
+      user_name: name,
+      user_email: email,
+      user_profile_image: profileImage
+    }, { onConflict: 'id' }) // avoids duplicates if user already exists
+    .select()
+    .single();
 
-    if(insertUserError)
-    {
-        console.error(`Error inserting user: ${insertUserError.hint, insertUserError.message}`)
-    }
+  if (insertUserError) {
+    console.error(`Error inserting/updating user: ${insertUserError.message}`);
+    throw insertUserError;
+  }
 
-    return insertUserData || []
-}
-
+  return insertUserData;
+};
 // Like meal
-export const likeMeal = async (userId, apiMealId) =>
-{
-  // Ensure meal does exist in database and get full meal info
-  const meal = await fetchLikedMealData(apiMealId)
-  
-  const {data: likedMealData, error: likedMealError} = await supabaseClient
-    .from('liked_meals')
+export const likeMeal = async (userId, apiMealId) => {
+  if (!userId) throw new Error("User ID is required");
+  if (!apiMealId) throw new Error("Meal API ID is required");
+
+  // ✅ Check user exists in users table
+  const { data: existingUser } = await supabaseClient
+    .from("users")
+    .select("id")
+    .eq("id", userId)
+    .single();
+
+  if (!existingUser) throw new Error("User does not exist in users table");
+
+  // Ensure meal exists in database
+  const meal = await fetchLikedMealData(apiMealId);
+  if (!meal?.id) throw new Error("Meal not found in database");
+
+  const { data: likedMealData, error: likedMealError } = await supabaseClient
+    .from("liked_meals")
     .insert({
       user_id: userId,
+      meal_id: meal.id,
       api_meal_id: meal.api_meal_id,
       meal_name: meal.meal_name,
       meal_thumb: meal.meal_thumb,
     })
     .select()
-    .single()
+    .single();
 
-    if(likedMealError)
-    {
-      // Unique constraint violation
-      if(likedMealError.code === '23505')
-      {
-        return {alreadyLiked: true} 
-      }
+  if (likedMealError) {
+    if (likedMealError.code === "23505") return { alreadyLiked: true };
+    throw new Error(`Failed to like meal: ${likedMealError.message}`);
+  }
 
-      throw new Error(`Failed to like meal: ${likedMealError.message}`)
-    }
-
-    console.log("Meal liked:", likedMealData)
-
-    return likedMealData
-}
+  return likedMealData;
+};
 
 
 
-// export const likeMeal = async (userId, apiMealId) => {
-//   // Get or insert meal into DB
-//   const mealData = await fetchLikedMealData(apiMealId); // ✅ returns local DB row
-
-//   const { data: likeMealData, error: likeMealError } = await supabaseClient
-//     .from('liked_meals')
-//     .insert({
-//       user_id: userId,
-//       meal_id: mealData.id,
-//       meal_name: slugify(mealData.title),
-//       meal_thumb: mealData.image_url, 
-//       created_at: new Date().toISOString()
-//     })
-//     .select()
-//     .single();
-
-//   if (likeMealError) {
-//     if (likeMealError.code === '23505') {
-//       console.log('Meal already liked');
-//       return { alreadyLiked: true };
-//     }
-//     throw new Error(`Failed to like meal: ${likeMealError.message}`);
-//   }
-
-//   return likeMealData;
-// };
 
 // Fetch liked meal data to store in database
 import { fetchSingleMealById } from "../meal_fetching"
-
-alData = async (apiMealId) =>
+export const fetchLikedMealData = async (apiMealId) =>
 {
     const {data: likedMealExistingData, error: likedMealExistingError} = await supabaseClient
       .from('meals')
@@ -287,26 +271,29 @@ alData = async (apiMealId) =>
 }
 
 // Fetch liked meals
-export const fetchLikedMealsData = async () =>
-{
-  const {data: {user}, error: userError} = await supabaseClient.auth.getUser()
 
-  if(userError || !user)
+export const fetchLikedMealsData = async () => {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  console.log(session)
+
+  if (!session?.user) 
   {
-    console.log(`No logged in user or error fetch user: ${userError.hint, userError.message}`) 
     return []
   }
 
-  // Fetch liked meals with meal details
-  const {data: likedMealData, error: likedMealError} = await supabaseClient
-    .from('liked_meals')
-    .select('id, meal_id, meal_name, meal_thumb, created_at, user_id')
-    .eq('user_id', user.id)
+  const userId = session.user.id;
 
-    if(likedMealError)
-    {
-      console.log(`Error fetching the liked meal: ${likedMealError.hint, likedMealError.message}`)
-    }
+  const { data, error } = await supabaseClient
+    .from("liked_meals")
+    .select("id, api_meal_id, meal_name, meal_thumb, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
 
-    return likedMealData || []
+  if (error) {
+    console.error("Error fetching liked meals:", error);
+    return [];
+  }
+  
+  return data || [];
 }

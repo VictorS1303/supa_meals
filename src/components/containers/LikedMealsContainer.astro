@@ -1,7 +1,10 @@
 ---
-import { fetchLikedMealsData as likedMealsData } from "../../js/supabase/supabase_methods"
+import { fetchLikedMealsData } from "../../js/supabase/supabase_methods"
 import Card from "../cards/Card.astro"
 const { class: className, id: id, likedMeals = [] } = Astro.props
+
+const likedMealsData = await fetchLikedMealsData()
+console.log("Liked meals data: ", likedMealsData)
 ---
 
 <div class={`${className} liked-meals-container`} id={id}>
@@ -22,23 +25,28 @@ const { class: className, id: id, likedMeals = [] } = Astro.props
 </div>
 
 <script>
-  import { fetchLikedMealsData as likedMealsData } from "../../js/supabase/supabase_methods"
+  import { fetchLikedMealsData } from "../../js/supabase/supabase_methods.js"
+
+  const likedMeals = await fetchLikedMealsData()
+
+  console.log("Liked meals: ", likedMeals)
 
   // CREATE LIKED MEAL CARD //
   async function createLikedMealCard() {
-    const likedMeals = await likedMealsData()
     const likedMealsContainer = document.querySelector(".liked-meals-container")
 
     likedMeals.forEach((likedMeal) => {
+      console.log("Liked meal: ", likedMeal)
       // Liked Meal Card Wrapper
       const likedMealCardWrapper = createlikedMealCardWrapper(
         "relative grid liked-meal-card relative w-[225px] h-[250px] bg-white overflow-hidden rounded-md group",
+        likedMeal.api_meal_id,
       )
 
       // Liked Meal Card Image
       const likedMealCardImage = createLikedMealCardImage(
         "h-full w-full object-cover",
-        "https://www.themealdb.com/images/media/meals/04axct1763793018.jpg",
+        likedMeal.meal_thumb,
       )
 
       // Liked Meal Card Overlay
@@ -58,8 +66,8 @@ const { class: className, id: id, likedMeals = [] } = Astro.props
       // Liked Meal Card Link
       const likedMealCardLink = createLikedMealCardLink(
         "text-[var(--secondary-text-color)] block truncate transition-all duration-200 ease-in-out group-hover:whitespace-normal hover:underline hover:decoration-2 cursor-pointer",
-        "Adana Kebab",
-        "/meals/53262",
+        likedMeal.meal_name,
+        `/meals/${likedMeal.api_meal_id}`,
       )
 
       // Dislike Meal Button
@@ -125,9 +133,10 @@ const { class: className, id: id, likedMeals = [] } = Astro.props
   }
 
   // Create Liked Meal Card Wrapper
-  function createlikedMealCardWrapper(likedMealCardClasses) {
+  function createlikedMealCardWrapper(likedMealCardClasses, id) {
     const likedMealCardWrapper = document.createElement("article")
     likedMealCardWrapper.className = likedMealCardClasses
+    likedMealCardWrapper.id = id
     return likedMealCardWrapper
   }
 

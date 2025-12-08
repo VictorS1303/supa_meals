@@ -84,6 +84,8 @@ const registerInputs = [
   signUpForm?.addEventListener("submit", (e) => handleRegisterAndLogin(e))
 
   async function handleRegisterAndLogin(e) {
+    e.preventDefault() // ✅ Prevent default form submission
+
     const formData = new FormData(signUpForm)
     const emailInput = formData.get("email_input")
     const fullNameInput = formData.get("full_name_input")
@@ -97,6 +99,7 @@ const registerInputs = [
       return
     }
 
+    // Register and login user
     const result = await registerAndLogin(
       fullNameInput,
       emailInput,
@@ -104,33 +107,27 @@ const registerInputs = [
       profileImageInput,
     )
 
-    // Handle result
     if (result.success) {
-      // IMPORTANT: Await the database insert before redirecting
+      // ✅ Store user correctly: pass name, email, password, avatarUrl
       const storeResult = await storeUsersInUsersTable(
-        result.user?.id,
-        result.user?.user_metadata.username,
-        result.user?.email,
-        result.user?.user_metadata.avatar_url,
+        fullNameInput, // name
+        emailInput, // email
+        result.avatarUrl, // profile image
       )
 
-      // Show modal
       signUpSuccessDialog?.showModal()
       signUpSuccessDialogParagraph.textContent = `Successful registration for ${result.user?.user_metadata.username}!`
 
-      if (storeResult?.success) {
+      if (storeResult?.length) {
         console.log("User stored in database successfully")
       } else {
-        console.error("Failed to store user in database:", storeResult?.error)
+        console.error("Failed to store user in database")
       }
 
-      // Redirect after everything is complete
       setTimeout(() => {
         window.location.href = "/dashboard"
       }, 2000)
     } else {
-      console.log("Registration failed: ", result.signUpError)
-
       signUpFailedDialog?.showModal()
       signUpFailedDialogParagraph.textContent = `Registration failed: ${result.signUpError}`
     }
