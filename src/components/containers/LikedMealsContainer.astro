@@ -7,34 +7,21 @@ const likedMealsData = await fetchLikedMealsData()
 console.log("Liked meals data: ", likedMealsData)
 ---
 
-<div class={`${className} liked-meals-container`} id={id}>
-  <!-- {
-    likedMealsData.length > 0 ? (
-      likedMealsData.map((likedMeal: any) => (
-        <Card
-          isLikedMealCard={true}
-          src={likedMeal.src}
-          alt={likedMeal.alt}
-          headingText={likedMeal.headingText}
-        />
-      ))
-    ) : (
-      <p class="text-(--secondary-text-color)">No liked meals</p>
-    )
-  } -->
-</div>
+<div class={`${className} liked-meals-container flex gap-8`} id={id}></div>
 
 <script>
   import { fetchLikedMealsData } from "../../js/supabase/supabase_methods.js"
 
   const likedMeals = await fetchLikedMealsData()
 
-  console.log("Liked meals: ", likedMeals)
+  const likedMealsContainer = document.querySelector(".liked-meals-container")
+
+  likedMealsContainer?.addEventListener("click", (e) => {
+    openDislikeMealModal(e)
+  })
 
   // CREATE LIKED MEAL CARD //
   async function createLikedMealCard() {
-    const likedMealsContainer = document.querySelector(".liked-meals-container")
-
     likedMeals.forEach((likedMeal) => {
       console.log("Liked meal: ", likedMeal)
       // Liked Meal Card Wrapper
@@ -73,6 +60,7 @@ console.log("Liked meals data: ", likedMealsData)
       // Dislike Meal Button
       const dislikeMealButton = createDislikeMealButton(
         "absolute grid place-content-center absolute top-4 right-4 h-10 w-10 bg-white rounded-full cursor-pointer z-10",
+        likedMeal.api_meal_id,
       )
 
       // Dislike Meal Button Icon Wrapper (unbroken heart)
@@ -180,9 +168,16 @@ console.log("Liked meals data: ", likedMealsData)
   }
 
   // Create Dislike Meal Button
-  function createDislikeMealButton(dislikeMealButtonClasses) {
+  function createDislikeMealButton(
+    dislikeMealButtonClasses,
+    dislikeMealButtonId,
+  ) {
     const dislikeMealButton = document.createElement("button")
     dislikeMealButton.className = dislikeMealButtonClasses
+    dislikeMealButton.setAttribute(
+      "dislike-meal-button-id",
+      dislikeMealButtonId,
+    )
 
     return dislikeMealButton
   }
@@ -214,4 +209,15 @@ console.log("Liked meals data: ", likedMealsData)
   }
 
   createLikedMealCard()
+
+  // Open Dislike Meal Modal
+  function openDislikeMealModal(e) {
+    const targetButton = e.target.closest("[dislike-meal-button-id]")
+
+    if (!targetButton) {
+      return
+    }
+
+    // console.log(targetButton.getAttribute("dislike-meal-button-id"))
+  }
 </script>

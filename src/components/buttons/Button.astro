@@ -13,8 +13,11 @@ const {
   isFormButton,
   isDialogCloseButton,
   type,
+  isDialogActionButton,
+  isDeleteDialogButton,
 } = Astro.props
 ---
+
 {
   isSignOutButton ? (
     <button
@@ -56,10 +59,20 @@ const {
     </button>
   ) : isDialogCloseButton ? (
     <button
-      class=`${className} dialog-close-button absolute top-3 right-3 text-white cursor-pointer text-2xl focus:outline-0 focus:ring-0`}
+      class={`${className} dialog-close-button absolute top-3 right-3 text-white cursor-pointer text-2xl focus:outline-0 focus:ring-0`}
       id={id}
     >
       <i class="fas fa-times" />
+    </button>
+  ) : isDialogActionButton ? (
+    <button
+      id={id}
+      class={`${className ?? ""} dialog-action-button px-4 py-2 rounded-md text-white cursor-pointer ${
+        isDeleteDialogButton ? "bg-red-400" : "bg-[var(--secondary-text-color)]"
+      }`}
+      data-action={dataAction}
+    >
+      {buttonText}
     </button>
   ) : (
     <button class={className} id={id}>

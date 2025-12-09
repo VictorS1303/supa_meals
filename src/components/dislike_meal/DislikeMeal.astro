@@ -1,0 +1,46 @@
+---
+import Dialog from "../dialogs/Dialog.astro"
+const { dialogActionButtons = [] } = Astro.props
+---
+
+<Dialog
+  headingText="Delete meal"
+  dialogMessageText="Are you sure you want to delete this meal? It cannot be undone!"
+  isClosableDialog={true}
+  isConfirmDialog={true}
+  dialogActionButtons={dialogActionButtons}
+  id="confirm_delete_meal_dialog"
+/>
+
+<script>
+  import { dislikeMeal } from '../../js/supabase/supabase_methods.js'
+
+  const likedMealsContainer = document.querySelector(".liked-meals-container")
+  const confirmDeleteMealDialog = document.querySelector('#confirm_delete_meal_dialog')
+
+  likedMealsContainer?.addEventListener("click", (e) => openConfirmDislikeMealModal(e))
+  confirmDeleteMealDialog?.addEventListener('click', (e) => handleDeleteMeal(e))
+
+  async function openConfirmDislikeMealModal(e) {
+    const dislikeMealTargetButton = e.target.closest("[dislike-meal-button-id]")
+    if (!dislikeMealTargetButton) return
+
+    const dislikeMealId = dislikeMealTargetButton.getAttribute("dislike-meal-button-id")
+    const confirmDeleteMealButton = document.querySelector('#confirm_delete_meal_dialog button[data-action="delete"]')
+
+    if (confirmDeleteMealButton) {
+      confirmDeleteMealButton.setAttribute("data-meal-id", dislikeMealId)
+    }
+
+    confirmDeleteMealDialog?.showModal()
+  }
+
+  async function handleDeleteMeal(e) {
+    if (e.target.matches('button[data-action="delete"]')) {
+      const dislikeId = e.target.getAttribute('data-meal-id')
+      if (dislikeId) {
+        await dislikeMeal(dislikeId)
+      }
+    }
+  }
+</script>

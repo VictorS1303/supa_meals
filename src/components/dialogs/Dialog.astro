@@ -1,5 +1,6 @@
 ---
 import Button from "../buttons/Button.astro"
+import DialogButtonsContainer from "../containers/DialogButtonsContainer.astro"
 import Heading from "../headings/Heading.astro"
 import DialogMessageParagraph from "../popovers/DialogMessageParagraph.astro"
 const {
@@ -10,24 +11,59 @@ const {
   headingText,
   dialogMessageId,
   isSuccess,
+  isDeleteDialog = false,
+  isConfirmDialog,
+  dialogActionButtons = [],
 } = Astro.props
 
-const dialogBorder = isSuccess
-  ? "border-(--secondary-text-color)"
-  : "border-red-400"
+const baseDialogClasses = `fixed top-[50%] left-[50%] -translate-x-1/2 -translate-y-1
+  bg-(--modal-bg-color) h-[300px] min-w-[40vw] max-w-[500px]
+  px-8 py-4 z-[10000000] rounded-md border-2`
+
+const dialogBorderClasses =
+  isSuccess && !isDeleteDialog && !isDeleteDialog
+    ? "border-(--secondary-text-color)"
+    : "border-red-400"
+
+// const dialogBorderClasses = isSuccess
+//   ? "border-(--secondary-text-color)"
+//   : "border-red-400"
 ---
 
 <dialog
   id={id}
-  class={`fixed top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2
-         bg-(--modal-bg-color) h-[300px] min-w-[40vw] max-w-[500px]
-         px-8 py-4 z-[10000000] rounded-md border-2
-         ${isSuccess ? 'border-(--secondary-text-color)' : 'border-red-400'}
-         ${isClosableDialog === ''}`} 
+  class={`
+    absolute
+    top-[50%]
+    left-[50%]
+    -translate-x-[50%]
+    -translate-y-[50%]
+    bg-(--modal-bg-color)
+    h-[300px] min-w-[40vw] max-w-[500px]
+    px-8 py-4 z-[10000000] rounded-md border-2
+    ${isSuccess && !isDeleteDialog ? "border-(--secondary-text-color)" : "border-red-400"}
+    ${className ?? ""}
+
+    [open]:top-[100%]
+    [open]:left-[50%]
+  `}
 >
   {isClosableDialog && <Button isDialogCloseButton={true} />}
-  <Heading isDialogHeading={true} headingText={headingText} />
-  <DialogMessageParagraph dialogMessageText={dialogMessageText} id={dialogMessageId} />
+
+  <div class="flex flex-col justify-around gap-2 h-full">
+    <Heading isDialogHeading={true} headingText={headingText} />
+
+    <DialogMessageParagraph
+      dialogMessageText={dialogMessageText}
+      id={dialogMessageId}
+    />
+
+    {
+      isConfirmDialog && (
+        <DialogButtonsContainer dialogActionButtons={dialogActionButtons} />
+      )
+    }
+  </div>
 </dialog>
 
 <style>
@@ -35,8 +71,3 @@ const dialogBorder = isSuccess
     backdrop-filter: blur(5px);
   }
 </style>
-
-<!-- <script>
-  const dialog = document.querySelector('dialog')
-  dialog?.showModal()
-</script> -->

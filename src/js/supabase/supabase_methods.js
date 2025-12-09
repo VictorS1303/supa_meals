@@ -277,7 +277,7 @@ export const fetchLikedMealsData = async () => {
 
   console.log(session)
 
-  if (!session?.user) 
+  if (!session?.user)
   {
     return []
   }
@@ -296,4 +296,20 @@ export const fetchLikedMealsData = async () => {
   }
   
   return data || [];
+}
+
+// Dislike Meal
+export const dislikeMeal = async (dislikeMealId) =>
+{
+  const {data: dislikeMealData, error: dislikeMealError} = await supabaseClient
+    .from('liked_meals')
+    .delete()
+    .eq('api_meal_id', dislikeMealId)
+
+  if(dislikeMealError)
+  {
+    console.log(`Error disliking meal: ${dislikeMealError.message}`)
+  }
+
+  return dislikeMealData
 }
