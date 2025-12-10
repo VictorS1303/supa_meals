@@ -5,6 +5,7 @@ const {
   isHeroParagraph,
   paragraphText,
   isCardParagraph,
+  isCommentCardParagraph,
 } = Astro.props
 ---
 
@@ -15,6 +16,8 @@ const {
     </p>
   ) : isCardParagraph ? (
     <p class="mb-8 line-clamp-4">{paragraphText}</p>
+  ) : isCommentCardParagraph ? (
+    <p>{paragraphText}</p>
   ) : (
     <p class={className} />
   )

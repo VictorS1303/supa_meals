@@ -1,0 +1,29 @@
+---
+const {class: className, id: id, comments = []} = Astro.props
+import Card from "../cards/Card.astro";
+---
+
+
+<div class={`${className} flex flex-wrap gap-7 mt-6`} id={id}>
+  {
+    comments.length > 0 ?
+      comments.map((comment) => (
+        <Card
+          src={comment.src}
+          username={comment.username}
+          timeSincePost={comment.timeSincePost}
+          paragraphText={comment.paragraphText}
+          headingText={comment.headingText}
+          likeAmount={comment.likeAmount}
+          starsCount={comment.starsCount}
+          mealRatingNumber={comment.mealRatingNumber}
+          maximumRatingNumber={comment.maximumRatingNumber}
+          isCommentCardFooter={true}
+          isCommentCard={true}
+          isCommentCardSubHeading={true}
+        />
+      )) : (
+        <p class="text-(--secondary-text-color)">No comments</p>
+      )
+  }
+</div>

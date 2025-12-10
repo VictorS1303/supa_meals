@@ -1,0 +1,11 @@
+---
+import Button from "../buttons/Button.astro"
+import LikeButton from "./LikeButton.astro"
+import LikeAmount from "./LikeAmount.astro"
+const {class: className, id: id, likeAmount} = Astro.props
+---
+
+<article class={`${className} flex gap-2 text-(--secondary-text-color) text-xl`} id={id}>
+  <LikeButton />
+  <LikeAmount likeAmount={likeAmount} />
+</article>

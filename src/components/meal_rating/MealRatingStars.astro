@@ -1,0 +1,14 @@
+---
+const {class: className, id: id, ratingStars = []} = Astro.props
+---
+
+<div class={`${className} rating-star-wrapper flex`}>
+  {
+    ratingStars.length > 0 ?
+      ratingStars.map((ratingStar) => (
+        <i class={ratingStar.class} />
+      )) : (
+        ''
+      )
+  }
+</div>

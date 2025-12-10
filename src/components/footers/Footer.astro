@@ -1,0 +1,18 @@
+---
+import LikesAndRatingsContainer from "../containers/LikesAndRatingsContainer.astro"
+const {class: className, id: id, isCommentCardFooter, likeAmount, starsCount, mealRatingNumber, maximumRatingNumber} = Astro.props
+---
+{
+   isCommentCardFooter ? (
+      <footer class={`${className}`} id={id}>
+        <LikesAndRatingsContainer 
+          likeAmount={likeAmount} 
+          starsCount={starsCount}
+          mealRatingNumber={mealRatingNumber} 
+          maximumRatingNumber={maximumRatingNumber} 
+        />
+      </footer>
+    ) : (
+      ''
+    )
+}

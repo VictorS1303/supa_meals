@@ -5,6 +5,7 @@ import CookingInstructionSection from "../components/sections/CookingInstruction
 import { getYouTubeId } from "../js/utils/ids_extractors.js"
 import MealInteractionSection from "../components/sections/MealInteractionSection.astro"
 import { supabaseClient } from "../js/supabase/supabase_client"
+import CommentsSection from "../components/sections/CommentsSection.astro"
 
 const { meal, title, src, headingText, alt, target } = Astro.props
 
@@ -47,6 +48,9 @@ console.log("Client: ", supabaseClient)
     ingredients={meal.ingredients}
     videoId={videoId}
   />
+
+  <!-- Comments Section -->
+  <CommentsSection headingText="Comments" isSingleViewSubHeading={true} />
 
   <MealInteractionSection mealInteractionButtons={mealInteractionButtons} />
 </Layout>

@@ -15,6 +15,7 @@ const {
   type,
   isDialogActionButton,
   isDeleteDialogButton,
+  isReadMoreButton,
 } = Astro.props
 ---
 
@@ -71,6 +72,13 @@ const {
         isDeleteDialogButton ? "bg-red-400" : "bg-[var(--secondary-text-color)]"
       }`}
       data-action={dataAction}
+    >
+      {buttonText}
+    </button>
+  ) : isReadMoreButton ? (
+    <button
+      class={`${className} text-(--secondary-text-color) cursor-pointer`}
+      id={id}
     >
       {buttonText}
     </button>

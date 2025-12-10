@@ -1,0 +1,86 @@
+---
+import Heading from "../headings/Heading.astro"
+import Paragraph from "../paragraphs/Paragraph.astro"
+import Button from "../buttons/Button.astro"
+
+const {
+  class: className,
+  id: id,
+  paragraphText,
+  isCommentCardParagraph,
+  headingText,
+  isCommentCardSubHeading,
+} = Astro.props
+---
+
+<div class={`${className} comment-card-body-container`} id={id}>
+  <Heading
+    isCommentCardSubHeading={isCommentCardSubHeading}
+    headingText={headingText}
+  />
+  <div>
+    <div class="paragraph-wrapper collapsed">
+      <Paragraph
+        isCommentCardParagraph={isCommentCardParagraph}
+        paragraphText={paragraphText}
+        id="comment_card_body_paragraph"
+      />
+    </div>
+    <Button
+      isReadMoreButton={true}
+      class="read-more-button"
+      id="read_more_button"
+      buttonText="Read more"
+    />
+  </div>
+</div>
+
+<style>
+  .paragraph-wrapper {
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+    max-height: 4.5rem; /* roughly 3 lines */
+  }
+
+  .paragraph-wrapper.expanded {
+    max-height: 1000px; /* something large enough */
+  }
+</style>
+
+<script>
+  const readMoreButtons = document.querySelectorAll('.read-more-button')
+  const collapsedHeight = 72 // 4.5rem
+  const paragraphWrappers = document.querySelectorAll('.paragraph-wrapper')
+
+  // Hide button if comment is too short
+  paragraphWrappers.forEach((paragraphWrapper) => {
+    const paragraph = paragraphWrapper.querySelector('p')
+    const readMoreButton = paragraphWrapper.parentElement.querySelector('.read-more-button')
+
+    if (paragraph.scrollHeight <= collapsedHeight) {
+      readMoreButton.style.display = 'none'
+    }
+  })
+
+  // Read more toggle logic
+  readMoreButtons.forEach((button) =>
+    button.addEventListener('click', toggleReadMore)
+  )
+
+  function toggleReadMore(e) {
+    const button = e.target
+    const wrapper = button.previousElementSibling
+
+    const isCollapsed = wrapper.classList.contains('collapsed')
+
+    if (isCollapsed) {
+      wrapper.classList.remove('collapsed')
+      wrapper.classList.add('expanded')
+      button.textContent = 'Read less'
+    } else {
+      wrapper.classList.add('collapsed')
+      wrapper.classList.remove('expanded')
+      button.textContent = 'Read more'
+    }
+  }
+</script>

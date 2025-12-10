@@ -16,6 +16,11 @@ const {
   isDashboardLockHeading,
   isDialogHeading,
   href,
+  isCommentCardHeading,
+  src,
+  alt,
+  timeSincePost,
+  isCommentCardSubHeading,
 } = Astro.props
 ---
 
@@ -59,14 +64,37 @@ const {
       <h2>{headingText}</h2>
     </header>
   ) : isDashboardLockHeading ? (
-    <header class=" text-white text-2xl text-center uppercase whitespace-normal md:text-4xl">
+    <header class="text-white text-2xl text-center uppercase whitespace-normal md:text-4xl">
       <h2>{headingText}</h2>
     </header>
   ) : isDialogHeading ? (
-    <header class=" text-white text-3xl text-center uppercase mt-8 whitespace-normal">
+    <header class="text-white text-3xl text-center uppercase mt-8 whitespace-normal">
       <h2>{headingText}</h2>
     </header>
+  ) : isCommentCardHeading ? (
+    <header class="h-[100px] flex items-center gap-4">
+      <img src={src} alt={alt} class="h-[100px] w-[100px] rounded-full" />
+      <div
+        class="flex flex-col username-and-comment-time"
+        id="username_and_comment_time"
+      >
+        <span class="username italic text-gray-400" id="username">
+          {username}
+        </span>
+        <span class="username" id="username">
+          <p class="text-(--secondary-text-color)">
+            Posted <span id="post_time">{timeSincePost}</span>
+          </p>
+        </span>
+      </div>
+    </header>
+  ) : isCommentCardSubHeading ? (
+    <header class="text-lg text-(--secondary-text-color) mb-2">
+      {headingText}
+    </header>
   ) : (
-    ""
+    <header>
+      <slot />
+    </header>
   )
 }

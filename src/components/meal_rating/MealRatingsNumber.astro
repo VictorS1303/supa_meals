@@ -1,0 +1,9 @@
+---
+const {class: className, id: id, mealRatingNumber, maximumRatingNumber = 5} = Astro.props
+---
+
+<div class={`${className} ratings-number-wrapper`} id={id}>
+  <span class="meal-rating-number" id="meal_rating_number">{mealRatingNumber}</span>
+  /
+  <span class="meal-maximum-rating-number" id="meal_maximum_rating_number">{maximumRatingNumber}</span>
+</div>
