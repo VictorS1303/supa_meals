@@ -13,20 +13,29 @@ const { dialogActionButtons = [] } = Astro.props
 />
 
 <script>
-  import { dislikeMeal } from '../../js/supabase/supabase_methods.js'
+  import { supabaseClient } from "../../js/supabase/supabase_client"
+  import { dislikeMeal } from "../../js/supabase/supabase_methods.js"
 
   const likedMealsContainer = document.querySelector(".liked-meals-container")
-  const confirmDeleteMealDialog = document.querySelector('#confirm_delete_meal_dialog')
+  const confirmDeleteMealDialog = document.querySelector(
+    "#confirm_delete_meal_dialog",
+  )
 
-  likedMealsContainer?.addEventListener("click", (e) => openConfirmDislikeMealModal(e))
-  confirmDeleteMealDialog?.addEventListener('click', (e) => handleDeleteMeal(e))
+  likedMealsContainer?.addEventListener("click", (e) =>
+    openConfirmDislikeMealModal(e),
+  )
+  confirmDeleteMealDialog?.addEventListener("click", (e) => handleDeleteMeal(e))
 
   async function openConfirmDislikeMealModal(e) {
     const dislikeMealTargetButton = e.target.closest("[dislike-meal-button-id]")
     if (!dislikeMealTargetButton) return
 
-    const dislikeMealId = dislikeMealTargetButton.getAttribute("dislike-meal-button-id")
-    const confirmDeleteMealButton = document.querySelector('#confirm_delete_meal_dialog button[data-action="delete"]')
+    const dislikeMealId = dislikeMealTargetButton.getAttribute(
+      "dislike-meal-button-id",
+    )
+    const confirmDeleteMealButton = document.querySelector(
+      '#confirm_delete_meal_dialog button[data-action="delete"]',
+    )
 
     if (confirmDeleteMealButton) {
       confirmDeleteMealButton.setAttribute("data-meal-id", dislikeMealId)
@@ -37,9 +46,10 @@ const { dialogActionButtons = [] } = Astro.props
 
   async function handleDeleteMeal(e) {
     if (e.target.matches('button[data-action="delete"]')) {
-      const dislikeId = e.target.getAttribute('data-meal-id')
+      const dislikeId = e.target.getAttribute("data-meal-id")
       if (dislikeId) {
         await dislikeMeal(dislikeId)
+        confirmDeleteMealDialog?.close()
       }
     }
   }

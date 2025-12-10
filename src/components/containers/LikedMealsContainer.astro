@@ -10,6 +10,7 @@ console.log("Liked meals data: ", likedMealsData)
 <div class={`${className} liked-meals-container flex gap-8`} id={id}></div>
 
 <script>
+  import { supabaseClient } from "../../js/supabase/supabase_client"
   import { fetchLikedMealsData } from "../../js/supabase/supabase_methods.js"
 
   const likedMeals = await fetchLikedMealsData()
@@ -208,8 +209,6 @@ console.log("Liked meals data: ", likedMealsData)
     return likedMealCardOverlay
   }
 
-  createLikedMealCard()
-
   // Open Dislike Meal Modal
   function openDislikeMealModal(e) {
     const targetButton = e.target.closest("[dislike-meal-button-id]")
@@ -217,7 +216,8 @@ console.log("Liked meals data: ", likedMealsData)
     if (!targetButton) {
       return
     }
-
     // console.log(targetButton.getAttribute("dislike-meal-button-id"))
   }
+
+  createLikedMealCard()
 </script>
