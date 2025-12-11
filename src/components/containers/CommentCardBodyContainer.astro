@@ -62,7 +62,9 @@ const {
 
   function toggleCommentCardHeight(e) {
     const toggleButton = e.target.closest(".read-more-button")
-    if (!toggleButton) return
+    if (!toggleButton) {
+      return
+    }
 
     const commentParagraphWrapper = toggleButton.previousElementSibling
     const commentParagraph = commentParagraphWrapper.firstElementChild
