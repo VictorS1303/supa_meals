@@ -1,13 +1,13 @@
 ---
 import Heading from "../headings/Heading.astro"
-import Section from "./Section.astro";
-import Card from "../cards/Card.astro";
+import Section from "./Section.astro"
+import Card from "../cards/Card.astro"
 import LikedMealsContainer from "../containers/LikedMealsContainer.astro"
 
-const {likedMeals} = Astro.props
+const { likedMeals } = Astro.props
 ---
 
 <Section class="liked-meals-section" id="liked_meals_section">
-  <Heading isDashboardSectionHeading={true} headingText="Liked Meals" />
+  <Heading variant="dashboard_section_heading">Liked meals</Heading>
   <LikedMealsContainer likedMeals={likedMeals} />
 </Section>

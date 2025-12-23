@@ -2,15 +2,16 @@
 import Heading from "../components/headings/Heading.astro"
 import AuthOptionsContainer from "../components/containers/AuthOptionsContainer.astro"
 
-const {class: className, id: id, authOptionLinks = []} = Astro.props
+const { class: className, id: id, authOptionLinks = [] } = Astro.props
 ---
 
-<article class={`${className} grid place-content-center absolute top-0 left-0 h-screen w-screen backdrop-blur-3xl z-[10000000]`} id={id}>
+<article
+  class={`${className} grid place-content-center absolute top-0 left-0 h-screen w-screen backdrop-blur-3xl z-[10000000]`}
+  id={id}
+>
   <div class="flex flex-col gap-6">
-    <Heading
-      isDashboardLockHeading={true}
-      headingText="You must be logged in"
-    />
+    <Heading variant="dashboard_lock_heading"> You must be logged in </Heading>
+
     <AuthOptionsContainer authOptionLinks={authOptionLinks} />
   </div>
 </article>

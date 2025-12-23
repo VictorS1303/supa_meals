@@ -1,37 +1,14 @@
 ---
-import Heading from "../headings/Heading.astro"
-import Paragraph from "../paragraphs/Paragraph.astro"
-import Button from "../buttons/Button.astro"
-
-const {
-  class: className,
-  id: id,
-  paragraphText,
-  isCommentCardParagraph,
-  headingText,
-  isCommentCardSubHeading,
-} = Astro.props
+const { class: className = "", id } = Astro.props
 ---
 
 <div class={`${className} comment-card-body-container`} id={id}>
-  <Heading
-    isCommentCardSubHeading={isCommentCardSubHeading}
-    headingText={headingText}
-  />
+  <slot name="heading" />
   <div>
     <div class="paragraph-wrapper collapsed">
-      <Paragraph
-        isCommentCardParagraph={isCommentCardParagraph}
-        paragraphText={paragraphText}
-        id="comment_card_body_paragraph"
-      />
+      <slot name="paragraph" />
     </div>
-    <Button
-      isReadMoreButton={true}
-      class="read-more-button"
-      id="read_more_button"
-      buttonText="Read more"
-    />
+    <slot name="actions" />
   </div>
 </div>
 
@@ -61,7 +38,7 @@ const {
   const collapsedHeight = rootFontSize * 4.5 // 4.5rem
 
   function toggleCommentCardHeight(e) {
-    const toggleButton = e.target.closest(".read-more-button")
+    const toggleButton = e.target.closest(".read-more-btn")
     if (!toggleButton) {
       return
     }
@@ -87,5 +64,7 @@ const {
       commentParagraphWrapper.classList.add("expanded")
       toggleButton.textContent = "Read less"
     }
+
+    console.log("Target: ", e.target)
   }
 </script>

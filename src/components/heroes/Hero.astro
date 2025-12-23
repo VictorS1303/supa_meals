@@ -1,71 +1,37 @@
 ---
-import Section from "../sections/Section.astro"
-import Overlay from "../overlays/Overlay.astro"
-import landingVideo from "/videos/landing_page/landing_page_video.mp4"
-import Heading from "../headings/Heading.astro"
-import Link from "../links/Link.astro"
-import Paragraph from "../paragraphs/Paragraph.astro"
-import Tooltip from "../tooltips/Tooltip.astro"
+const { class: className, id, variant = "single_view" } = Astro.props
 
-const {
-  headingText,
-  paragraphText,
-  buttonText,
-  href,
-  src,
-  isLandingHero,
-  isSingleViewHero,
-  buttonIconClass,
-  target,
-  isSingleViewHeroLink,
-} = Astro.props
+const baseHeroClasses = "relative overflow-hidden"
+
+const heroVariants = {
+  landing: "h-screen w-screen",
+  single_view: "mb-3 h-[300px] w-full",
+  default: "h-screen max-h-[300px] w-full",
+}
+
+const heroClass = `${baseHeroClasses} ${heroVariants[variant]} ${className ?? ""}`
 ---
 
-<Section class="hero-section" id="hero_section">
+<section class={heroClass}>
+  <!-- Background slot -->
+  <slot name="background" />
+
+  <!-- Overlay slot -->
+  <slot name="overlay" />
+
+  <!-- Backlink slot -->
   {
-    isLandingHero ? (
-      <div class="relative h-screen w-screen overflow-hidden">
-        <Overlay />
-
-        <video
-          src={landingVideo}
-          class="h-full w-full object-cover"
-          autoplay
-          muted
-          loop
-        />
-
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100000] flex flex-col items-center gap-4">
-          <Heading headingText={headingText} isHeroHeading={true} />
-          <Paragraph isHeroParagraph={true} paragraphText={paragraphText} />
-          <Link buttonText={buttonText} href={href} />
-        </div>
-      </div>
-    ) : isSingleViewHero ? (
-      <div class="relative mb-3 h-[300px] w-full overflow-hidden flex flex-col gap-4 justify-center">
-        <Link isSingleViewHeroLink={isSingleViewHeroLink} href={href}>
-          <i class="fas fa-arrow-left" />
-        </Link>
-
-        <Overlay isSingleViewOverlay={true} />
-
-        <img src={src} class="w-full h-full object-cover" />
-
-        <h2 class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-3xl md:text-4xl z-[10000] text-center">
-          {headingText}
-        </h2>
-      </div>
-    ) : (
-      <div class="relative h-screen max-h-[300px] w-full overflow-hidden">
-        <Overlay />
-
-        <img src={src} class="w-full h-full object-cover" />
-
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100000] flex flex-col items-center">
-          <Heading headingText={headingText} isHeroHeading={true} />
-          <Paragraph isHeroParagraph={true} paragraphText={paragraphText} />
-        </div>
+    variant === "single_view" && (
+      <div class="absolute top-4 left-4 z-20">
+        <slot name="backlink" />
       </div>
     )
   }
-</Section>
+
+  <!-- Centered content slot -->
+  <div
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-4 text-center"
+  >
+    <slot />
+  </div>
+</section>

@@ -9,6 +9,5 @@ const ratingStars = Array.from({length: starsCount}, () => ({class: "fas fa-star
 ---
 <div class={`${className} ratings flex gap-2 items-center text-(--secondary-text-color)`} id={id}>
   <MealRatingStars ratingStars={ratingStars} />
-
-    <MealRatingsNumber mealRatingNumber={mealRatingNumber} maximumRatingNumber={maximumRatingNumber} />
+  <MealRatingsNumber mealRatingNumber={mealRatingNumber} maximumRatingNumber={maximumRatingNumber} />
 </div>

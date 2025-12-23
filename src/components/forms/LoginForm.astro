@@ -1,38 +1,17 @@
 ---
 import Form from "./Form.astro"
 import Dialog from "../dialogs/Dialog.astro"
-
-const loginInputs = [
-  {
-    type: "email",
-    labelText: "E-mail",
-    placeholder: "Enter e-mail",
-    name: "email_input",
-  },
-  {
-    type: "password",
-    labelText: "Password",
-    placeholder: "Enter password",
-    name: "password_input",
-  },
-]
 ---
 
-<Form
-  headingText="Login"
-  inputs={loginInputs}
-  buttonText="Log In"
-  id="login_form"
-  action="login"
-/>
+<Form variant="login" id="login_form" />
 
 <!-- Login Success Dialog -->
-<Dialog
+<!-- <Dialog
   dialogMessageId="login_dialog_message"
   id="login_success_dialog"
   headingText="Registration Successful"
   isSuccess={true}
-/>
+/> -->
 
 <!-- Login Failed Dialog -->
 <Dialog
@@ -83,7 +62,7 @@ const loginInputs = [
       } = await supabaseClient.auth.getUser()
 
       loginSuccessDialog?.showModal()
-      loginSuccessDialogParagraph.textContent = `${user?.user_metadata.username} successfully logged in!`
+      // loginSuccessDialogParagraph.textContent = `${user?.user_metadata.username} successfully logged in!`
 
       setTimeout(() => {
         window.location.href = "/dashboard"

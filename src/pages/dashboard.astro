@@ -24,12 +24,6 @@ const authOptionLinks = [
   { buttonText: "Login", href: "/register/login" },
 ]
 
-// const dialogActionButtons = [
-//   {
-//     buttonText: "Hey",
-//   },
-// ]
-
 const likedMeals = await fetchLikedMealsData()
 
 const dialogActionButtons = [
@@ -45,7 +39,6 @@ const dialogActionButtons = [
 <Layout title="Dashboard">
   <!-- HIDDEN BY DEFAULT — JS will decide -->
   <div id="dashboard_content_wrapper" style="display:none;">
-    <Link isBackLink={true} href="/meals" />
     <UserInfoAndNotificationSection />
     <div class="mt-12 flex flex-col gap-20">
       <LikedMealsSection likedMeals={likedMeals} />

@@ -9,11 +9,13 @@ import Link from "../../components/links/Link.astro"
     <div>
       <LoginForm />
       <h4 class="text-(--secondary-text-color) mt-4 text-center">
-        Not already a user? Log in <Link
+        Not already a user?
+        <Link variant="register_link" href="/register/sign-up">here</Link>.
+        <!-- Not already a user? Log in <Link
           href="/register/sign-up"
           isRegisterLink={true}
           buttonText="here"
-        />.
+        />. -->
       </h4>
     </div>
   </div>

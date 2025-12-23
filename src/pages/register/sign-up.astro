@@ -10,12 +10,10 @@ import Dialog from "../../components/dialogs/Dialog.astro"
     <div>
       <SignUpForm />
       <h4 class="text-(--secondary-text-color) mt-4 text-center">
-        Already a user? Log in <Link
-          href="/register/login"
-          isRegisterLink={true}
-          buttonText="here"
-        />.
+        Already a user? Log in
+        <Link variant="register_link" href="/register/sign-up"> here </Link>
+        .
       </h4>
     </div>
-  </div>  
+  </div>
 </Layout>

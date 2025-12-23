@@ -1,14 +1,29 @@
 ---
 import Layout from "../layouts/Layout.astro"
 import Hero from "../components/heroes/Hero.astro"
+import Overlay from "../components/overlays/Overlay.astro"
+import Link from "../components/links/Link.astro"
+import Paragraph from "../components/paragraphs/Paragraph.astro"
 ---
 
 <Layout title="Home">
-  <Hero
-    isLandingHero={true}
-    headingText="SupaMeals"
-    paragraphText="The only place you need to visit for your next meal. Save and comment on your favorite meals to always have them at hand."
-    buttonText="Browse meals"
-    href="/meals"
-  />
+  <Hero variant="landing">
+    <img
+      slot="background"
+      src="https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg"
+      alt="Delicious meal"
+      class="absolute inset-0 w-full h-full object-cover"
+    />
+    <Overlay slot="overlay" />
+
+    <!-- Landing Hero Content Container -->
+
+    <h2 class="text-white text-3xl md:text-4xl z-40 text-center">SupaMeals</h2>
+
+    <Paragraph variant="hero_paragraph">
+      The only place you need to go to find and plan your next meals.
+    </Paragraph>
+
+    <Link variant="hero_link" href="/meals"> Browse meals </Link>
+  </Hero>
 </Layout>

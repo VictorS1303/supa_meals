@@ -1,100 +1,40 @@
 ---
 const {
-  class: className,
-  id: id,
-  isHeroHeading,
-  headingText,
-  isCardHeading,
-  isSingleViewHeroHeading,
-  isSingleViewSubHeading,
-  isDashboardHeading,
-  isFormHeading,
-  greetingText,
-  username,
-  isDashboardSectionHeading,
-  isLikedMealCardHeading,
-  isDashboardLockHeading,
-  isDialogHeading,
-  href,
-  isCommentCardHeading,
-  src,
-  alt,
-  timeSincePost,
-  isCommentCardSubHeading,
+  class: className = "",
+  id,
+  variant = "default", // hero | card | singleViewHero | singleViewSub | dashboard | dashboardSection | likedMealCard | form | dashboardLock | dialog | comment | commentSub
 } = Astro.props
+
+const variantClasses = {
+  default: "",
+  hero: "text-white text-4xl md:text-6xl whitespace-nowrap",
+  card: "text-[var(--primary-text-color)] text-lg uppercase font-semibold tracking-wide mt-3 mb-2",
+  meal_card: "text-[var(--primary-text-color)] text-xl my-2 font-bold",
+  single_view_hero_heading:
+    "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-3xl z-[10000] md:text-4xl text-center",
+  single_view_sub_heading:
+    "text-[var(--singleview-subheading-text-color)] text-3xl",
+  dashboard_heading: "text-[var(--singleview-subheading-text-color)] text-2xl",
+  dashboard_section_heading:
+    "text-[var(--singleview-subheading-text-color)] mb-3 text-3xl",
+  liked_meal_card_heading:
+    "absolute -bottom-[210px] h-full w-full text-center bg-white text-var(--secondary-text-color) px-2 py-2 transition-all duration-200 ease-in-out group-hover:-bottom-[80px]",
+  form_heading:
+    "mt-4 mb-8 text-center text-(--secondary-text-color) text-2xl uppercase",
+  dashboard_lock_heading:
+    "text-white text-2xl text-center uppercase whitespace-normal md:text-4xl",
+  dialog_heading:
+    "text-white text-3xl text-center uppercase mt-8 whitespace-normal",
+  comment_heading:
+    "mb-1 flex items-center gap-4 text-(--secondary-text-color) text-xl",
+  comment_sub_heading:
+    "flex flex-col gap-4 text-lg text-(--secondary-text-color) mb-2 md:flex-row md:items-center",
+}
 ---
 
-{
-  isHeroHeading ? (
-    <header class="text-white text-4xl md:text-6xl whitespace-nowrap">
-      {headingText}
-    </header>
-  ) : isCardHeading ? (
-    <header class="text-[var(--primary-text-color)] text-lg uppercase font-semibold tracking-wide mt-3 mb-2">
-      {headingText}
-    </header>
-  ) : isSingleViewHeroHeading ? (
-    <h2 class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white text-3xl z-[10000] md:text-4xl text-center">
-      {headingText}
-    </h2>
-  ) : isSingleViewSubHeading ? (
-    <h2 class="text-[var(--singleview-subheading-text-color)] text-3xl">
-      {headingText}
-    </h2>
-  ) : isDashboardHeading ? (
-    <h2 class="text-[var(--singleview-subheading-text-color)] text-2xl" id={id}>
-      <slot />
-    </h2>
-  ) : isDashboardSectionHeading ? (
-    <h2 class="text-[var(--singleview-subheading-text-color)] mb-3 text-3xl">
-      {headingText}
-    </h2>
-  ) : isLikedMealCardHeading ? (
-    <h3 class="absolute -bottom-[210px] h-full w-full text-center bg-white text-var(--secondary-text-color) px-2 py-2 transition-all duration-200 ease-in-out group-hover:-bottom-[80px]">
-      <a
-        href={href}
-        class="text-[var(--secondary-text-color)] block truncate transition-all duration-200 ease-in-out
-         group-hover:whitespace-normal hover:underline hover:decoration-2 cursor-pointer"
-      >
-        {headingText}
-      </a>
-    </h3>
-  ) : isFormHeading ? (
-    <header class="mt-4 mb-8 text-center text-(--secondary-text-color) text-2xl uppercase">
-      <h2>{headingText}</h2>
-    </header>
-  ) : isDashboardLockHeading ? (
-    <header class="text-white text-2xl text-center uppercase whitespace-normal md:text-4xl">
-      <h2>{headingText}</h2>
-    </header>
-  ) : isDialogHeading ? (
-    <header class="text-white text-3xl text-center uppercase mt-8 whitespace-normal">
-      <h2>{headingText}</h2>
-    </header>
-  ) : isCommentCardHeading ? (
-    <header class="h-[100px] flex items-center gap-4">
-      <img src={src} alt={alt} class="h-[100px] w-[100px] rounded-full" />
-      <div
-        class="flex flex-col username-and-comment-time"
-        id="username_and_comment_time"
-      >
-        <span class="username italic text-gray-400" id="username">
-          {username}
-        </span>
-        <span class="username" id="username">
-          <p class="text-(--secondary-text-color)">
-            Posted <span id="post_time">{timeSincePost}</span>
-          </p>
-        </span>
-      </div>
-    </header>
-  ) : isCommentCardSubHeading ? (
-    <header class="text-lg text-(--secondary-text-color) mb-2">
-      {headingText}
-    </header>
-  ) : (
-    <header>
-      <slot />
-    </header>
-  )
-}
+<header class={`${variantClasses[variant]} ${className}`} id={id}>
+  <slot name="leading" />
+  <slot name="title" />
+  <slot name="trailing" />
+  <slot />
+</header>

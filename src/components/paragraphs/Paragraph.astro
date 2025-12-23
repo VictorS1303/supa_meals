@@ -1,4 +1,17 @@
 ---
+const { class: className, id: id, variant, paragraphText } = Astro.props
+
+const paragraphVariants = {
+  hero_paragraph: "text-center text-lg text-white md:text-xl min-w-[300px]",
+  card_paragraph: "mb-8 line-clamp-4",
+}
+---
+
+<p class={`${paragraphVariants[variant]}`}>
+  <slot />
+</p>
+
+<!-- ---
 const {
   class: className,
   id: id,
@@ -21,4 +34,4 @@ const {
   ) : (
     <p class={className} />
   )
-}
+} -->

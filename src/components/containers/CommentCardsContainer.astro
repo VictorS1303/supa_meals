@@ -1,29 +1,64 @@
 ---
-const {class: className, id: id, comments = []} = Astro.props
-import Card from "../cards/Card.astro";
+const { class: className, id, comments = [] } = Astro.props
+import Card from "../cards/Card.astro"
+import Heading from "../headings/Heading.astro"
+import Footer from "../footers/Footer.astro"
+import LikesAndRatingsContainer from "./LikesAndRatingsContainer.astro"
+import CommentCardBodyContainer from "../containers/CommentCardBodyContainer.astro"
 ---
 
+<div class="flex flex-col mt-12">
+  <Heading variant="single_view_sub_heading">Comments</Heading>
+  <div class={`${className} flex flex-wrap gap-7 mt-6`} id={id}>
+    {
+      comments.length > 0 ? (
+        comments.map((comment, index) => (
+          <Card variant="comment" key={index}>
+            <Heading variant="comment_sub_heading">
+              <img
+                slot="leading"
+                src={comment.src}
+                alt={comment.username}
+                class="h-[100px] w-[100px] rounded-full"
+              />
+              <div slot="title" class="flex flex-col username-and-comment-time">
+                <span class="username italic text-gray-400">
+                  {comment.username}
+                </span>
+                <p class="text-(--secondary-text-color)">
+                  Posted <span>{comment.timeSincePost}</span>
+                </p>
+              </div>
+            </Heading>
 
-<div class={`${className} flex flex-wrap gap-7 mt-6`} id={id}>
-  {
-    comments.length > 0 ?
-      comments.map((comment) => (
-        <Card
-          src={comment.src}
-          username={comment.username}
-          timeSincePost={comment.timeSincePost}
-          paragraphText={comment.paragraphText}
-          headingText={comment.headingText}
-          likeAmount={comment.likeAmount}
-          starsCount={comment.starsCount}
-          mealRatingNumber={comment.mealRatingNumber}
-          maximumRatingNumber={comment.maximumRatingNumber}
-          isCommentCardFooter={true}
-          isCommentCard={true}
-          isCommentCardSubHeading={true}
-        />
-      )) : (
+            <CommentCardBodyContainer>
+              <Heading slot="heading" variant="comment_heading">
+                {comment.headingText}
+              </Heading>
+              <p slot="paragraph">{comment.paragraphText}</p>
+              <button
+                slot="actions"
+                class="read-more-btn text-(--secondary-text-color) cursor-pointer"
+                type="button"
+                id="read_more_btn"
+              >
+                Read more
+              </button>
+            </CommentCardBodyContainer>
+
+            <Footer variant="comment_card_footer">
+              <LikesAndRatingsContainer
+                likeAmount={comment.likeAmount}
+                starsCount={comment.starsCount}
+                mealRatingNumber={comment.mealRatingNumber}
+                maximumRatingNumber={comment.maximumRatingNumber}
+              />
+            </Footer>
+          </Card>
+        ))
+      ) : (
         <p class="text-(--secondary-text-color)">No comments</p>
       )
-  }
+    }
+  </div>
 </div>

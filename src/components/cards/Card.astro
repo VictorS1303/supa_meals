@@ -8,78 +8,26 @@ import MealRatingContainer from "../containers/MealRatingContainer.astro"
 import CommentCardBodyContainer from "../containers/CommentCardBodyContainer.astro"
 import Footer from "../footers/Footer.astro"
 
-const {
-  class: className,
-  id: id,
-  isMealCard,
-  href,
-  buttonText,
-  paragraphText,
-  isCardParagraph,
-  headingText,
-  src,
-  alt,
-  meal,
-  isLikedMealCard,
-  isCommentCard,
-  username,
-  timeSincePost,
-  likeAmount,
-  starsCount,
-  mealRatingNumber,
-  maximumRatingNumber,
-} = Astro.props
+const { class: className = "", id, variant = "default" } = Astro.props
+
+const cardBaseClasses = `
+  bg-white rounded-md
+`
+const cardVariantClasses = {
+  default: "",
+  meal: "w-full max-w-[300px] p-4 flex flex-col",
+  liked: "relative grid w-[225px] h-[250px] overflow-hidden group",
+  comment: "w-full p-4 flex flex-col gap-6 md:max-w-[400px]",
+}
 ---
 
-{
-  isMealCard ? (
-    <article
-      class={`${className} w-full max-w-[300px] p-4 bg-white rounded-md flex flex-col`}
-      id={id}
-      data-meal-name={meal?.strMeal || ""}
-    >
-      <img src={src} class="rounded-tl-md rounded-tr-md w-full" />
-      <Heading isCardHeading={true} headingText={headingText} />
-      <Paragraph paragraphText={paragraphText} isCardParagraph={true} />
-      <Link
-        href={href}
-        isMealCardLink={true}
-        buttonText={buttonText}
-        class="mt-auto"
-      />
-    </article>
-  ) : isLikedMealCard ? (
-    <article class="grid liked-meal-card relative w-[225px] h-[250px] overflow-hidden rounded-md group">
-      <img src={src} alt={alt} class="h-full w-full object-cover" />
-      <Heading isLikedMealCardHeading={true} headingText={headingText} />
-      <Button isDislikeMealButton={true} />
-    </article>
-  ) : isCommentCard ? (
-    <article class="flex flex-col gap-6 bg-white w-full p-4 rounded-md md:max-w-[400px]">
-      <Heading
-        isCommentCardHeading={true}
-        src={src}
-        alt={alt}
-        username={username}
-        timeSincePost={timeSincePost}
-      />
-
-      <CommentCardBodyContainer
-        isCommentCardSubHeading={true}
-        headingText={headingText}
-        isCommentCardParagraph={true}
-        paragraphText={paragraphText}
-      />
-
-      <Footer
-        isCommentCardFooter={true}
-        likeAmount={likeAmount}
-        starsCount={starsCount}
-        mealRatingNumber={mealRatingNumber}
-        maximumRatingNumber={maximumRatingNumber}
-      />
-    </article>
-  ) : (
-    ""
-  )
-}
+<article
+  id={id}
+  class={`
+    ${cardBaseClasses}
+    ${cardVariantClasses[variant]}
+    ${className}
+  `}
+>
+  <slot />
+</article>
