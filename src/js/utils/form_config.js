@@ -54,5 +54,10 @@ export const formVariants = {
     name: "password_input",
   },
     ]
+  },
+  comment:
+  {
+    headingText: 'Comment',
+    buttonText: 'Comment',
   }
 }

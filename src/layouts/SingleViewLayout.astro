@@ -105,12 +105,10 @@ const commentFormInputs = [
     id="meal_comment_dialog"
     variant="success"
   >
-    <Form id="submit_comment_form" inputs={commentFormInputs} />
+    <Form
+      variant="comment"
+      id="submit_comment_form"
+      inputs={commentFormInputs}
+    />
   </Dialog>
 </Layout>
-<!-- 
-<script>
-  const mealCommentDialog = document.querySelector("#meal_comment_dialog")
-  mealCommentDialog.show()
-  console.log(mealCommentDialog)
-</script> -->
