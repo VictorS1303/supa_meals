@@ -1,16 +1,50 @@
 ---
 import Dialog from "../dialogs/Dialog.astro"
+import Heading from "../headings/Heading.astro"
+import Paragraph from "../paragraphs/Paragraph.astro"
+import Button from "../buttons/Button.astro"
+
 const { dialogActionButtons = [] } = Astro.props
 ---
 
 <Dialog
-  headingText="Delete meal"
-  dialogMessageText="Are you sure you want to delete this meal? It cannot be undone!"
-  isClosableDialog={true}
-  isConfirmDialog={true}
-  dialogActionButtons={dialogActionButtons}
+  variant="danger"
   id="confirm_delete_meal_dialog"
-/>
+  isClosableDialog={true}
+>
+  <Heading slot="title">
+    <h2>Dislike meal</h2>
+  </Heading>
+
+  <Paragraph
+    slot="dialog-body-text"
+    variant="dialog_paragraph"
+    data-role="dislike_meal_confirm_modal"
+  >
+    <p class="text-white text-center" id="dislike_meal_confirm_message"></p>
+  </Paragraph>
+
+  <div
+    class="action-buttons-container flex justify-center gap-4"
+    slot="actions"
+  >
+    <Button
+      variant="dialog_action_button"
+      class="bg-red-400"
+      data-action="delete-meal"
+      id="confirm_delete_meal_button"
+    >
+      Dislike Meal
+    </Button>
+    <Button
+      variant="dialog_action_button"
+      class="bg-red-400"
+      id="cancel_delete_meal_button"
+    >
+      Cancel
+    </Button>
+  </div>
+</Dialog>
 
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
@@ -19,6 +53,9 @@ const { dialogActionButtons = [] } = Astro.props
   const likedMealsContainer = document.querySelector(".liked-meals-container")
   const confirmDeleteMealDialog = document.querySelector(
     "#confirm_delete_meal_dialog",
+  )
+  const confirmDeleteMealDialogMessage = confirmDeleteMealDialog?.querySelector(
+    "#dislike_meal_confirm_message",
   )
 
   likedMealsContainer?.addEventListener("click", (e) =>
@@ -34,7 +71,7 @@ const { dialogActionButtons = [] } = Astro.props
       "dislike-meal-button-id",
     )
     const confirmDeleteMealButton = document.querySelector(
-      '#confirm_delete_meal_dialog button[data-action="delete"]',
+      '#confirm_delete_meal_dialog button[data-action="delete-meal"]',
     )
 
     if (confirmDeleteMealButton) {
@@ -42,15 +79,24 @@ const { dialogActionButtons = [] } = Astro.props
     }
 
     confirmDeleteMealDialog?.showModal()
+    confirmDeleteMealDialogMessage.textContent =
+      "Are you sure, you want to dislike this meal? It cannot be undone!"
   }
 
   async function handleDeleteMeal(e) {
-    if (e.target.matches('button[data-action="delete"]')) {
-      const dislikeId = e.target.getAttribute("data-meal-id")
-      if (dislikeId) {
-        await dislikeMeal(dislikeId)
-        confirmDeleteMealDialog?.close()
-      }
+    if (e.target.matches("#cancel_delete_meal_button")) {
+      confirmDeleteMealDialog?.close()
+      return
+    }
+
+    const dislikeId = e.target.getAttribute("data-meal-id")
+    if (dislikeId) {
+      await dislikeMeal(dislikeId)
+      confirmDeleteMealDialog?.close()
+
+      setTimeout(() => {
+        location.reload()
+      }, 0)
     }
   }
 </script>
