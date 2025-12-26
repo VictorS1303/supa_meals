@@ -23,6 +23,7 @@ const { isLoggedIn } = Astro.props
           <Button
             variant="meal_interaction_button"
             data-action={mealInteractionButton.dataAction}
+            class="meal-interaction-button"
           >
             <i class={`${mealInteractionButton.iconClass} text-2xl`} />
             <span class="text-md">
@@ -122,6 +123,7 @@ const { isLoggedIn } = Astro.props
     }
 
     const userId = session.user.id
+
     if (!userId) {
       alert("Could not determine your user ID. Please log in again.")
       return

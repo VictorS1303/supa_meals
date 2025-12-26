@@ -180,10 +180,17 @@ export const storeUsersInUsersTable = async (name, email, profileImage) => {
 };
 // Like meal
 export const likeMeal = async (userId, apiMealId) => {
-  if (!userId) throw new Error("User ID is required");
-  if (!apiMealId) throw new Error("Meal API ID is required");
+  if (!userId)
+  {
+    throw new Error("User ID is required");
+  }
+  
+  if (!apiMealId)
+  {
+    throw new Error("Meal API ID is required");
+  }
 
-  // ✅ Check user exists in users table
+  // Check user exists in users table
   const { data: existingUser } = await supabaseClient
     .from("users")
     .select("id")
@@ -194,7 +201,10 @@ export const likeMeal = async (userId, apiMealId) => {
 
   // Ensure meal exists in database
   const meal = await fetchLikedMealData(apiMealId);
-  if (!meal?.id) throw new Error("Meal not found in database");
+  if (!meal?.id)
+  {
+    throw new Error("Meal not found in database")
+  }
 
   const { data: likedMealData, error: likedMealError } = await supabaseClient
     .from("liked_meals")
@@ -209,7 +219,11 @@ export const likeMeal = async (userId, apiMealId) => {
     .single();
 
   if (likedMealError) {
-    if (likedMealError.code === "23505") return { alreadyLiked: true };
+    if (likedMealError.code === "23505")
+    {
+      return { alreadyLiked: true }
+    }
+    
     throw new Error(`Failed to like meal: ${likedMealError.message}`);
   }
 

@@ -4,6 +4,7 @@ const {
   id: id,
   variant,
   isClosableDialog = false,
+  ...rest
 } = Astro.props
 
 const baseButtonClasses = `cursor-pointer`
@@ -27,6 +28,7 @@ const buttonVariants = {
 <button
   id={id}
   class={`${baseButtonClasses} ${buttonVariants[variant] ?? ""} ${className ?? ""}`}
+  {...rest}
 >
   <slot />
 </button>
