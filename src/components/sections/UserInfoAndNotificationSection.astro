@@ -45,7 +45,7 @@ const { class: className, id: id } = Astro.props
     }
 
     const username = user?.user_metadata?.username || user?.email?.split("@")[0]
-    greeting.textContent = `${formatGreeting()}, ${username}`
+    greeting.textContent = `${formatGreeting()}, ${username}!`
   }
 
   async function setProfileImage() {

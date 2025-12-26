@@ -1,6 +1,9 @@
 ---
 import Button from "../buttons/Button.astro"
 import Dialog from "../dialogs/Dialog.astro"
+import Heading from "../headings/Heading.astro"
+import Link from "../links/Link.astro"
+import Paragraph from "../paragraphs/Paragraph.astro"
 
 const {
   class: className,
@@ -16,11 +19,10 @@ const { isLoggedIn } = Astro.props
   {
     mealInteractionButtons.length > 0 ? (
       mealInteractionButtons.map((mealInteractionButton) => {
-        console.log("Button config:", mealInteractionButton) // DEBUG
         return (
           <Button
-            isMealInteractionButton={true}
-            dataAction={mealInteractionButton.dataAction}
+            variant="meal_interaction_button"
+            data-action={mealInteractionButton.dataAction}
           >
             <i class={`${mealInteractionButton.iconClass} text-2xl`} />
             <span class="text-md">
@@ -35,6 +37,33 @@ const { isLoggedIn } = Astro.props
   }
 </article>
 
+<!-- Like Succes Dialog -->
+<Dialog
+  variant="liked_meal_dialog success"
+  isClosableDialog={true}
+  id="liked_meal_success_dialog"
+>
+  <Heading variant="dialog_heading" slot="title">
+    <h2>Meal liked successfully!</h2>
+  </Heading>
+  <Paragraph slot="dialog-body-text" variant="dialog_paragraph">
+    You can see your liked meals on your
+    <Link variant="dialog_link" href="/dashboard">dashboard.</Link>
+  </Paragraph>
+</Dialog>
+
+<!-- Already Liked Meal -->
+<Dialog variant="danger" isClosableDialog={true} id="already_liked_meal_dialog">
+  <Heading variant="dialog_heading" slot="title">
+    <h2>Meal already liked</h2>
+  </Heading>
+
+  <Paragraph slot="dialog-body-text" variant="dialog_paragraph">
+    You have already liked this meal. You can find it on your
+    <Link variant="dialog_link" href="/dashboard">dashboard.</Link>
+  </Paragraph>
+</Dialog>
+
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
   import {
@@ -42,6 +71,14 @@ const { isLoggedIn } = Astro.props
     likeMeal,
     storeUsersInUsersTable,
   } from "../../js/supabase/supabase_methods.js"
+
+  const likedMealSuccessDialog = document.querySelector<HTMLDialogElement>(
+    "#liked_meal_success_dialog",
+  )
+
+  const alreadyLikedMealDialog = document.querySelector<HTMLDialogElement>(
+    "#already_liked_meal_dialog",
+  )
 
   // Get meal ID from URL path
   const mealIdFromURL = window.location.pathname.split("/").pop()
@@ -114,9 +151,9 @@ const { isLoggedIn } = Astro.props
       try {
         const likeResult = await likeMeal(userId, mealIdFromURL)
         if (likeResult?.alreadyLiked) {
-          alert("Meal already liked")
+          alreadyLikedMealDialog?.showModal()
         } else {
-          alert("Meal liked successfully")
+          likedMealSuccessDialog?.showModal()
         }
       } catch (err) {
         console.error("Error liking meal:", err)

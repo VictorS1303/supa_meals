@@ -1,13 +1,13 @@
 ---
 import Button from "../buttons/Button.astro"
 import Heading from "../headings/Heading.astro"
+import Paragraph from "../paragraphs/Paragraph.astro"
 
 const {
   class: className = "",
   id,
-  headingText,
   isClosableDialog = false,
-  variant = "danger", // "success" | "danger"
+  variant = "danger",
 } = Astro.props
 
 const baseDialogClasses = `
@@ -30,37 +30,61 @@ const openStateClasses = `
   [open]:top-[100%]
   [open]:left-1/2
 `
+
+const dialogVariants = {
+  liked_meal_dialog: "text-white",
+}
+
+// Split variant string into array and map to classes
+const variants = variant.split(" ")
+const borderClasses = variants
+  .map((v) => borderVariants[v])
+  .filter(Boolean)
+  .join(" ")
+const dialogClasses = variants
+  .map((v) => dialogVariants[v])
+  .filter(Boolean)
+  .join(" ")
 ---
 
 <dialog
   id={id}
   class={`
     ${baseDialogClasses}
-    ${borderVariants[variant]}
+    ${borderClasses}
     ${openStateClasses}
+    ${dialogClasses}
     ${className}
   `}
 >
-  {isClosableDialog && <Button isDialogCloseButton />}
+  {
+    isClosableDialog ? (
+      <Button
+        variant="dialog_close_button"
+        class="dialog-close-button text-white"
+      >
+        <i class="fas fa-times" />
+      </Button>
+    ) : null
+  }
 
-  <div class="flex h-full flex-col gap-4">
-    {
-      headingText && (
-        <Heading variant="dialog">
-          <h2 slot="title">Delete concert</h2>
-        </Heading>
-      )
-    }
-  </div>
+  <div class="flex flex-col h-full min-h-[200px]">
+    <!-- HEADING - stays at top -->
+    <Heading variant="dialog_heading">
+      <slot name="title" />
+    </Heading>
 
-  <!-- BODY -->
-  <div class="flex-1">
-    <slot />
-  </div>
+    <!-- BODY - centered paragraph -->
+    <div class="flex-1 flex items-center justify-center w-full">
+      <Paragraph variant="dialog_paragraph">
+        <slot name="dialog-body-text" />
+      </Paragraph>
+    </div>
 
-  <!-- ACTIONS -->
-  <div>
-    <slot name="actions" />
+    <!-- ACTIONS -->
+    <div class="w-full">
+      <slot name="actions" />
+    </div>
   </div>
 </dialog>
 
@@ -69,3 +93,13 @@ const openStateClasses = `
     backdrop-filter: blur(5px);
   }
 </style>
+
+<script>
+  window?.addEventListener("click", (e) => closeDialog(e))
+
+  function closeDialog(e) {
+    if (e.target.classList.contains("dialog-close-button")) {
+      e.target.closest("dialog").close()
+    }
+  }
+</script>

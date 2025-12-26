@@ -1,26 +1,61 @@
 ---
+import { supabaseClient } from "../../js/supabase/supabase_client"
 import Form from "./Form.astro"
 import Dialog from "../dialogs/Dialog.astro"
+import Heading from "../headings/Heading.astro"
+import Paragraph from "../paragraphs/Paragraph.astro"
+import Button from "../buttons/Button.astro"
+
+const {
+  data: { user },
+} = await supabaseClient.auth.getUser()
+
+const username = user?.user_metadata.username
 ---
 
+<!-- 
+  NEXT STEP IS TO GET THE CLOSE BUTTON TO DISPLAY INSIDE THE MODALS
+-->
 <Form variant="login" id="login_form" />
 
 <!-- Login Success Dialog -->
-<!-- <Dialog
-  dialogMessageId="login_dialog_message"
-  id="login_success_dialog"
-  headingText="Registration Successful"
-  isSuccess={true}
-/> -->
+<Dialog variant="success" id="login_success_dialog" isClosableDialog={true}>
+  <Heading slot="dialog-body-text" slot="title">
+    <h2>Login successful</h2>
+  </Heading>
+
+  <Paragraph
+    slot="dialog-body-text"
+    variant="dialog_paragraph"
+    data-role="login-success-message"
+  >
+    <p class="text-white" id="login_success_message"></p>
+  </Paragraph>
+</Dialog>
 
 <!-- Login Failed Dialog -->
 <Dialog
+  variant="danger"
   id="login_failed_dialog"
-  dialogMessageId="login_failed_dialog"
-  headingText="Login Failed"
+  isDialogCloseButton={true}
   isClosableDialog={true}
-  isSuccess={false}
-/>
+>
+  <Heading slot="dialog-body-text" slot="title">
+    <h2>Login failed</h2>
+  </Heading>
+
+  <Paragraph
+    slot="dialog-body-text"
+    variant="dialog_paragraph"
+    data-role="login-failed-message"
+  >
+    <p class="text-white" id="login_failed_message"></p>
+  </Paragraph>
+
+  <Button variant="dialog_close_button">
+    <i class="fas fa-times"></i>
+  </Button>
+</Dialog>
 
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
@@ -31,18 +66,15 @@ import Dialog from "../dialogs/Dialog.astro"
   const loginSuccessDialog = document.querySelector<HTMLDialogElement>(
     "#login_success_dialog",
   )
-  const loginSuccessDialogParagraph = loginSuccessDialog?.querySelector(
-    ".dialog-message-text",
+
+  const loginSuccessMessage = loginSuccessDialog?.querySelector(
+    "#login_success_message",
   )
 
-  const loginFailedDialog = document.querySelector<HTMLElement>(
-    "#login_failed_dialog",
+  const loginFailedDialog = document.querySelector("#login_failed_dialog")
+  const loginFailedMessage = loginFailedDialog?.querySelector(
+    "#login_failed_message",
   )
-  const loginFailedDialogParagraph = loginFailedDialog?.querySelector(
-    ".dialog-message-text",
-  )
-
-  console.log(loginFailedDialogParagraph)
 
   loginForm?.addEventListener("submit", (e) => handleLogin(e))
 
@@ -62,16 +94,17 @@ import Dialog from "../dialogs/Dialog.astro"
       } = await supabaseClient.auth.getUser()
 
       loginSuccessDialog?.showModal()
-      // loginSuccessDialogParagraph.textContent = `${user?.user_metadata.username} successfully logged in!`
+
+      if (loginSuccessMessage && user) {
+        loginSuccessMessage.textContent = `Welcome back, ${user.user_metadata.username}! You will be redirected to your dashboard shortly!`
+      }
 
       setTimeout(() => {
         window.location.href = "/dashboard"
       }, 2000)
     } else {
-      console.error("Login failed:", loginResult.error)
       loginFailedDialog?.showModal()
-      loginFailedDialogParagraph.textContent =
-        "Your credentials don't match. Please try again"
+      loginFailedMessage.textContent = "Something went wrong. Please try again!"
     }
   }
 </script>

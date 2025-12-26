@@ -1,37 +1,20 @@
 ---
-const { class: className, id: id, variant, paragraphText } = Astro.props
+const { class: className, id: id, variant = "" } = Astro.props
 
 const paragraphVariants = {
   hero_paragraph: "text-center text-lg text-white md:text-xl min-w-[300px]",
   card_paragraph: "mb-8 line-clamp-4",
+  dialog_paragraph: "text-center justify-center text-white",
 }
+
+// Split variant string and map to classes
+const variants = variant.split(" ")
+const appliedClasses = variants
+  .map((v) => paragraphVariants[v])
+  .filter(Boolean)
+  .join(" ")
 ---
 
-<p class={`${paragraphVariants[variant]}`}>
+<p class={`${appliedClasses} ${className}`} id={id}>
   <slot />
 </p>
-
-<!-- ---
-const {
-  class: className,
-  id: id,
-  isHeroParagraph,
-  paragraphText,
-  isCardParagraph,
-  isCommentCardParagraph,
-} = Astro.props
----
-
-{
-  isHeroParagraph ? (
-    <p class="mt-6 mb-8 text-center text-lg text-white md:text-xl">
-      {paragraphText}
-    </p>
-  ) : isCardParagraph ? (
-    <p class="mb-8 line-clamp-4">{paragraphText}</p>
-  ) : isCommentCardParagraph ? (
-    <p>{paragraphText}</p>
-  ) : (
-    <p class={className} />
-  )
-} -->

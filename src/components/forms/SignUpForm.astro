@@ -4,71 +4,65 @@ const { headingText } = Astro.props
 import Form from "../../components/forms/Form.astro"
 import Dialog from "../dialogs/Dialog.astro"
 import Heading from "../headings/Heading.astro"
-
-// const registerInputs = [
-//   {
-//     type: "email",
-//     labelText: "E-mail",
-//     placeholder: "Enter e-mail",
-//     name: "email_input",
-//   },
-//   {
-//     type: "text",
-//     labelText: "Name",
-//     placeholder: "Enter full name",
-//     name: "full_name_input",
-//   },
-//   {
-//     type: "password",
-//     labelText: "Password",
-//     placeholder: "Enter password",
-//     name: "password_input",
-//   },
-//   {
-//     type: "password",
-//     labelText: "Repeat Password",
-//     placeholder: "Repeat password",
-//     name: "repeat_password_input",
-//   },
-//   {
-//     type: "file",
-//     labelText: "Profile image",
-//     id: "avatar_image_upload",
-//     name: "avatar_image_upload_input",
-//   },
-// ]
+import Paragraph from "../paragraphs/Paragraph.astro"
 ---
 
-<Form id="sign_up_form" variant="register" />
+<Form id="sign_up_form" variant="sign_up" />
 
-<!-- Sign Up Success Message -->
-<Dialog
-  dialogMessageId="sign_up_dialog_message"
-  id="sign_up_success_dialog"
-  headingText="Registration Successful"
-  isSuccess={true}
-/>
+<!-- Sign Up Success Dialog -->
+<Dialog variant="success" id="sign_up_success_dialog">
+  <Heading slot="dialog-body-text" slot="title">
+    <h2>Sign up successful</h2>
+  </Heading>
+
+  <Paragraph
+    slot="dialog-body-text"
+    variant="dialog_paragraph"
+    data-role="sign-up-success-message"
+  >
+    <p class="text-white" id="sign_up_success_message"></p>
+  </Paragraph>
+</Dialog>
+
+<!-- Sign Up Failed Dialog -->
+<Dialog variant="danger" id="sign_up_failed_dialog">
+  <Heading slot="dialog-body-text" slot="title">
+    <h2>Sign up failed</h2>
+  </Heading>
+
+  <Paragraph
+    slot="dialog-body-text"
+    variant="dialog_paragraph"
+    data-role="sign-up-failed-message"
+  >
+    <p class="text-white" id="sign_up_failed_message"></p>
+  </Paragraph>
+</Dialog>
 
 <!-- Sign Up Failed Message -->
-<Dialog
+<!-- <Dialog
   dialogMessageId="sign_up_failed_dialog_message"
   id="sign_up_failed_dialog"
   headingText="Registration Failed"
   isSuccess={false}
-/>
+/> -->
 
 <script>
+  import { supabaseClient } from "../../js/supabase/supabase_client"
   import {
     registerAndLogin,
     storeUsersInUsersTable,
   } from "../../js/supabase/supabase_methods"
-  import { openDialog } from "../../js/utils/animations.js"
 
   const signUpForm = document.querySelector("#sign_up_form")
   const signUpSuccessDialog = document.querySelector("#sign_up_success_dialog")
-  const signUpFailedDialog = document.querySelector("#sign_up_failed_dialog")
-
-  console.log(signUpFailedDialog)
+  const signUpSuccessDialogMessage = signUpSuccessDialog?.querySelector(
+    "#sign_up_success_message",
+  )
+  const signUpFailedDialog = document.querySelector("#sign_up_failed_message")
+  const signUpFailedDialogMessage = signUpFailedDialog?.querySelector(
+    "#sign_up_failed_message",
+  )
 
   signUpForm?.addEventListener("submit", async (e) => {
     e.preventDefault()
@@ -100,7 +94,12 @@ import Heading from "../headings/Heading.astro"
         result.avatarUrl,
       )
 
+      const {
+        data: { user },
+      } = await supabaseClient.auth.getUser()
+
       signUpSuccessDialog?.showModal()
+      signUpSuccessDialogMessage.textContent = `You successfully signed up as ${user?.user_metadata?.username}! You will be redirected to your dashboard shortly.`
 
       if (storeResult?.length) {
         console.log("User stored in database successfully")
