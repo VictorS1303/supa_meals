@@ -327,3 +327,74 @@ export const dislikeMeal = async (dislikeMealId) =>
 
   return dislikeMealData
 }
+
+// Comment Meal
+export const commentMeal = async (mealId, commentData) => {
+  const { data: { session } } = await supabaseClient.auth.getSession()
+  const user = session?.user
+
+  if (!user) {
+    throw new Error('User not authenticated')
+  }
+
+  const insertCommentData = {
+    meal_id: mealId,
+    user_id: user.id,
+    title: commentData.title,
+    body: commentData.body,
+    rating: commentData.rating,
+  }
+
+  const { data, error } = await supabaseClient
+    .from('comments')
+    .insert(insertCommentData)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Failed to insert comment: ', error)
+    throw error
+  }
+
+  return data
+}
+
+// Get Meal Primary Key
+export const getMelPrimaryKeyByApiId = async (apiMealId) =>
+{
+    const {data, error} = await supabaseClient
+      .from('meals')
+      .select('id')
+      .eq('api_meal_id', apiMealId)
+      .single()
+  
+
+    if (error || !data) {
+      throw new Error(`Meal with api_meal_id ${apiMealId} not found`)
+    }
+
+    return data.id
+}
+
+// Resolve api_meal_id to internal meal id
+export const resolveApiMealIdToInternalMealId = async (apiMealId) =>
+{
+    if(!apiMealId)
+    {
+      throw new Error("API meal ID is required")
+    }
+
+    const { data: mealData, error: mealError } = await supabaseClient
+      .from("meals")
+      .select("id")
+      .eq("api_meal_id", apiMealId)
+      .single()
+
+    if (!mealData || mealError) {
+      console.error("No meal found for api_meal_id: ", apiMealId)
+      alert("Cannot submit comment: Meal not found!")
+      return
+    }
+
+    return mealData.id
+}

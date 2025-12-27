@@ -1,8 +1,10 @@
 ---
 import Button from "../buttons/Button.astro"
 import Dialog from "../dialogs/Dialog.astro"
+import Form from "../forms/Form.astro"
 import Heading from "../headings/Heading.astro"
 import Link from "../links/Link.astro"
+import MealRatingsInput from "../meal_rating/MealRatingsInput.astro"
 import Paragraph from "../paragraphs/Paragraph.astro"
 
 const {
@@ -65,12 +67,27 @@ const { isLoggedIn } = Astro.props
   </Paragraph>
 </Dialog>
 
+<!-- Comment Dialog -->
+<Dialog variant="success" isClosableDialog={true} id="comment_meal_dialog">
+  <Form
+    variant="comment"
+    id="comment_meal_form"
+    isDialogForm={true}
+    slot="form"
+  >
+    <MealRatingsInput maxStars={5} />
+  </Form>
+</Dialog>
+
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
   import {
     fetchLikedMealData,
     likeMeal,
     storeUsersInUsersTable,
+    commentMeal,
+    getMelPrimaryKeyByApiId,
+    resolveApiMealIdToInternalMealId,
   } from "../../js/supabase/supabase_methods.js"
 
   const likedMealSuccessDialog = document.querySelector<HTMLDialogElement>(
@@ -80,6 +97,11 @@ const { isLoggedIn } = Astro.props
   const alreadyLikedMealDialog = document.querySelector<HTMLDialogElement>(
     "#already_liked_meal_dialog",
   )
+
+  const commentMealDialog = document.querySelector("#comment_meal_dialog")
+  const commentMealForm = document.querySelector("form#comment_meal_form")
+
+  commentMealForm?.addEventListener("submit", (e) => handleCommentMeal(e))
 
   // Get meal ID from URL path
   const mealIdFromURL = window.location.pathname.split("/").pop()
@@ -161,6 +183,60 @@ const { isLoggedIn } = Astro.props
         console.error("Error liking meal:", err)
         alert("Failed to like meal. Please try again.")
       }
+    }
+
+    if (action === "comment") {
+      commentMealDialog?.showModal()
+    }
+  }
+
+  // Handle meal commenting
+  async function handleCommentMeal(e) {
+    e.preventDefault()
+
+    const formData = new FormData(commentMealForm)
+    const commentTitle = formData.get("comment_title_input")
+    const commentBody = formData.get("comment_text_input")
+    const ratingRaw = formData.get("comment_rating_input")
+    const ratingAsNumber = Number(ratingRaw)
+
+    if (
+      !commentTitle ||
+      !commentBody ||
+      Number.isNaN(ratingAsNumber) ||
+      ratingAsNumber <= 0
+    ) {
+      alert("Please fill out all fields and rate the meal")
+      return
+    }
+
+    const internalMealId = await resolveApiMealIdToInternalMealId(mealIdFromURL)
+
+    // Resolve api_meal_id (from URL) to internal meal id
+    // const { data: mealData, error: mealError } = await supabaseClient
+    //   .from("meals")
+    //   .select("id")
+    //   .eq("api_meal_id", mealIdFromURL)
+    //   .single()
+
+    // if (!mealData || mealError) {
+    //   console.error("No meal found for api_meal_id: ", mealIdFromURL)
+    //   alert("Cannot submit comment: Meal not found!")
+    //   return
+    // }
+
+    try {
+      await commentMeal(internalMealId, {
+        title: commentTitle,
+        body: commentBody,
+        rating: ratingAsNumber,
+      })
+
+      commentMealDialog?.close()
+      commentMealForm?.reset()
+    } catch (error) {
+      console.error("Failed to submit comment: ", error)
+      alert("Could not submit the comment!")
     }
   }
 

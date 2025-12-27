@@ -72,6 +72,38 @@ export const formVariants = {
       }
   },
  
+  comment:
+  {
+    headingText: 'Comment',
+    buttonText: 'Comment',
 
+    inputs:
+    [
+      {
+        type: 'text',
+        labelText: 'Comment title',
+        placeholder: 'Enter comment title',
+        name: 'comment_title_input',
+      },
+      {
+        type: 'textarea',
+        labelText: 'Comment text',
+        placeholder: 'Enter comment text',
+        name: 'comment_text_input'
+      },
+      {
+        type: 'hidden',
+        labelText: 'Rate meal',
+        name: 'comment_rating_input',
+      }
+    ],
+
+    button:
+    {
+      text: 'Comment',
+      variant: 'form_button',
+      type: 'submit'
+    }
+  },
 
 }

@@ -74,8 +74,9 @@ const dialogClasses = variants
       <slot name="title" />
     </Heading>
 
-    <!-- BODY - centered paragraph -->
+    <!-- BODY -->
     <div class="flex-1 flex items-center justify-center w-full">
+      <slot name="form" />
       <Paragraph variant="dialog_paragraph">
         <slot name="dialog-body-text" />
       </Paragraph>

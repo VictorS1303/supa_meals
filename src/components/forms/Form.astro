@@ -2,19 +2,14 @@
 import Heading from "../headings/Heading.astro"
 import Button from "../buttons/Button.astro"
 import { formVariants } from "../../js/utils/form_config"
-
 const { class: className = "", id, variant, isDialogForm = false } = Astro.props
-
 if (!variant) {
   throw new Error("Form component requires a `variant` prop")
 }
-
 const formConfig = formVariants[variant]
-
 if (!formConfig) {
   throw new Error(`Unknown form variant: ${variant}`)
 }
-
 const { inputs = [], headingText, button } = formConfig
 ---
 
@@ -22,7 +17,9 @@ const { inputs = [], headingText, button } = formConfig
   id={id}
   data-variant={variant}
   class={`${className} ${
-    isDialogForm ? "border-0" : "border-2 border-(--secondary-text-color)"
+    isDialogForm
+      ? "border-0 bg-transparent"
+      : "border-2 border-(--secondary-text-color)"
   } min-h-[350px] h-fit min-w-[300px] w-fit p-4 rounded-md`}
 >
   <Heading variant="form_heading">
@@ -47,6 +44,18 @@ const { inputs = [], headingText, button } = formConfig
               name={input.name}
             />
           )}
+          {input.type === "textarea" && (
+            <textarea
+              name={input.name}
+              placeholder={input.placeholder}
+              rows={input.rows ?? 4}
+              class={`${
+                input.class ?? ""
+              } block p-2 border-b-2 border-(--secondary-text-color)
+            rounded-none text-(--secondary-text-color) w-full h-fit mb-6
+            focus:ring-0 focus:outline-0 bg-transparent resize-none`}
+            />
+          )}
           {input.type === "file" && (
             <input
               type="file"
@@ -58,12 +67,17 @@ const { inputs = [], headingText, button } = formConfig
             file:text-white file:cursor-pointer hover:file:opacity-85"
             />
           )}
+          {input.type === "hidden" && (
+            <input type="hidden" name={input.name} value={input.value ?? ""} />
+          )}
         </div>
       ))
     ) : (
       <p>No inputs</p>
     )
   }
+
+  <slot />
 
   {
     button && (
