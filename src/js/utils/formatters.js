@@ -35,6 +35,39 @@ export const formatGreeting = (timeOfDay) => {
   }
 }
 
+// Date formatter
+export const formatCommentPostDate = (timeSinceCommentPost) =>
+{
+  const now = Date.now()
+  const timeDifference = now - timeSinceCommentPost
+
+  const seconds = Math.floor(timeDifference / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+
+  if(seconds < 60)
+  {
+    return 'Just now'
+  }
+  if(minutes < 60)
+  {
+    return `Comment posted ${minutes} minute${minutes > 1 ? 's' : ''} ago`
+  }
+  if(hours < 60)
+  {
+    return `Comment posted ${hours} minute${hours > 1 ? 's' : ''} ago`
+  }
+  if(days < 7)
+  {
+    return `${days} day${daus > 1 ? 's' : ''} ago`
+  }
+
+  // If comments are more than a week old, show the actual date
+  const date = new Date(timeSinceCommentPost)
+  return date.toLocaleString(undefined, {year: 'numeric', month: 'short', day: 'numeric'})
+}
+
 // Slugify
 export function slugify(title)
 {

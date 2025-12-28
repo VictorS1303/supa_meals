@@ -398,3 +398,37 @@ export const resolveApiMealIdToInternalMealId = async (apiMealId) =>
 
     return mealData.id
 }
+
+// Fetch comments
+export const fetchComments = async (mealId) => {
+  const numericMealId = Number(mealId);
+  console.log("Fetching comments for mealId:", numericMealId, typeof numericMealId);
+
+  if (!numericMealId) {
+    throw new Error("Meal ID is required to fetch comments");
+  }
+
+  const { data: fetchCommentsData, error: fetchCommentsError } = await supabaseClient
+    .from('comments')
+    .select(`
+      id,
+      title,
+      body,
+      rating,
+      created_at,
+      user:user_id (
+        id,
+        user_name,
+        user_profile_image
+      )
+    `)
+    .eq('meal_id', numericMealId)
+    .order('created_at', { ascending: true });
+
+  if (fetchCommentsError) {
+    console.error("Error fetching comments:", fetchCommentsError);
+    throw fetchCommentsError;
+  }
+
+  return fetchCommentsData;
+};

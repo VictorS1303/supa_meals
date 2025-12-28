@@ -1,13 +1,33 @@
 ---
-import MealRatingStars from '../meal_rating/MealRatingStars.astro'
-import MealRatingsNumber from '../meal_rating/MealRatingsNumber.astro'
-import RatingStarsNumber from '../meal_rating/RatingStarsNumber.astro'
-const {class: className, id: id, starsCount = 0, mealRatingNumber, maximumRatingNumber} = Astro.props
+import MealRatingStars from "../meal_rating/MealRatingStars.astro"
+import MealRatingsNumber from "../meal_rating/MealRatingsNumber.astro"
+import RatingStarsNumber from "../meal_rating/RatingStarsNumber.astro"
+const {
+  class: className,
+  id: id,
+  starsCount = 0,
+  mealRatingNumber,
+  maximumRatingNumber,
+} = Astro.props
 
-// Generate stars array based on the count
-const ratingStars = Array.from({length: starsCount}, () => ({class: "fas fa-star"}))
+const fullStars = Math.floor(mealRatingNumber)
+const hasHalfStar = mealRatingNumber % 1 >= 0.5
+const emptyStars = maximumRatingNumber - fullStars - (hasHalfStar ? 1 : 0)
+
+const ratingStars = [
+  ...Array.from({ length: fullStars }, () => ({ class: "fas fa-star" })),
+  ...(hasHalfStar ? [{ class: "fas fa-star-half-alt" }] : []),
+  ...Array.from({ length: emptyStars }, () => ({ class: "far fa-star" })),
+]
 ---
-<div class={`${className} ratings flex gap-2 items-center text-(--secondary-text-color)`} id={id}>
+
+<div
+  class={`${className} ratings flex gap-2 items-center text-(--secondary-text-color)`}
+  id={id}
+>
   <MealRatingStars ratingStars={ratingStars} />
-  <MealRatingsNumber mealRatingNumber={mealRatingNumber} maximumRatingNumber={maximumRatingNumber} />
+  <MealRatingsNumber
+    mealRatingNumber={mealRatingNumber}
+    maximumRatingNumber={maximumRatingNumber}
+  />
 </div>

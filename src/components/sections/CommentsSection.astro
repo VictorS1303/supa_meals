@@ -1,40 +1,22 @@
 ---
+import {
+  fetchComments,
+  resolveApiMealIdToInternalMealId,
+} from "../../js/supabase/supabase_methods"
 import Heading from "../headings/Heading.astro"
 import Section from "./Section.astro"
 import CommentCardsContainer from "../containers/CommentCardsContainer.astro"
-import MealRatingsNumber from "../meal_rating/MealRatingsNumber.astro"
 
-const {
-  class: className,
-  id: id,
-  headingText,
-  isSingleViewSubHeading,
-} = Astro.props
+const { mealId: apiMealId, headingText, class: className, id } = Astro.props
 
-const starsCount = 2
-const comments = [
-  {
-    src: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    username: "Victor Schweitz",
-    timeSincePost: "4 hours ago",
-    paragraphText:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur corrupti et neque at, impedit necessitatibus, dignissimos in ab tempora libero quidem id animi possimus aliquid dicta laudantium commodi rerum nam, ea porro repudiandae sit consequatur ullam! Repudiandae, laboriosam debitis, fugiat adipisci quae quod voluptatibus sequi magnam dignissimos eveniet voluptas quam beatae voluptates deleniti! Placeat consequuntur quaerat vitae provident voluptate aperiam aspernatur qui at voluptas illum deserunt quidem molestiae unde nisi impedit ipsa ipsam maiores natus sunt id enim, deleniti veniam suscipit exercitationem? Sed accusantium necessitatibus fuga labore, hic libero alias dolorem amet eos veritatis est quidem ipsum impedit, dolores molestias. Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur corrupti et neque at, impedit necessitatibus, dignissimos in ab tempora libero quidem id animi possimus aliquid dicta laudantium commodi rerum nam, ea porro repudiandae sit consequatur ullam! Repudiandae, laboriosam debitis, fugiat adipisci quae quod voluptatibus sequi magnam dignissimos eveniet voluptas quam beatae voluptates deleniti! Placeat consequuntur quaerat vitae provident voluptate aperiam aspernatur qui at voluptas illum deserunt quidem molestiae unde nisi impedit ipsa ipsam maiores natus sunt id enim, deleniti veniam suscipit exercitationem? Sed accusantium necessitatibus fuga labore, hic libero alias dolorem amet eos veritatis est quidem ipsum impedit, dolores molestias.",
-    headingText: "Perfect for a family of 4",
-    likeAmount: 4,
-    starsCount: starsCount,
-    mealRatingNumber: starsCount,
-  },
-  {
-    src: "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    username: "Jane Doe",
-    timeSincePost: "2 minutes ago",
-    paragraphText: "Lorem ipsum dolor sit amet consectetur.",
-    headingText: "Perfect for a family of 4",
-    likeAmount: 4,
-    starsCount: starsCount,
-    mealRatingNumber: starsCount,
-  },
-]
+// Resolve API ID to internal PK
+const internalMealId = await resolveApiMealIdToInternalMealId(apiMealId)
+
+// Only fetch comments if we successfully resolved the internal ID
+const comments = internalMealId ? await fetchComments(internalMealId) : []
+
+console.log("API ID:", apiMealId, "Internal ID:", internalMealId)
+console.log("Fetched comments:", comments)
 ---
 
 <Section class={`${className} my-7`} id={id}>

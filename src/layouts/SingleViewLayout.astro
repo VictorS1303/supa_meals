@@ -34,12 +34,8 @@ const mealInteractionButtons = [
   },
 ]
 
-const commentFormInputs = [
-  {
-    type: "text",
-    placeholder: "Comment title",
-  },
-]
+console.log("Meal object: ", meal)
+console.log("Meal ID: ", meal.idMeal)
 ---
 
 <Layout title={title}>
@@ -95,7 +91,8 @@ const commentFormInputs = [
   />
 
   <!-- Comments Section -->
-  <CommentsSection headingText="Comments" isSingleViewSubHeading={true} />
+  <CommentsSection mealId={meal.idMeal} />
+  <!-- <CommentsSection headingText="Comments" isSingleViewSubHeading={true} /> -->
 
   <MealInteractionSection mealInteractionButtons={mealInteractionButtons} />
 
@@ -105,10 +102,6 @@ const commentFormInputs = [
     id="meal_comment_dialog"
     variant="success"
   >
-    <Form
-      variant="comment"
-      id="submit_comment_form"
-      inputs={commentFormInputs}
-    />
+    <Form variant="comment" id="submit_comment_form" />
   </Dialog>
 </Layout>

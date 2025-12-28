@@ -1,10 +1,11 @@
 ---
-const { class: className, id, comments = [] } = Astro.props
+import { formatCommentPostDate } from "../../js/utils/formatters"
 import Card from "../cards/Card.astro"
 import Heading from "../headings/Heading.astro"
 import Footer from "../footers/Footer.astro"
 import LikesAndRatingsContainer from "./LikesAndRatingsContainer.astro"
 import CommentCardBodyContainer from "../containers/CommentCardBodyContainer.astro"
+const { class: className, id, comments = [] } = Astro.props
 ---
 
 <div class="flex flex-col mt-12">
@@ -17,25 +18,26 @@ import CommentCardBodyContainer from "../containers/CommentCardBodyContainer.ast
             <Heading variant="comment_sub_heading">
               <img
                 slot="leading"
-                src={comment.src}
-                alt={comment.username}
+                src={comment.user.user_profile_image}
+                alt={comment.user.user_name}
                 class="h-[100px] w-[100px] rounded-full"
               />
               <div slot="title" class="flex flex-col username-and-comment-time">
                 <span class="username italic text-gray-400">
-                  {comment.username}
+                  {comment.user.user_name}
                 </span>
                 <p class="text-(--secondary-text-color)">
-                  Posted <span>{comment.timeSincePost}</span>
+                  Posted{" "}
+                  <span>{formatCommentPostDate(comment.created_at)}</span>
                 </p>
               </div>
             </Heading>
 
             <CommentCardBodyContainer>
               <Heading slot="heading" variant="comment_heading">
-                {comment.headingText}
+                {comment.title}
               </Heading>
-              <p slot="paragraph">{comment.paragraphText}</p>
+              <p slot="paragraph">{comment.body}</p>
               <button
                 slot="actions"
                 class="read-more-btn text-(--secondary-text-color) cursor-pointer"
@@ -49,8 +51,8 @@ import CommentCardBodyContainer from "../containers/CommentCardBodyContainer.ast
             <Footer variant="comment_card_footer">
               <LikesAndRatingsContainer
                 likeAmount={comment.likeAmount}
-                starsCount={comment.starsCount}
-                mealRatingNumber={comment.mealRatingNumber}
+                starsCount={comment.rating}
+                mealRatingNumber={comment.rating}
                 maximumRatingNumber={comment.maximumRatingNumber}
               />
             </Footer>
