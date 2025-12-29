@@ -6,22 +6,30 @@ import {
 import Heading from "../headings/Heading.astro"
 import Section from "./Section.astro"
 import CommentCardsContainer from "../containers/CommentCardsContainer.astro"
+import CommentCardBodyContainer from "../containers/CommentCardBodyContainer.astro"
 
 const { mealId: apiMealId, headingText, class: className, id } = Astro.props
 
-// Resolve API ID to internal PK
-const internalMealId = await resolveApiMealIdToInternalMealId(apiMealId)
+console.log("Meal ID from props:", apiMealId)
+
+// Resolve API meal ID to internal database ID
+let internalMealId
+try {
+  internalMealId = await resolveApiMealIdToInternalMealId(apiMealId)
+  console.log("Internal meal ID: ", internalMealId)
+} catch (error) {
+  console.error("Failed to resolve internal meal ID: ", error)
+}
 
 // Only fetch comments if we successfully resolved the internal ID
 const comments = internalMealId ? await fetchComments(internalMealId) : []
 
-console.log("API ID:", apiMealId, "Internal ID:", internalMealId)
-console.log("Fetched comments:", comments)
+console.log("Comments fetched in section: ", comments)
 ---
 
 <Section class={`${className} my-7`} id={id}>
   <Heading variant="comment_heading" slot="title">
     {headingText}
   </Heading>
-  <CommentCardsContainer comments={comments} />
+  <CommentCardsContainer comments={comments} mealId={internalMealId} />
 </Section>

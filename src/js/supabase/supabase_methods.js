@@ -379,36 +379,36 @@ export const getMelPrimaryKeyByApiId = async (apiMealId) =>
 // Resolve api_meal_id to internal meal id
 export const resolveApiMealIdToInternalMealId = async (apiMealId) =>
 {
-    if(!apiMealId)
-    {
-      throw new Error("API meal ID is required")
-    }
-
-    const { data: mealData, error: mealError } = await supabaseClient
-      .from("meals")
-      .select("id")
-      .eq("api_meal_id", apiMealId)
-      .single()
-
-    if (!mealData || mealError) {
-      console.error("No meal found for api_meal_id: ", apiMealId)
-      alert("Cannot submit comment: Meal not found!")
-      return
-    }
-
-    return mealData.id
-}
-
-// Fetch comments
-export const fetchComments = async (mealId) => {
-  const numericMealId = Number(mealId);
-  console.log("Fetching comments for mealId:", numericMealId, typeof numericMealId);
-
-  if (!numericMealId) {
-    throw new Error("Meal ID is required to fetch comments");
+  if(!apiMealId)
+  {
+    throw new Error('API meal ID is required')
   }
 
-  const { data: fetchCommentsData, error: fetchCommentsError } = await supabaseClient
+  const {data: mealData, error: mealError} = await supabaseClient
+    .from('meals')
+    .select('id')
+    .eq('api_meal_id', apiMealId)
+    .single()
+  
+  if(!mealData || mealError)
+  {
+    console.error('No meal found for api_meal_id', apiMealId)
+    return null
+  }
+
+  return mealData.id
+}
+
+
+// Fetch comments
+export const fetchComments = async (mealId) =>
+{
+  if(!mealId)
+  {
+    throw new Error('Meal ID is required to fetch commments')
+  }
+
+  const {data, error} = await supabaseClient
     .from('comments')
     .select(`
       id,
@@ -422,13 +422,44 @@ export const fetchComments = async (mealId) => {
         user_profile_image
       )
     `)
-    .eq('meal_id', numericMealId)
-    .order('created_at', { ascending: true });
+    .eq("meal_id", mealId) // ✅ use meal_id
+    .order("created_at", { ascending: true })
 
-  if (fetchCommentsError) {
-    console.error("Error fetching comments:", fetchCommentsError);
-    throw fetchCommentsError;
-  }
+    if(error)
+    {
+      console.error('Error fetching comments: ', error)
+      throw error
+    }
 
-  return fetchCommentsData;
-};
+    return data    
+}
+
+// export const fetchComments = async (mealId) => {
+//   if (!mealId) {
+//     throw new Error("Meal ID is required to fetch comments")
+//   }
+
+//   const { data, error } = await supabaseClient
+//     .from("comments")
+//     .select(`
+//       comment_id,
+//       title,
+//       body,
+//       rating,
+//       created_at,
+//       user:user_id (
+//         id,
+//         user_name,
+//         user_profile_image
+//       )  
+//     `)
+//     .eq("comment_meal_id", mealId)  // ✅ Correct column
+//     .order("created_at", { ascending: true })
+
+//   if (error) {
+//     console.error("Error fetching comments:", error)
+//     throw error
+//   }
+
+//   return data
+// }
