@@ -10,14 +10,6 @@ import { supabaseClient } from "../../js/supabase/supabase_client"
 import { fetchComments } from "../../js/supabase/supabase_methods"
 
 const { comments = [], mealId } = Astro.props
-// Get current user session
-const {
-  data: { session },
-} = await supabaseClient.auth.getSession()
-
-console.log("Comments: ", comments)
-const currentUserId = session?.user?.id
-console.log("Current user ID:", currentUserId)
 ---
 
 <div class="flex flex-col mt-12">
@@ -25,8 +17,15 @@ console.log("Current user ID:", currentUserId)
     {
       comments.length > 0 ? (
         comments.map((comment, index) => (
-          <Card variant="comment" class="comment-card group" key={index}>
-            <div class="comment-action-buttons-container absolute -right-2 -top-4 flex gap-2 opacity-0 transition-opacity duration-150 ease-in group-hover:opacity-100">
+          <Card
+            variant="comment"
+            class="comment-card group relative"
+            key={index}
+          >
+            <div
+              class="comment-action-buttons-container absolute -right-2 -top-4 flex gap-2 opacity-0 transition-opacity duration-150 ease-in group-hover:opacity-100"
+              data-comment-user-id={comment.user.id}
+            >
               <Button variant="comment_edit_button" data-action="edit-comment">
                 <i class="fas fa-pencil-alt text-xl" />
               </Button>
@@ -88,6 +87,38 @@ console.log("Current user ID:", currentUserId)
 </div>
 
 <script>
+  import { supabaseClient } from "../../js/supabase/supabase_client"
+
+  // Check authentication and hide/show buttons
+  async function checkAuthAndUpdateButtons() {
+    const {
+      data: { session },
+    } = await supabaseClient.auth.getSession()
+    const currentUserId = session?.user?.id
+    console.log("Current user ID: ", currentUserId)
+
+    const commentActionButtonsContainers = document.querySelectorAll(
+      ".comment-action-buttons-container",
+    )
+
+    commentActionButtonsContainers?.forEach((commentActionButtonsContainer) => {
+      const commentUserId = commentActionButtonsContainer.getAttribute(
+        "data-comment-user-id",
+      )
+      console.log("Comment user ID: ", commentUserId)
+
+      // Hide buttons if user is NOT the comment author
+      if (!currentUserId || currentUserId !== commentUserId) {
+        commentActionButtonsContainer.style.display = "none"
+      }
+      // If user IS the author, leave untouched so hover effect works
+    })
+  }
+
+  // Run on page load
+  checkAuthAndUpdateButtons()
+
+  // Event handlers
   const commentActionButtonsContainers = document.querySelectorAll(
     ".comment-action-buttons-container",
   )
