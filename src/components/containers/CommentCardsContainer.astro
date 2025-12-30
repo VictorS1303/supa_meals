@@ -32,6 +32,7 @@ const { comments = [], mealId } = Astro.props
               <Button
                 variant="comment_delete_button"
                 data-action="delete-comment"
+                data-id={comment.id}
               >
                 <i class="fas fa-trash-alt" />
               </Button>
@@ -88,6 +89,35 @@ const { comments = [], mealId } = Astro.props
 
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
+  import { deleteMealComment } from "../../js/supabase/supabase_methods"
+
+  const deleteMealCommentConfirmationDialog = document.querySelector(
+    "#confirm_delete_meal_comment_dialog",
+  )
+
+  const deleteMealCommentConfirmationDialogConfirmButton =
+    deleteMealCommentConfirmationDialog?.querySelector(
+      "#confirm_delete_meal_comment_button",
+    )
+
+  const deleteMealCommentConfirmationDialogCancelButton =
+    deleteMealCommentConfirmationDialog?.querySelector(
+      "#cancel_delete_meal_comment_button",
+    )
+
+  const confirmDeleteCommentDialogParagraph =
+    deleteMealCommentConfirmationDialog?.querySelector("p")
+
+  console.log(confirmDeleteCommentDialogParagraph)
+
+  deleteMealCommentConfirmationDialogConfirmButton?.addEventListener(
+    "click",
+    handleConfirmDeleteMealComment,
+  )
+  deleteMealCommentConfirmationDialogCancelButton?.addEventListener(
+    "click",
+    handleConfirmDeleteMealComment,
+  )
 
   // Check authentication and hide/show buttons
   async function checkAuthAndUpdateButtons() {
@@ -111,7 +141,6 @@ const { comments = [], mealId } = Astro.props
       if (!currentUserId || currentUserId !== commentUserId) {
         commentActionButtonsContainer.style.display = "none"
       }
-      // If user IS the author, leave untouched so hover effect works
     })
   }
 
@@ -134,7 +163,37 @@ const { comments = [], mealId } = Astro.props
       console.log("Edit comment")
     }
     if (e.target.matches('[data-action="delete-comment"]')) {
-      console.log("Delete comment")
+      openDeleteCommentConfirmationModal(e)
     }
+  }
+
+  function openDeleteCommentConfirmationModal(e) {
+    const confirmDeleteMealCommentButton =
+      deleteMealCommentConfirmationDialog?.querySelector(
+        "#confirm_delete_meal_comment_button",
+      )
+
+    confirmDeleteCommentDialogParagraph.textContent =
+      "Are you sure you want to delete your comment? This cannot be undone!"
+    confirmDeleteMealCommentButton?.setAttribute("data-id", e.target.dataset.id)
+    deleteMealCommentConfirmationDialog?.showModal()
+  }
+
+  async function handleConfirmDeleteMealComment(e) {
+    if (e.target.matches("#cancel_delete_meal_comment_button")) {
+      deleteMealCommentConfirmationDialog?.close()
+      return
+    }
+    const deleteButtonId = e.target.dataset.id
+    const { data: deleteCommentData, error: deleteCommentError } =
+      await deleteMealComment(deleteButtonId)
+
+    if (!deleteCommentData || deleteCommentError) {
+      console.error("Error deleting comment: ", deleteCommentError)
+    } else {
+      document.querySelector(`[data-comment-id="${deleteButtonId}"]`)?.remove()
+    }
+
+    deleteMealCommentConfirmationDialog?.close()
   }
 </script>

@@ -9,7 +9,10 @@ import Dialog from "../components/dialogs/Dialog.astro"
 import Form from "../components/forms/Form.astro"
 import Link from "../components/links/Link.astro"
 import Overlay from "../components/overlays/Overlay.astro"
+import Heading from "../components/headings/Heading.astro"
 import { supabaseClient } from "../js/supabase/supabase_client"
+import Paragraph from "../components/paragraphs/Paragraph.astro"
+import Button from "../components/buttons/Button.astro"
 
 const { meal, title, src, headingText, alt, target } = Astro.props
 
@@ -62,27 +65,6 @@ console.log("Meal ID: ", meal.idMeal)
     </h2>
   </Hero>
 
-  <!-- <Hero variant="single_view">
-    <img
-      slot="background"
-      src={src}
-      alt={alt}
-      class="absolute inset-0 w-full h-full object-cover"
-    />
-
-    <h2 class="text-white text-3xl md:text-4xl z-20 text-center">
-      {headingText}
-    </h2>
-  </Hero> -->
-
-  <!-- <Hero
-    isSingleViewHero={true}
-    src={src}
-    alt={alt}
-    href="/meals"
-    isSingleViewHeroLink={true}
-    headingText={headingText}
-  /> -->
   <CookingInstructionSection
     headingText={`What you need for ${meal.strMeal}`}
     meal={meal}
@@ -92,8 +74,8 @@ console.log("Meal ID: ", meal.idMeal)
 
   <!-- Comments Section -->
   <CommentsSection mealId={meal.idMeal} />
-  <!-- <CommentsSection headingText="Comments" isSingleViewSubHeading={true} /> -->
 
+  <!-- Meal Interaction Section -->
   <MealInteractionSection mealInteractionButtons={mealInteractionButtons} />
 
   <!-- Meal Comment Dialog -->
@@ -103,5 +85,43 @@ console.log("Meal ID: ", meal.idMeal)
     variant="success"
   >
     <Form variant="comment" id="submit_comment_form" />
+  </Dialog>
+
+  <!-- Confirm Delete Meal Comment Dialog -->
+  <Dialog
+    variant="danger"
+    id="confirm_delete_meal_comment_dialog"
+    isClosableDialog={true}
+  >
+    <Heading slot="title">
+      <h2>Confirm Comment Deletion</h2>
+    </Heading>
+    <Paragraph
+      slot="dialog-body-text"
+      variant="dialog_paragraph"
+      data-role="delete_meal_comment_confirm_modal"
+    >
+      <p class="text-white" id="delete_meal_comment_confirm_message"></p>
+    </Paragraph>
+    <div
+      class="action-buttons-container flex justify-center gap-4"
+      slot="actions"
+    >
+      <Button
+        variant="dialog_action_button"
+        class="bg-red-400"
+        data-action="delete-meal-comment"
+        id="confirm_delete_meal_comment_button"
+      >
+        Delete Comment
+      </Button>
+      <Button
+        variant="dialog_action_button"
+        class="bg-red-400"
+        id="cancel_delete_meal_comment_button"
+      >
+        Cancel
+      </Button>
+    </div>
   </Dialog>
 </Layout>

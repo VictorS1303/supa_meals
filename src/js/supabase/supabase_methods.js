@@ -359,6 +359,41 @@ export const commentMeal = async (mealId, commentData) => {
   return data
 }
 
+
+
+// Delete Meal Comment
+export const deleteMealComment = async (deleteCommentId) =>
+{
+
+    const { data: { user } } = await supabaseClient.auth.getUser()
+    const currentUserId = user?.id
+
+    if(!deleteCommentId)
+    {
+      throw new Error(`No comment ID: ${deleteCommentId}`)
+    }
+
+    // Verifying that the comment belongs to the user
+    const {data: comment} = await supabaseClient
+      .from('comments')
+      .select('user_id')
+      .eq('id', deleteCommentId)
+      .single()
+    
+    if(comment?.user_id !== currentUserId)
+    {
+      return {data: null, error: {message: 'Unauthorized: You can only delete your own comments'}}
+    }
+
+    // Delete comment
+    const {data: deleteCommentData, error: deleteCommentError} = await supabaseClient
+      .from('comments')
+      .delete()
+      .eq('id', deleteCommentId)
+    
+    return {data: deleteCommentData, error: deleteCommentError}
+}
+
 // Get Meal Primary Key
 export const getMelPrimaryKeyByApiId = async (apiMealId) =>
 {
