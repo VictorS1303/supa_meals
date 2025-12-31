@@ -20,12 +20,16 @@ import Paragraph from "../paragraphs/Paragraph.astro"
     variant="dialog_paragraph"
     data-role="sign-up-success-message"
   >
-    <p class="text-white" id="sign_up_success_message"></p>
+    <p
+      class="text-white whitespace-pre-line text-center"
+      id="sign_up_success_message"
+    >
+    </p>
   </Paragraph>
 </Dialog>
 
 <!-- Sign Up Failed Dialog -->
-<Dialog variant="danger" id="sign_up_failed_dialog">
+<Dialog variant="danger" id="sign_up_failed_dialog" isClosableDialog={true}>
   <Heading slot="title">
     <h2>Sign up failed</h2>
   </Heading>
@@ -35,17 +39,13 @@ import Paragraph from "../paragraphs/Paragraph.astro"
     variant="dialog_paragraph"
     data-role="sign-up-failed-message"
   >
-    <p class="text-white" id="sign_up_failed_message"></p>
+    <p
+      class="text-white whitespace-pre-line text-center"
+      id="sign_up_failed_dialog_message"
+    >
+    </p>
   </Paragraph>
 </Dialog>
-
-<!-- Sign Up Failed Message -->
-<!-- <Dialog
-  dialogMessageId="sign_up_failed_dialog_message"
-  id="sign_up_failed_dialog"
-  headingText="Registration Failed"
-  isSuccess={false}
-/> -->
 
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
@@ -59,7 +59,7 @@ import Paragraph from "../paragraphs/Paragraph.astro"
   const signUpSuccessDialogMessage = signUpSuccessDialog?.querySelector(
     "#sign_up_success_message",
   )
-  const signUpFailedDialog = document.querySelector("#sign_up_failed_message")
+  const signUpFailedDialog = document.querySelector("#sign_up_failed_dialog")
   const signUpFailedDialogMessage = signUpFailedDialog?.querySelector(
     "#sign_up_failed_message",
   )
@@ -114,9 +114,10 @@ import Paragraph from "../paragraphs/Paragraph.astro"
       const signUpFailedDialogParagraph = signUpFailedDialog?.querySelector(
         "#sign_up_failed_dialog_message",
       )
+
       signUpFailedDialog?.showModal()
       if (signUpFailedDialogParagraph) {
-        signUpFailedDialogParagraph.textContent = `Registration failed: ${result.signUpError}`
+        signUpFailedDialogParagraph.textContent = `Registration failed: \n${result.signUpError}`
       }
     }
   })

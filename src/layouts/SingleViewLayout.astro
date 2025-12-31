@@ -88,13 +88,12 @@ console.log("Meal ID: ", meal.idMeal)
   </Dialog>
 
   <!-- Edit Meal Comment Dialog -->
-  <Dialog id="edit_comment_dialog" variant="success">
+  <Dialog id="edit_comment_dialog" variant="success" isClosableDialog={true}>
     <Form
       variant="edit_comment"
       id="edit_comment_form"
       slot="form"
       isDialogForm={true}
-      isClosableDialog={true}
     >
       <MealRatingsInput maxStars={5} />
     </Form>
@@ -117,7 +116,7 @@ console.log("Meal ID: ", meal.idMeal)
       <p class="text-white" id="delete_meal_comment_confirm_message"></p>
     </Paragraph>
     <div
-      class="action-buttons-container flex justify-center gap-4"
+      class="action-buttons-container flex flex-col justify-center gap-4 md:flex-row"
       slot="actions"
     >
       <Button

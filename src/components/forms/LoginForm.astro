@@ -29,7 +29,11 @@ const username = user?.user_metadata.username
     variant="dialog_paragraph"
     data-role="login-success-message"
   >
-    <p class="text-white" id="login_success_message"></p>
+    <p
+      class="text-white text-center tracking-wide whitespace-pre-line"
+      id="login_success_message"
+    >
+    </p>
   </Paragraph>
 </Dialog>
 
@@ -49,7 +53,11 @@ const username = user?.user_metadata.username
     variant="dialog_paragraph"
     data-role="login-failed-message"
   >
-    <p class="text-white" id="login_failed_message"></p>
+    <p
+      class="text-white text-center tracking-wide whitespace-pre-line"
+      id="login_failed_message"
+    >
+    </p>
   </Paragraph>
 
   <Button variant="dialog_close_button">
@@ -96,7 +104,7 @@ const username = user?.user_metadata.username
       loginSuccessDialog?.showModal()
 
       if (loginSuccessMessage && user) {
-        loginSuccessMessage.textContent = `Welcome back, ${user.user_metadata.username}! You will be redirected to your dashboard shortly!`
+        loginSuccessMessage.textContent = `Welcome back, ${user.user_metadata.username}! \nYou will be redirected to your dashboard shortly!`
       }
 
       setTimeout(() => {
@@ -104,7 +112,8 @@ const username = user?.user_metadata.username
       }, 2000)
     } else {
       loginFailedDialog?.showModal()
-      loginFailedMessage.textContent = "Something went wrong. Please try again!"
+      loginFailedMessage.textContent =
+        "Something went wrong. \nPlease try again!"
     }
   }
 </script>
