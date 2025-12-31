@@ -394,6 +394,28 @@ export const deleteMealComment = async (deleteCommentId) =>
     return {data: deleteCommentData, error: deleteCommentError}
 }
 
+// Edit meal comment
+export const editMealComment = async (commentId, commentTitle, commentText, commentRating) =>
+{
+  const {data: editCommentData, error: editCommentError} = await supabaseClient
+    .from('comments')
+    .update({
+      title: commentTitle,
+      body: commentText,
+      rating: commentRating
+    })
+    .eq('id', commentId)
+    .select()
+    .single()
+  
+  if(!editCommentData || editCommentError)
+  {
+    console.log("Couldn't edit comment: ", editCommentError.message, editCommentError.hint)
+  }
+
+  return editCommentData
+}
+
 // Get Meal Primary Key
 export const getMelPrimaryKeyByApiId = async (apiMealId) =>
 {

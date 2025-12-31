@@ -21,12 +21,20 @@ const { comments = [], mealId } = Astro.props
             variant="comment"
             class="comment-card group relative"
             key={index}
+            data-id={comment.id}
+            data-comment-title={comment.title}
+            data-comment-body-text={comment.body}
+            data-comment-rating={comment.rating}
           >
             <div
               class="comment-action-buttons-container absolute -right-2 -top-4 flex gap-2 opacity-0 transition-opacity duration-150 ease-in group-hover:opacity-100"
               data-comment-user-id={comment.user.id}
             >
-              <Button variant="comment_edit_button" data-action="edit-comment">
+              <Button
+                variant="comment_edit_button"
+                data-action="edit-comment"
+                data-id={comment.id}
+              >
                 <i class="fas fa-pencil-alt text-xl" />
               </Button>
               <Button
@@ -37,6 +45,7 @@ const { comments = [], mealId } = Astro.props
                 <i class="fas fa-trash-alt" />
               </Button>
             </div>
+
             <Heading variant="comment_sub_heading">
               <img
                 slot="leading"
@@ -49,7 +58,7 @@ const { comments = [], mealId } = Astro.props
                   {comment.user.user_name}
                 </span>
                 <p class="text-(--secondary-text-color)">
-                  Posted
+                  Posted{" "}
                   <span>{formatCommentPostDate(comment.created_at)}</span>
                 </p>
               </div>
@@ -89,26 +98,24 @@ const { comments = [], mealId } = Astro.props
 
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
-  import { deleteMealComment } from "../../js/supabase/supabase_methods"
+  import {
+    deleteMealComment,
+    editMealComment,
+  } from "../../js/supabase/supabase_methods"
 
   const deleteMealCommentConfirmationDialog = document.querySelector(
     "#confirm_delete_meal_comment_dialog",
   )
-
   const deleteMealCommentConfirmationDialogConfirmButton =
     deleteMealCommentConfirmationDialog?.querySelector(
       "#confirm_delete_meal_comment_button",
     )
-
   const deleteMealCommentConfirmationDialogCancelButton =
     deleteMealCommentConfirmationDialog?.querySelector(
       "#cancel_delete_meal_comment_button",
     )
-
   const confirmDeleteCommentDialogParagraph =
     deleteMealCommentConfirmationDialog?.querySelector("p")
-
-  console.log(confirmDeleteCommentDialogParagraph)
 
   deleteMealCommentConfirmationDialogConfirmButton?.addEventListener(
     "click",
@@ -118,6 +125,17 @@ const { comments = [], mealId } = Astro.props
     "click",
     handleConfirmDeleteMealComment,
   )
+
+  const editCommentFormDialog = document.querySelector("#edit_comment_dialog")
+  const editCommentForm =
+    editCommentFormDialog?.querySelector("#edit_comment_form")
+
+  const confirmDeleteCommentDialog = document.querySelector(
+    "confirm_delete_meal_comment_dialog",
+  )
+  console.log(confirmDeleteCommentDialog)
+  console.log(editCommentForm)
+  editCommentForm?.addEventListener("submit", (e) => submitCommentEdit(e))
 
   // Check authentication and hide/show buttons
   async function checkAuthAndUpdateButtons() {
@@ -131,15 +149,13 @@ const { comments = [], mealId } = Astro.props
       ".comment-action-buttons-container",
     )
 
-    commentActionButtonsContainers?.forEach((commentActionButtonsContainer) => {
-      const commentUserId = commentActionButtonsContainer.getAttribute(
-        "data-comment-user-id",
-      )
+    commentActionButtonsContainers?.forEach((container) => {
+      const commentUserId = container.getAttribute("data-comment-user-id")
       console.log("Comment user ID: ", commentUserId)
 
       // Hide buttons if user is NOT the comment author
       if (!currentUserId || currentUserId !== commentUserId) {
-        commentActionButtonsContainer.style.display = "none"
+        container.style.display = "none"
       }
     })
   }
@@ -152,27 +168,89 @@ const { comments = [], mealId } = Astro.props
     ".comment-action-buttons-container",
   )
 
-  commentActionButtonsContainers?.forEach((commentActionButtonsContainer) => {
-    commentActionButtonsContainer?.addEventListener("click", (e) =>
-      handleCommentAction(e),
-    )
+  commentActionButtonsContainers?.forEach((container) => {
+    container?.addEventListener("click", (e) => handleCommentAction(e))
   })
 
   function handleCommentAction(e) {
     if (e.target.matches('[data-action="edit-comment"]')) {
+      openEditCommentForm(e)
       console.log("Edit comment")
     }
+
     if (e.target.matches('[data-action="delete-comment"]')) {
       openDeleteCommentConfirmationModal(e)
     }
   }
 
+  // EDITING COMMENT //
+
+  // Open Comment Edit form
+  function openEditCommentForm(e) {
+    // Display dialog
+    editCommentFormDialog?.showModal()
+
+    const commentCard = e.target.closest(".comment-card")
+    const commentId = commentCard.dataset.id
+    editCommentForm.dataset.id = commentId
+
+    const editCommentFormFieldsObject = {
+      commentTitle: "comment_title_input",
+      commentBodyText: "comment_text_input",
+      commentRating: "comment_rating_input",
+    }
+
+    Object.entries(editCommentFormFieldsObject).forEach(
+      ([commentKey, inputName]) => {
+        const value = commentCard?.dataset[commentKey]
+        const input = editCommentForm?.querySelector(`[name="${inputName}"]`)
+        if (input) {
+          input.value = value ?? "" // sets the initial input value
+        }
+      },
+    )
+
+    populateRatingStarsUI()
+  }
+
+  // Populate rating star UI
+  function populateRatingStarsUI() {
+    const starsContainer = editCommentForm.querySelector(".meal-rating-star")
+    if (starsContainer) {
+      const starWrappers = starsContainer.querySelectorAll(".star-wrapper")
+      const ratingInput = editCommentForm.querySelector(
+        '[name="comment_rating_input"]',
+      )
+      const currentRating = parseFloat(ratingInput.value) || 0
+      updateStarDisplay(starWrappers, currentRating)
+    }
+  }
+
+  function submitCommentEdit(e) {
+    e.preventDefault()
+    const commentId = editCommentForm.dataset.id
+    const commentTitle = editCommentForm.querySelector(
+      '[name="comment_title_input"]',
+    ).value
+    const commentText = editCommentForm.querySelector(
+      '[name="comment_text_input"]',
+    ).value
+    const commentRating =
+      parseFloat(
+        editCommentForm.querySelector('[name="comment_rating_input"]').value,
+      ) || 0
+
+    editMealComment(commentId, commentTitle, commentText, commentRating)
+
+    editCommentFormDialog?.close()
+  }
+
+  // DELETING COMMENT //
   function openDeleteCommentConfirmationModal(e) {
     const confirmDeleteMealCommentButton =
       deleteMealCommentConfirmationDialog?.querySelector(
         "#confirm_delete_meal_comment_button",
       )
-
     confirmDeleteCommentDialogParagraph.textContent =
       "Are you sure you want to delete your comment? This cannot be undone!"
     confirmDeleteMealCommentButton?.setAttribute("data-id", e.target.dataset.id)
@@ -184,6 +262,7 @@ const { comments = [], mealId } = Astro.props
       deleteMealCommentConfirmationDialog?.close()
       return
     }
+
     const deleteButtonId = e.target.dataset.id
     const { data: deleteCommentData, error: deleteCommentError } =
       await deleteMealComment(deleteButtonId)

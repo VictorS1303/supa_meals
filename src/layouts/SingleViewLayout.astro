@@ -13,7 +13,7 @@ import Heading from "../components/headings/Heading.astro"
 import { supabaseClient } from "../js/supabase/supabase_client"
 import Paragraph from "../components/paragraphs/Paragraph.astro"
 import Button from "../components/buttons/Button.astro"
-
+import MealRatingsInput from "../components/meal_rating/MealRatingsInput.astro"
 const { meal, title, src, headingText, alt, target } = Astro.props
 
 // Extract the YouTube video ID here inside the layout
@@ -84,7 +84,20 @@ console.log("Meal ID: ", meal.idMeal)
     id="meal_comment_dialog"
     variant="success"
   >
-    <Form variant="comment" id="submit_comment_form" />
+    <Form variant="comment" id="submit_comment_form" slot="form" />
+  </Dialog>
+
+  <!-- Edit Meal Comment Dialog -->
+  <Dialog id="edit_comment_dialog" variant="success">
+    <Form
+      variant="edit_comment"
+      id="edit_comment_form"
+      slot="form"
+      isDialogForm={true}
+      isClosableDialog={true}
+    >
+      <MealRatingsInput maxStars={5} />
+    </Form>
   </Dialog>
 
   <!-- Confirm Delete Meal Comment Dialog -->

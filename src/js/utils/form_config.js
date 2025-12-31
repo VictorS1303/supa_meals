@@ -2,7 +2,7 @@ export const formVariants = {
    sign_up:
    {
       headingText: "Sign up",
-      buttonText: "Sign up",
+
       inputs: [
         {
           type: "email",
@@ -46,8 +46,6 @@ export const formVariants = {
   login:
   {
     headingText: 'Log In',
-    buttonText: 'Log In',
-
     inputs:
     [
       {
@@ -75,7 +73,6 @@ export const formVariants = {
   comment:
   {
     headingText: 'Comment',
-    buttonText: 'Comment',
 
     inputs:
     [
@@ -105,5 +102,40 @@ export const formVariants = {
       type: 'submit'
     }
   },
+
+  edit_comment:
+  {
+    headingText: 'Edit Comment',
+
+    inputs:
+    [
+      {
+        type: 'text',
+        labelText: 'Comment title',
+        placeholder: 'Enter comment title',
+        name: 'comment_title_input',
+      },
+      {
+        type: 'textarea',
+        labelText: 'Comment text',
+        placeholder: 'Enter comment text',
+        name: 'comment_text_input'
+      },
+      {
+        type: 'hidden',
+        labelText: 'Rate meal',
+        name: 'comment_rating_input',
+      }
+    ],
+
+    button:
+    {
+      text: 'Submit',
+      variant: 'form_button',
+      type: 'submit'
+    }
+  },
+
+ 
 
 }

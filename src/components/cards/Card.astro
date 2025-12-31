@@ -8,7 +8,7 @@ import MealRatingContainer from "../containers/MealRatingContainer.astro"
 import CommentCardBodyContainer from "../containers/CommentCardBodyContainer.astro"
 import Footer from "../footers/Footer.astro"
 
-const { class: className = "", id, variant = "default" } = Astro.props
+const { class: className = "", id, variant = "default", ...rest } = Astro.props
 
 const cardBaseClasses = `
   bg-white rounded-md
@@ -23,6 +23,7 @@ const cardVariantClasses = {
 
 <article
   id={id}
+  {...rest}
   class={`
     ${cardBaseClasses}
     ${cardVariantClasses[variant]}
