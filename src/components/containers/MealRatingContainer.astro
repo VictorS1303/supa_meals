@@ -10,9 +10,10 @@ const {
   maximumRatingNumber,
 } = Astro.props
 
+const maxStars = 5
 const fullStars = Math.floor(mealRatingNumber)
 const hasHalfStar = mealRatingNumber % 1 >= 0.5
-const emptyStars = maximumRatingNumber - fullStars - (hasHalfStar ? 1 : 0)
+const emptyStars = maxStars - fullStars - (hasHalfStar ? 1 : 0)
 
 const ratingStars = [
   ...Array.from({ length: fullStars }, () => ({ class: "fas fa-star" })),
