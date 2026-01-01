@@ -29,15 +29,13 @@ const { inputs = [], headingText, button } = formConfig
     inputs.length > 0 ? (
       inputs.map((input) => (
         <div class="flex flex-col gap-2">
-          <label class="text-(--secondary-text-color) ml-1">
-            {input.labelText}
-          </label>
+          <label class="text-white ml-1">{input.labelText}</label>
           {["text", "email", "password"].includes(input.type) && (
             <input
               class={`${
                 input.class ?? ""
-              } block indent-[5px] border-b-2 border-(--secondary-text-color)
-            text-(--secondary-text-color) w-full mb-6
+              } block indent-[5px] border-b-2 border-white
+            text-white w-full mb-6
             focus:ring-0 focus:outline-0`}
               type={input.type}
               placeholder={input.placeholder}
@@ -49,10 +47,8 @@ const { inputs = [], headingText, button } = formConfig
               name={input.name}
               placeholder={input.placeholder}
               rows={input.rows ?? 4}
-              class={`${
-                input.class ?? ""
-              } block p-2 border-b-2 border-(--secondary-text-color)
-            rounded-none text-(--secondary-text-color) w-full h-fit mb-6
+              class={`${input.class ?? ""} block p-2 border-b-2 border-white
+            rounded-none text-white w-full h-fit mb-6
             focus:ring-0 focus:outline-0 bg-transparent resize-none`}
             />
           )}
