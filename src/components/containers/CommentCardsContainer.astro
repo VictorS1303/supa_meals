@@ -1,5 +1,5 @@
 ---
-import { formatCommentPostDate } from "../../js/utils/formatters"
+import { formatCommentPostDate, formatDate } from "../../js/utils/formatters"
 import Card from "../cards/Card.astro"
 import Heading from "../headings/Heading.astro"
 import Footer from "../footers/Footer.astro"
@@ -10,6 +10,9 @@ import { supabaseClient } from "../../js/supabase/supabase_client"
 import { fetchComments } from "../../js/supabase/supabase_methods"
 
 const { comments = [], mealId } = Astro.props
+
+// Add this to see what's actually in the comments data
+console.log("Full comment object:", JSON.stringify(comments[0], null, 2))
 ---
 
 <div class="flex flex-col mt-12">
@@ -19,79 +22,96 @@ const { comments = [], mealId } = Astro.props
   <div class="comments-section flex flex-wrap gap-7 mt-6" data-meal-id={mealId}>
     {
       comments.length > 0 ? (
-        comments.map((comment, index) => (
-          <Card
-            variant="comment"
-            class="comment-card group relative"
-            key={index}
-            data-id={comment.id}
-            data-comment-title={comment.title}
-            data-comment-body-text={comment.body}
-            data-comment-rating={comment.rating}
-          >
-            <div
-              class="comment-action-buttons-container absolute -right-2 -top-4 flex gap-2 opacity-0 transition-opacity duration-150 ease-in group-hover:opacity-100"
-              data-comment-user-id={comment.user.id}
+        comments.map((comment, index) => {
+          console.log("Updated at:", comment.updated_at)
+          return (
+            <Card
+              variant="comment"
+              class="comment-card group relative"
+              key={index}
+              data-id={comment.id}
+              data-comment-title={comment.title}
+              data-comment-body-text={comment.body}
+              data-comment-rating={comment.rating}
+              data-updated-at={comment.updated_at}
             >
-              <Button
-                variant="comment_edit_button"
-                data-action="edit-comment"
-                data-id={comment.id}
+              <div
+                class="comment-action-buttons-container absolute -right-2 -top-4 flex gap-2 opacity-0 transition-opacity duration-150 ease-in group-hover:opacity-100"
+                data-comment-user-id={comment.user.id}
               >
-                <i class="fas fa-pencil-alt text-xl" />
-              </Button>
-              <Button
-                variant="comment_delete_button"
-                data-action="delete-comment"
-                data-id={comment.id}
-              >
-                <i class="fas fa-trash-alt" />
-              </Button>
-            </div>
-
-            <Heading variant="comment_sub_heading">
-              <img
-                slot="leading"
-                src={comment.user.user_profile_image}
-                alt={comment.user.user_name}
-                class="h-[100px] w-[100px] rounded-full"
-              />
-              <div slot="title" class="flex flex-col username-and-comment-time">
-                <span class="username italic text-gray-400">
-                  {comment.user.user_name}
-                </span>
-                <p class="text-(--secondary-text-color)">
-                  Posted{" "}
-                  <span>{formatCommentPostDate(comment.created_at)}</span>
-                </p>
+                <Button
+                  variant="comment_edit_button"
+                  data-action="edit-comment"
+                  data-id={comment.id}
+                >
+                  <i class="fas fa-pencil-alt text-xl" />
+                </Button>
+                <Button
+                  variant="comment_delete_button"
+                  data-action="delete-comment"
+                  data-id={comment.id}
+                >
+                  <i class="fas fa-trash-alt" />
+                </Button>
               </div>
-            </Heading>
-
-            <CommentCardBodyContainer>
-              <Heading slot="heading" variant="comment_heading">
-                {comment.title}
+              <Heading variant="comment_sub_heading">
+                <img
+                  slot="leading"
+                  src={comment.user.user_profile_image}
+                  alt={comment.user.user_name}
+                  class="h-[100px] w-[100px] rounded-full"
+                />
+                <div
+                  slot="title"
+                  class="flex flex-col username-and-comment-time"
+                >
+                  <div class="tracking-tighter mb-0.5">
+                    <span class="username text-gray-400">
+                      {comment.user.user_name}
+                    </span>
+                    <p class="text-md text-(--secondary-text-color)">
+                      Posted:
+                      <span>{formatCommentPostDate(comment.created_at)}</span>
+                    </p>
+                  </div>
+                  <p class="text-sm text-gray-400 mt-1 italic">
+                    Edited:
+                    <span>
+                      {formatDate(
+                        comment.updated_at,
+                        "short",
+                        "numeric",
+                        "numeric",
+                      )}
+                    </span>
+                  </p>
+                </div>
               </Heading>
-              <p slot="paragraph">{comment.body}</p>
-              <button
-                slot="actions"
-                class="read-more-btn text-(--secondary-text-color) cursor-pointer"
-                type="button"
-                id="read_more_btn"
-              >
-                Read more
-              </button>
-            </CommentCardBodyContainer>
-
-            <Footer variant="comment_card_footer">
-              <LikesAndRatingsContainer
-                likeAmount={comment.likeAmount}
-                starsCount={comment.rating}
-                mealRatingNumber={comment.rating}
-                maximumRatingNumber={comment.maximumRatingNumber}
-              />
-            </Footer>
-          </Card>
-        ))
+              <CommentCardBodyContainer>
+                <Heading slot="heading" variant="comment_heading">
+                  {comment.title}
+                </Heading>
+                <p slot="paragraph">{comment.body}</p>
+                <button
+                  slot="actions"
+                  class="read-more-btn text-(--secondary-text-color) cursor-pointer"
+                  type="button"
+                  id="read_more_btn"
+                >
+                  Read more
+                </button>
+              </CommentCardBodyContainer>
+              <Footer variant="comment_card_footer">
+                <LikesAndRatingsContainer
+                  likeAmount={comment.likeAmount}
+                  starsCount={comment.rating}
+                  mealRatingNumber={comment.rating}
+                  maximumRatingNumber={comment.maximumRatingNumber}
+                />
+              </Footer>
+            </Card>
+          )
+        })
       ) : (
         <p class="text-(--secondary-text-color)">No comments</p>
       )

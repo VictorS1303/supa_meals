@@ -397,12 +397,15 @@ export const deleteMealComment = async (deleteCommentId) =>
 // Edit meal comment
 export const editMealComment = async (commentId, commentTitle, commentText, commentRating) =>
 {
+  const updateAt = new Date().toISOString()
+
   const {data: editCommentData, error: editCommentError} = await supabaseClient
     .from('comments')
     .update({
       title: commentTitle,
       body: commentText,
-      rating: commentRating
+      rating: commentRating,
+      updated_at: updateAt,
     })
     .eq('id', commentId)
     .select()
@@ -473,6 +476,7 @@ export const fetchComments = async (mealId) =>
       body,
       rating,
       created_at,
+      updated_at,
       user:user_id (
         id,
         user_name,
