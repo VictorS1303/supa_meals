@@ -461,7 +461,7 @@ export const resolveApiMealIdToInternalMealId = async (apiMealId) =>
 
 
 // Fetch comments
-export const fetchComments = async (mealId) =>
+export const fetchCommentsForSingleMeal = async (mealId) =>
 {
   if(!mealId)
   {
@@ -483,7 +483,7 @@ export const fetchComments = async (mealId) =>
         user_profile_image
       )
     `)
-    .eq("meal_id", mealId) // ✅ use meal_id
+    .eq("meal_id", mealId)
     .order("created_at", { ascending: true })
 
     if(error)
@@ -495,32 +495,22 @@ export const fetchComments = async (mealId) =>
     return data    
 }
 
-// export const fetchComments = async (mealId) => {
-//   if (!mealId) {
-//     throw new Error("Meal ID is required to fetch comments")
-//   }
+// Fetch all comments
+export const fetchCommentsCountForMeal = async () =>
+{
+    const { data, error } = await supabaseClient
+      .from("comments")
+      .select(`
+        meal_id,
+        meals ( api_meal_id )
+      `)
 
-//   const { data, error } = await supabaseClient
-//     .from("comments")
-//     .select(`
-//       comment_id,
-//       title,
-//       body,
-//       rating,
-//       created_at,
-//       user:user_id (
-//         id,
-//         user_name,
-//         user_profile_image
-//       )  
-//     `)
-//     .eq("comment_meal_id", mealId)  // ✅ Correct column
-//     .order("created_at", { ascending: true })
+    const counts = {}
 
-//   if (error) {
-//     console.error("Error fetching comments:", error)
-//     throw error
-//   }
+    data.forEach(({ meals }) => {
+      const apiMealId = meals.api_meal_id
+      counts[apiMealId] = (counts[apiMealId] || 0) + 1
+    })
 
-//   return data
-// }
+    return counts
+}

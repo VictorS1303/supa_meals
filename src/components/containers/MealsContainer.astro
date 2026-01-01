@@ -3,35 +3,77 @@ import Card from "../cards/Card.astro"
 import MealFilter from "../filters/MealFilter.astro"
 import Heading from "../headings/Heading.astro"
 import Link from "../links/Link.astro"
-import Overlay from '../../components/overlays/Overlay.astro'
-const { class: className, id: id, mealsForPage = [] } = Astro.props
+import Overlay from "../../components/overlays/Overlay.astro"
+import { resolveApiMealIdToInternalMealId } from "../../js/supabase/supabase_methods"
+
+import { fetchCommentsCountForMeal } from "../../js/supabase/supabase_methods"
+import MealCommentsCounter from "../counters/MealCommentsCounter.astro"
+
+const {
+  class: className,
+  id: id,
+  mealsForPage = [],
+  mealId: apiMealId,
+} = Astro.props
 
 // Use the paginated meals passed as props
 const mealsToDisplay = mealsForPage.length > 0 ? mealsForPage : []
 
-console.log("Displaying meals:", mealsToDisplay.length)
+// Resolve API meal ID to internal database meal ID
+let internalMealId = null
+
+try {
+  internalMealId = await resolveApiMealIdToInternalMealId(apiMealId)
+  console.log("Internal meal ID:", internalMealId)
+} catch (error) {
+  console.log("Failed to resolve internal meal ID: ", error)
+}
+
+// Fetch comment comment count for all meals
+const commentCounts = await fetchCommentsCountForMeal()
+console.log("Comment counts: ", commentCounts)
 ---
 
 <div class="mt-8">
   <MealFilter />
+
   <div
     class="meals-container w-full flex flex-wrap justify-center items-stretch py-10 gap-8 md:justify-between"
   >
     {
       mealsToDisplay.length > 0 ? (
-        mealsToDisplay.map((mealCard) => (
-          <Card variant="meal">
-            <img src={mealCard.strMealThumb} class="rounded-md" />
+        mealsToDisplay.map((mealCard) => {
+          const commentCount = commentCounts?.[mealCard.idMeal] ?? 0
 
-            <Heading variant="meal_card" name="title">
-              {mealCard.strMeal}
-            </Heading>
+          return (
+            <Card key={mealCard.idMeal} variant="meal">
+              {commentCount > 0 && (
+                <MealCommentsCounter class="absolute -top-4 -right-2">
+                  <div class="grid place-items-center">
+                    <i class="fas fa-comment text-3xl text-(--secondary-text-color)" />
+                    <span class="absolute inset-0 grid place-items-center text-sm font-semibold text-white">
+                      {commentCount}
+                    </span>
+                  </div>
+                </MealCommentsCounter>
+              )}
 
-            <Link href={`/meals/${mealCard.idMeal}`} variant="meal_card_link">
-              See Recipe
-            </Link>
-          </Card>
-        ))
+              <img
+                src={mealCard.strMealThumb}
+                class="rounded-md"
+                alt={mealCard.strMeal}
+              />
+
+              <Heading variant="meal_card" name="title">
+                {mealCard.strMeal}
+              </Heading>
+
+              <Link href={`/meals/${mealCard.idMeal}`} variant="meal_card_link">
+                See Recipe
+              </Link>
+            </Card>
+          )
+        })
       ) : (
         <p>No meals found</p>
       )

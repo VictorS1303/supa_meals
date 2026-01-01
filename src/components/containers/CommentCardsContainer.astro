@@ -7,12 +7,8 @@ import LikesAndRatingsContainer from "./LikesAndRatingsContainer.astro"
 import CommentCardBodyContainer from "../containers/CommentCardBodyContainer.astro"
 import Button from "../buttons/Button.astro"
 import { supabaseClient } from "../../js/supabase/supabase_client"
-import { fetchComments } from "../../js/supabase/supabase_methods"
 
 const { comments = [], mealId } = Astro.props
-
-// Add this to see what's actually in the comments data
-console.log("Full comment object:", JSON.stringify(comments[0], null, 2))
 ---
 
 <div class="flex flex-col mt-12">

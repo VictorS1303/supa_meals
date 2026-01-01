@@ -1,0 +1,7 @@
+---
+const {class: className, id: id, variant} = Astro.props
+---
+
+<article class={`${className}`} id={id}>
+  <slot />
+</article>

@@ -1,6 +1,6 @@
 ---
 import {
-  fetchComments,
+  fetchCommentsForSingleMeal,
   resolveApiMealIdToInternalMealId,
 } from "../../js/supabase/supabase_methods"
 import Heading from "../headings/Heading.astro"
@@ -22,7 +22,7 @@ try {
 }
 
 // Only fetch comments if we successfully resolved the internal ID
-const comments = internalMealId ? await fetchComments(internalMealId) : []
+const comments = internalMealId ? await fetchCommentsForSingleMeal(internalMealId) : []
 
 console.log("Comments fetched in section: ", comments)
 ---
