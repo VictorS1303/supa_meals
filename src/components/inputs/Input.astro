@@ -1,5 +1,9 @@
 ---
-const {class: className, id: id, placeholder} = Astro.props
+const { class: className, id: id, placeholder } = Astro.props
 ---
 
-<input class={`${className} flex self-center w-full border-b-2 border-[var(--secondary-text-color)] text-[var(--secondary-text-color)] focus:outline-0 focus:ring-0 md:justify-start md:max-w-[300px]`} id={id} placeholder={placeholder}/>
+<input
+  class={`${className} flex self-center w-full border-b-2 border-white text-white focus:outline-0 focus:ring-0 md:justify-start md:max-w-[300px]`}
+  id={id}
+  placeholder={placeholder}
+/>

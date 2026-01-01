@@ -38,7 +38,7 @@ console.log("Comment counts: ", commentCounts)
   <MealFilter />
 
   <div
-    class="meals-container w-full flex flex-wrap justify-center items-stretch py-10 gap-8 md:justify-between"
+    class="meals-container w-full grid grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))] py-10 gap-8 md:justify-between"
   >
     {
       mealsToDisplay.length > 0 ? (

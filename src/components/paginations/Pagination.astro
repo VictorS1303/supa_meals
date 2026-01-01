@@ -12,7 +12,7 @@ const { currentPage, totalPages } = Astro.props
     class={`prev-btn ${
       currentPage <= 1
         ? "pointer-events-none opacity-25"
-        : "bg-[var(--btn-background-color)]"
+        : "bg-(--secondary-text-color)"
     }`}
   >
     <i class="fas fa-arrow-left"></i>
@@ -28,7 +28,7 @@ const { currentPage, totalPages } = Astro.props
     class={`next-btn ${
       currentPage >= totalPages
         ? "pointer-events-none opacity-25"
-        : "bg-[var(--btn-background-color)]"
+        : "bg-(--secondary-text-color)"
     }`}
   >
     <i class="fas fa-arrow-right"></i>
