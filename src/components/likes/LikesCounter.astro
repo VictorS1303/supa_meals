@@ -2,9 +2,9 @@
 import Button from "../buttons/Button.astro"
 import LikeButton from "./LikeButton.astro"
 import LikeAmount from "./LikeAmount.astro"
+
 import { countLikes } from "../../js/supabase/supabase_methods"
 const { class: className, id: id, likeAmount, userId, commentId } = Astro.props
-
 const currentLikesAmount = await countLikes(commentId)
 ---
 
@@ -22,11 +22,14 @@ const currentLikesAmount = await countLikes(commentId)
   import {
     likeComment,
     hasUserLikedComment,
+    dislikeComment,
   } from "../../js/supabase/supabase_methods"
 
   const likesCounterContainers = document.querySelectorAll(
     ".like-counter-container",
   )
+
+  window.addEventListener("load", initializeCommentLikes)
 
   // Get current user
   const {
@@ -44,6 +47,17 @@ const currentLikesAmount = await countLikes(commentId)
     )
   })
 
+  function initializeCommentLikes() {
+    likesCounterContainers.forEach(async (likeCounterContainer) => {
+      await updateLikesContainerUI(likeCounterContainer)
+      await handleCommentLikeCheck(likeCounterContainer)
+
+      likeCounterContainer.addEventListener("click", (e) => {
+        handleCommentLike(e, likeCounterContainer)
+      })
+    })
+  }
+
   function updateLikesContainerUI(container) {
     const commentAuthorId = container.dataset.commentAuthorId
 
@@ -58,10 +72,12 @@ const currentLikesAmount = await countLikes(commentId)
       return
     }
 
-    const commentId = container?.dataset?.commentId
-    const likeIcon = container?.querySelector("i")
+    const commentId = container.dataset.commentId
+    const likeIcon = container.querySelector("i")
 
     const hasLiked = await hasUserLikedComment(currentUserId, commentId)
+
+    container.dataset.hasLiked = hasLiked ? "true" : "false"
 
     if (hasLiked && likeIcon) {
       likeIcon.classList.remove("fa-regular")
@@ -69,13 +85,29 @@ const currentLikesAmount = await countLikes(commentId)
     }
   }
 
-  function handleCommentLike(e, container) {
-    const commentId = container.dataset.commentId
-
+  async function handleCommentLike(e, likeCounterContainer) {
     if (!currentUserId) {
       return
     }
 
-    likeComment(currentUserId, commentId)
+    const commentId = likeCounterContainer?.dataset?.commentId
+    const likeIcon = likeCounterContainer?.querySelector("i")
+
+    const hasLiked = await hasUserLikedComment(currentUserId, commentId)
+
+    if (hasLiked) {
+      // DISLIKE
+      await dislikeComment(currentUserId, commentId)
+
+      likeIcon.classList.remove("fa-solid")
+      likeIcon.classList.add("fa-regular")
+    } else {
+      // LIKE
+      await likeComment(currentUserId, commentId)
+      likeCounterContainer.dataset.hasLiked = "true"
+
+      likeIcon.classList.add("fa-solid")
+      likeIcon.classList.remove("fa-regular")
+    }
   }
 </script>

@@ -548,6 +548,26 @@ export const likeComment = async (userId, commentId) =>
   return likeCommentData
 }
 
+// Dislike comment
+export const dislikeComment = async (userId, commentId) =>
+{
+  if(!userId || !commentId)
+  {
+    return
+  }
+
+  const {data: dislikeCommentData, error: dislikeCommentError} = await supabaseClient
+    .from('likes')
+    .delete()
+    .eq('user_id', userId)
+    .eq('comment_id', commentId)
+
+  if(!dislikeCommentData || dislikeCommentError)
+  {
+    console.log('Error disliking comment: ', dislikeCommentError)
+  }
+}
+
 // Count Likes
 export const countLikes = async (commentId) =>
 {
