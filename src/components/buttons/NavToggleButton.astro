@@ -36,10 +36,20 @@ const hiddenClass =
   ></span>
 </Button>
 
+<style>
+  span.scrolled {
+    background-color: var(--secondary-text-color);
+  }
+</style>
+
 <script>
   const navToggleButton = document.querySelector("#nav_toggle_button")
+  const navToggleButtonLines = navToggleButton?.querySelectorAll("span")
+
+  console.log(navToggleButtonLines)
   const mainNav = document.querySelector("#main_nav")
 
+  window.addEventListener("scroll", updateBackgroundColorOnScroll)
   navToggleButton?.addEventListener("click", toggleNavbar)
 
   function toggleNavbar() {
@@ -49,5 +59,14 @@ const hiddenClass =
     mainNav?.classList.contains("open")
       ? (document.body.style.overflow = "hidden")
       : (document.body.style.overflow = "scroll")
+  }
+
+  // Update background color on scroll
+  function updateBackgroundColorOnScroll() {
+    const isScrolled = window.scrollY > 400
+
+    navToggleButtonLines?.forEach((line) => {
+      line.classList.toggle("scrolled", isScrolled)
+    })
   }
 </script>
