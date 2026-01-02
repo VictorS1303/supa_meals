@@ -48,14 +48,18 @@ console.log("Meal ID: ", meal.idMeal)
       slot="background"
       src={src}
       alt={alt}
-      class="absolute inset-0 w-full h-full object-cover"
+      class="absolute inset-0 w-full h-full object-cover rounded-md"
     />
 
     <!-- Overlay -->
     <Overlay slot="overlay" class="absolute inset-0 opacity-25 bg-dark/50" />
 
     <!-- Backlink -->
-    <Link slot="backlink" href="/meals" class="text-white z-[10000]">
+    <Link
+      slot="backlink"
+      href="/meals"
+      class="text-white z-[10000] transition-text duration-150 ease-in hover:text-(--secondary-text-color)"
+    >
       <i class="fas fa-arrow-left"></i>
     </Link>
 
