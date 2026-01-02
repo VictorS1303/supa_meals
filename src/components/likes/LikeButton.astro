@@ -1,7 +1,15 @@
 ---
 import Button from "../buttons/Button.astro"
+import { likeComment } from "../../js/supabase/supabase_methods"
+
+const { id, userId, commentId } = Astro.props
 ---
 
-<Button class="like-button cursor-pointer" id="like_button">
+<Button
+  class="like-button cursor-pointer"
+  id="like_button"
+  data-user-id={userId}
+  data-comment-id={commentId}
+>
   <i class="fa-regular fa-thumbs-up"></i>
 </Button>

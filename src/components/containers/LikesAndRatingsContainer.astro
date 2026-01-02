@@ -1,13 +1,26 @@
 ---
 import LikesCounter from "../likes/LikesCounter.astro"
 import MealRatingContainer from "./MealRatingContainer.astro"
-const {class: className, id: id, likeAmount, starsCount, mealRatingNumber, maximumRatingNumber} = Astro.props
+const {
+  class: className,
+  id: id,
+  likeAmount,
+  starsCount,
+  mealRatingNumber,
+  maximumRatingNumber,
+  userId,
+  commentId,
+} = Astro.props
 ---
-<div class={`${className} likes-and-ratings-container flex items-center justify-between`} id={id}>
-  <LikesCounter likeAmount={likeAmount} />
-  <MealRatingContainer 
+
+<div
+  class={`${className} likes-and-ratings-container flex items-center justify-between`}
+  id={id}
+>
+  <LikesCounter userId={userId} commentId={commentId} likeAmount={likeAmount} />
+  <MealRatingContainer
     starsCount={starsCount}
-    mealRatingNumber={mealRatingNumber} 
-    maximumRatingNumber={maximumRatingNumber} 
+    mealRatingNumber={mealRatingNumber}
+    maximumRatingNumber={maximumRatingNumber}
   />
 </div>

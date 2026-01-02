@@ -235,6 +235,7 @@ export const likeMeal = async (userId, apiMealId) => {
 
 // Fetch liked meal data to store in database
 import { fetchSingleMealById } from "../meal_fetching"
+import { comment } from "postcss"
 export const fetchLikedMealData = async (apiMealId) =>
 {
     const {data: likedMealExistingData, error: likedMealExistingError} = await supabaseClient
@@ -513,4 +514,80 @@ export const fetchCommentsCountForMeal = async () =>
     })
 
     return counts
+}
+
+// Like Comment
+export const likeComment = async (userId, commentId) =>
+{
+
+  if(!userId || !commentId)
+  {
+    throw new Error('No user or no comment')
+  }
+
+  const {data: likeCommentData, error: likeCommentError} = await supabaseClient
+    .from('likes')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('comment_id', commentId)
+  
+
+  if(likeCommentData && likeCommentData.length === 0)
+  {
+    await supabaseClient
+      .from('likes')
+      .insert({user_id: userId, comment_id: commentId})
+      .select()
+  }
+
+  if(!likeCommentData || likeCommentError)
+  {
+    console.error('Could not like the comment', likeCommentError.message, likeCommentError.hint)
+  }
+
+  return likeCommentData
+}
+
+// Count Likes
+export const countLikes = async (commentId) =>
+{
+  if(!commentId)
+  {
+    throw new Error('Comment ID required for getting comment count')
+  }
+
+  const {count: commentCountData, error: commentCountError} = await supabaseClient
+    .from('likes') 
+    .select('*', {count: 'exact', head: true})
+    .eq('comment_id', commentId)
+
+  if(!commentCountData || commentCountError)
+  {
+    console.error('No comment data: ', commentCountError)
+    return 0
+  }
+
+  return commentCountData || 0
+}
+
+// Check if liked
+export const hasUserLikedComment = async (userId, commentId) => {
+  if (!userId || !commentId) 
+  {
+    return false
+  }
+
+  const { data, error } = await supabaseClient
+    .from("likes")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("comment_id", commentId)
+    .maybeSingle()
+
+  if (error) {
+    console.error("Error checking likes:", error)
+    return false
+  }
+
+  return !!data
 }
