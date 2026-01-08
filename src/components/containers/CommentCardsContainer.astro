@@ -195,29 +195,21 @@ const { comments = [], mealId } = Astro.props
 
     // DELEGATED CLICK HANDLER FOR COMMENTS SECTION - FIXED
     commentsSection?.addEventListener("click", (e) => {
-      console.log("Click detected on:", e.target)
-
       // Find the button - check if clicked element is button or inside a button
       const button = e.target.closest(
         "button[data-action], .comment-action-buttons-container button",
       )
 
       if (!button) {
-        console.log("No button found")
         return
       }
-
-      console.log("Button found:", button)
-      console.log("Button data-action:", button.dataset.action)
 
       const action = button.dataset.action
 
       if (action === "edit-comment") {
-        console.log("Opening edit form")
         openEditCommentForm({ target: button })
       }
       if (action === "delete-comment") {
-        console.log("Opening delete modal")
         openDeleteCommentConfirmationModal({ target: button })
       }
     })
