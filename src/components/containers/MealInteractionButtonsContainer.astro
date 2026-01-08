@@ -83,6 +83,8 @@ const { isLoggedIn } = Astro.props
 
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
+  import { handleRealtime } from "../../js/supabase/supabase_methods.js"
+  import { createCommentCard } from "../../js/supabase/realtime_dom_helper_methods"
   import {
     fetchLikedMealData,
     likeMeal,
@@ -100,6 +102,8 @@ const { isLoggedIn } = Astro.props
     "#already_liked_meal_dialog",
   )
 
+  // createCommentCard()
+
   const commentMealDialog = document.querySelector("#comment_meal_dialog")
   const commentMealForm = document.querySelector("form#comment_meal_form")
 
@@ -107,8 +111,6 @@ const { isLoggedIn } = Astro.props
 
   // Get meal ID from URL path
   const mealIdFromURL = window.location.pathname.split("/").pop()
-  console.log("Meal ID from URL:", mealIdFromURL)
-
   const mealInteractionButtons = document.querySelectorAll(
     ".meal-interaction-button",
   )
@@ -126,9 +128,7 @@ const { isLoggedIn } = Astro.props
 
   // Attach click handlers
   mealInteractionButtons.forEach((btn) => {
-    console.log("Attaching listener to mealInteractionButton:", btn)
     btn.addEventListener("click", async (e) => {
-      console.log("Button clicked!")
       await handleMealInteraction(e.currentTarget)
     })
   })
@@ -214,19 +214,6 @@ const { isLoggedIn } = Astro.props
 
     const internalMealId = await resolveApiMealIdToInternalMealId(mealIdFromURL)
 
-    // Resolve api_meal_id (from URL) to internal meal id
-    // const { data: mealData, error: mealError } = await supabaseClient
-    //   .from("meals")
-    //   .select("id")
-    //   .eq("api_meal_id", mealIdFromURL)
-    //   .single()
-
-    // if (!mealData || mealError) {
-    //   console.error("No meal found for api_meal_id: ", mealIdFromURL)
-    //   alert("Cannot submit comment: Meal not found!")
-    //   return
-    // }
-
     try {
       await commentMeal(internalMealId, {
         title: commentTitle,
@@ -236,6 +223,8 @@ const { isLoggedIn } = Astro.props
 
       commentMealDialog?.close()
       commentMealForm?.reset()
+
+      // window.location.reload()
     } catch (error) {
       console.error("Failed to submit comment: ", error)
       alert("Could not submit the comment!")
@@ -257,3 +246,15 @@ const { isLoggedIn } = Astro.props
 
   checkAuthStatus()
 </script>
+
+<!-- 
+if (eventType === "UPDATE" && target) {
+        target.dataset.commentTitle = payload.new.title
+        target.dataset.commentBodyText = payload.new.body
+        target.dataset.commentRating = payload.new.rating
+      }
+
+      if (eventType === "DELETE" && target) {
+        target.remove()
+      }
+-->

@@ -101,12 +101,6 @@ import Paragraph from "../paragraphs/Paragraph.astro"
       signUpSuccessDialog?.showModal()
       signUpSuccessDialogMessage.textContent = `You successfully signed up as ${user?.user_metadata?.username}! You will be redirected to your dashboard shortly.`
 
-      if (storeResult?.length) {
-        console.log("User stored in database successfully")
-      } else {
-        console.error("Failed to store user in database")
-      }
-
       setTimeout(() => {
         window.location.href = "/dashboard"
       }, 2000)

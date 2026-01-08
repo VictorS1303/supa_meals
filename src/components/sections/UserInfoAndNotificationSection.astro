@@ -37,8 +37,6 @@ const { class: className, id: id } = Astro.props
       data: { user },
     } = await supabaseClient.auth.getUser()
 
-    console.log("Greeting - User object:", user)
-
     if (!greeting) {
       console.error("Greeting element not found")
       return
@@ -50,8 +48,6 @@ const { class: className, id: id } = Astro.props
 
   async function setProfileImage() {
     const userProfileImage = document.querySelector("#user_profile_image")
-
-    console.log("Image element:", userProfileImage)
 
     if (!userProfileImage) {
       console.error("Profile image element #user_profile_image not found")

@@ -4,7 +4,6 @@ import Card from "../cards/Card.astro"
 const { class: className, id: id, likedMeals = [] } = Astro.props
 
 const likedMealsData = await fetchLikedMealsData()
-console.log("Liked meals data: ", likedMealsData)
 ---
 
 <div class={`${className} liked-meals-container flex gap-8`} id={id}></div>
@@ -24,7 +23,6 @@ console.log("Liked meals data: ", likedMealsData)
   // CREATE LIKED MEAL CARD //
   async function createLikedMealCard() {
     likedMeals.forEach((likedMeal) => {
-      console.log("Liked meal: ", likedMeal)
       // Liked Meal Card Wrapper
       const likedMealCardWrapper = createlikedMealCardWrapper(
         "relative grid liked-meal-card relative w-[225px] h-[250px] bg-white overflow-hidden rounded-md group",

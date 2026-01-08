@@ -10,21 +10,18 @@ import CommentCardBodyContainer from "../containers/CommentCardBodyContainer.ast
 
 const { mealId: apiMealId, headingText, class: className, id } = Astro.props
 
-console.log("Meal ID from props:", apiMealId)
-
 // Resolve API meal ID to internal database ID
 let internalMealId
 try {
   internalMealId = await resolveApiMealIdToInternalMealId(apiMealId)
-  console.log("Internal meal ID: ", internalMealId)
 } catch (error) {
   console.error("Failed to resolve internal meal ID: ", error)
 }
 
 // Only fetch comments if we successfully resolved the internal ID
-const comments = internalMealId ? await fetchCommentsForSingleMeal(internalMealId) : []
-
-console.log("Comments fetched in section: ", comments)
+const comments = internalMealId
+  ? await fetchCommentsForSingleMeal(internalMealId)
+  : []
 ---
 
 <Section class={`${className} my-7`} id={id}>
@@ -33,3 +30,98 @@ console.log("Comments fetched in section: ", comments)
   </Heading>
   <CommentCardsContainer comments={comments} mealId={internalMealId} />
 </Section>
+
+<script>
+  import { supabaseClient } from "../../js/supabase/supabase_client"
+  import {
+    deleteCommentFromDOM,
+    addCommentToDOM,
+    updateCommentInDOM,
+  } from "../../js/supabase/realtime_dom_helper_methods"
+  import {
+    deleteMealComment,
+    editMealComment,
+  } from "../../js/supabase/supabase_methods"
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const deleteDialog = document.querySelector(
+      "#confirm_delete_meal_comment_dialog",
+    )
+    const confirmDeleteBtn = deleteDialog?.querySelector(
+      "#confirm_delete_meal_comment_button",
+    )
+    const cancelDeleteBtn = deleteDialog?.querySelector(
+      "#cancel_delete_meal_comment_button",
+    )
+    const confirmParagraph = deleteDialog?.querySelector("p")
+
+    // Handle delete confirmation
+    async function handleConfirmDelete(e) {
+      if (e.target.matches("#cancel_delete_meal_comment_button")) {
+        deleteDialog?.close()
+        return
+      }
+
+      if (!e.target.matches("#confirm_delete_meal_comment_button")) return
+
+      const commentId = e.target.dataset.id
+      if (!commentId) return
+
+      const { error } = await deleteMealComment(commentId)
+      if (error) {
+        console.error("Error deleting comment:", error)
+        return
+      }
+
+      deleteDialog?.close()
+      // DOM removal handled by realtime event
+    }
+
+    confirmDeleteBtn?.addEventListener("click", handleConfirmDelete)
+    cancelDeleteBtn?.addEventListener("click", handleConfirmDelete)
+
+    // Delegated click handler for delete buttons
+    document
+      .querySelectorAll(".comments-section")
+      .forEach((commentsSection) => {
+        commentsSection.addEventListener("click", (e) => {
+          const button = e.target.closest(
+            "button[data-action='delete-comment']",
+          )
+          if (!button) return
+
+          confirmParagraph.textContent =
+            "Are you sure you want to delete your comment? This cannot be undone!"
+          confirmDeleteBtn?.setAttribute("data-id", button.dataset.id)
+          deleteDialog?.showModal()
+        })
+      })
+
+    // REALTIME COMMENTS
+    const commentSubscription = supabaseClient
+      .channel("comments")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "comments" },
+        (payload) => {
+          const { eventType } = payload
+
+          if (eventType === "INSERT") {
+            // Scope to the correct comments section
+            const commentsSection = document.querySelector(
+              `.comments-section[data-meal-id='${payload.new.meal_id}']`,
+            )
+
+            if (commentsSection) {
+              addCommentToDOM(payload.new.id, commentsSection)
+            }
+          } else if (eventType === "UPDATE") {
+            updateCommentInDOM(payload.new)
+          } else if (eventType === "DELETE") {
+            deleteCommentFromDOM(payload.old.id)
+          }
+        },
+      )
+      .subscribe()
+  })
+</script>

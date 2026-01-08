@@ -391,7 +391,8 @@ export const deleteMealComment = async (deleteCommentId) =>
       .from('comments')
       .delete()
       .eq('id', deleteCommentId)
-    
+      .select()
+
     return {data: deleteCommentData, error: deleteCommentError}
 }
 
@@ -610,4 +611,57 @@ export const hasUserLikedComment = async (userId, commentId) => {
   }
 
   return !!data
+}
+
+// Fetch single comment
+export const fetchSingleComment = async (commentId) =>
+{
+  const {data: commentData, error: commentError} = await supabaseClient
+    .from('comments')
+    .select(`
+      id,
+      title,
+      body,
+      rating,
+      created_at,
+      updated_at,
+      user:user_id (
+        id,
+        user_name,
+        user_profile_image
+      )
+    `)
+    .eq('id', commentId)
+    .single()
+
+  if(commentError)
+  {
+    console.log('Error fetching comment: ', commentError)
+    throw commentError
+  }
+
+  return commentData
+}
+
+// REAL TIME //
+export const handleRealtime = ({
+  supabaseClient,
+  channelName,
+  schema = "public",
+  table,
+  event = "*",
+  getTargetFromPayload,
+  onChange,
+} = {}) => {
+  return supabaseClient
+    .channel(channelName)
+    .on(
+      "postgres_changes",
+      { event, schema, table },
+      async (payload) => {
+        const target = getTargetFromPayload(payload) ?? null
+        await onChange({ payload, target })
+      }
+    )
+    .subscribe()
 }

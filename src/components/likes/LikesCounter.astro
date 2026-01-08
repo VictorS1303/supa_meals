@@ -20,6 +20,10 @@ const currentLikesAmount = await countLikes(commentId)
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
   import {
+    countLikes,
+    handleRealtime,
+  } from "../../js/supabase/supabase_methods"
+  import {
     likeComment,
     hasUserLikedComment,
     dislikeComment,
@@ -29,31 +33,22 @@ const currentLikesAmount = await countLikes(commentId)
     ".like-counter-container",
   )
 
-  window.addEventListener("load", initializeCommentLikes)
-
   // Get current user
   const {
     data: { session },
   } = await supabaseClient.auth.getSession()
-
   const currentUserId = session?.user?.id
 
-  likesCounterContainers.forEach(async (likesCounterContainer) => {
-    await updateLikesContainerUI(likesCounterContainer)
-    await handleCommentLikeCheck(likesCounterContainer)
-
-    likesCounterContainer.addEventListener("click", (e) =>
-      handleCommentLike(e, likesCounterContainer),
-    )
-  })
+  // Initialize likes on page load
+  window.addEventListener("load", initializeCommentLikes)
 
   function initializeCommentLikes() {
     likesCounterContainers.forEach(async (likeCounterContainer) => {
       await updateLikesContainerUI(likeCounterContainer)
       await handleCommentLikeCheck(likeCounterContainer)
 
-      likeCounterContainer.addEventListener("click", (e) => {
-        handleCommentLike(e, likeCounterContainer)
+      likeCounterContainer.addEventListener("click", async (e) => {
+        await handleCommentLike(e, likeCounterContainer)
       })
     })
   }
@@ -74,7 +69,6 @@ const currentLikesAmount = await countLikes(commentId)
 
     const commentId = container.dataset.commentId
     const likeIcon = container.querySelector("i")
-
     const hasLiked = await hasUserLikedComment(currentUserId, commentId)
 
     container.dataset.hasLiked = hasLiked ? "true" : "false"
@@ -82,32 +76,94 @@ const currentLikesAmount = await countLikes(commentId)
     if (hasLiked && likeIcon) {
       likeIcon.classList.remove("fa-regular")
       likeIcon.classList.add("fa-solid")
+    } else if (likeIcon) {
+      likeIcon.classList.remove("fa-solid")
+      likeIcon.classList.add("fa-regular")
     }
   }
 
   async function handleCommentLike(e, likeCounterContainer) {
-    if (!currentUserId) {
-      return
-    }
+    if (!currentUserId) return
 
-    const commentId = likeCounterContainer?.dataset?.commentId
-    const likeIcon = likeCounterContainer?.querySelector("i")
-
+    const commentId = likeCounterContainer.dataset.commentId
+    const likeIcon = likeCounterContainer.querySelector("i")
     const hasLiked = await hasUserLikedComment(currentUserId, commentId)
 
     if (hasLiked) {
       // DISLIKE
       await dislikeComment(currentUserId, commentId)
-
-      likeIcon.classList.remove("fa-solid")
-      likeIcon.classList.add("fa-regular")
     } else {
       // LIKE
       await likeComment(currentUserId, commentId)
-      likeCounterContainer.dataset.hasLiked = "true"
-
-      likeIcon.classList.add("fa-solid")
-      likeIcon.classList.remove("fa-regular")
     }
+
+    // Update count and icon after action
+    await updateLikeCount(likeCounterContainer)
+    await handleCommentLikeCheck(likeCounterContainer)
   }
+
+  async function updateLikeCount(likeCounterContainer) {
+    if (!likeCounterContainer) {
+      console.log(
+        "Like counter container not found - comment may have been deleted",
+      )
+      return
+    }
+
+    const commentId = likeCounterContainer.dataset.commentId
+    const amountEl = likeCounterContainer.querySelector(".like-amount")
+
+    if (!commentId || !amountEl) {
+      return
+    }
+
+    const newCount = await countLikes(commentId)
+    amountEl.textContent = newCount
+  }
+
+  // Handle likes in realtime
+  const likesChannel = supabaseClient
+    .channel("realtime-likes")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "likes",
+      },
+      async (payload) => {
+        const commentId = payload.new?.comment_id || payload.old?.comment_id
+
+        if (!commentId) {
+          return
+        }
+
+        const likeCounterContainer = document.querySelector(`
+          .like-counter-container[data-comment-id="${commentId}"]
+      `)
+
+        if (!likeCounterContainer) {
+          console.log(
+            "Target element not found - comment may have been deleted",
+          )
+          return
+        }
+
+        // Refetch like count
+        await updateLikeCount(likeCounterContainer)
+
+        // Update icon if current user triggered the change
+        const userId = payload.new?.user_id || payload.old?.user_id
+
+        if (userId === currentUserId) {
+          await handleCommentLikeCheck(likeCounterContainer)
+        }
+      },
+    )
+    .subscribe()
+
+  // Cleanup on page unload
+  window.addEventListener("beforeunload", () => {
+    supabaseClient.removeChannel(likesChannel)
+  })
 </script>

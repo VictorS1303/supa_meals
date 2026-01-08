@@ -24,14 +24,12 @@ let internalMealId = null
 
 try {
   internalMealId = await resolveApiMealIdToInternalMealId(apiMealId)
-  console.log("Internal meal ID:", internalMealId)
 } catch (error) {
   console.log("Failed to resolve internal meal ID: ", error)
 }
 
 // Fetch comment comment count for all meals
 const commentCounts = await fetchCommentsCountForMeal()
-console.log("Comment counts: ", commentCounts)
 ---
 
 <div class="mt-8">
