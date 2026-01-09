@@ -582,13 +582,12 @@ export const countLikes = async (commentId) =>
     .select('*', {count: 'exact', head: true})
     .eq('comment_id', commentId)
 
-  if(!commentCountData || commentCountError)
-  {
-    console.error('No comment data: ', commentCountError)
-    return 0
-  }
+    if (commentCountError) {
+      console.error('Error counting comments:', commentCountError)
+      return 0
+    }
 
-  return commentCountData || 0
+    return commentCountData ?? 0
 }
 
 // Check if liked
@@ -641,6 +640,25 @@ export const fetchSingleComment = async (commentId) =>
   }
 
   return commentData
+}
+
+
+// Fetch meal ID Map
+export const fetchMealIdMap = async () =>
+{
+  const {data, error} = await supabaseClient
+    .from('meals')
+    .select('id, api_meal_id')
+  
+  if(error)
+  {
+    console.error('Error fetching meals: ', error)
+    return {}
+  }
+
+  return Object.fromEntries(
+    data.map((meal) => [meal.id, meal.api_meal_id])
+  )
 }
 
 // REAL TIME //

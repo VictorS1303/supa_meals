@@ -44,9 +44,16 @@ const commentCounts = await fetchCommentsCountForMeal()
           const commentCount = commentCounts?.[mealCard.idMeal] ?? 0
 
           return (
-            <Card key={mealCard.idMeal} variant="meal">
+            <Card
+              key={mealCard.idMeal}
+              variant="meal"
+              data-meal-api-id={mealCard.idMeal}
+            >
               {commentCount > 0 && (
-                <MealCommentsCounter class="absolute -top-4 -right-2">
+                <MealCommentsCounter
+                  class="absolute -top-4 -right-2"
+                  data-meal-comment-counter
+                >
                   <div class="grid place-items-center">
                     <i class="fas fa-comment text-3xl text-(--secondary-text-color)" />
                     <span class="absolute inset-0 grid place-items-center text-sm font-semibold text-white">
@@ -78,3 +85,69 @@ const commentCounts = await fetchCommentsCountForMeal()
     }
   </div>
 </div>
+
+<script>
+  import { supabaseClient } from "../../js/supabase/supabase_client"
+  import { fetchMealIdMap } from "../../js/supabase/supabase_methods"
+
+  const mealCommentCountersMap = new Map()
+
+  const mealDataIds = document.querySelectorAll("[data-meal-id]")
+
+  mealDataIds.forEach((card) => {
+    const mealId = card.dataset.mealId
+    const mealCommentCounterMap = card.querySelector(
+      "[data-comment-counter] span",
+    )
+
+    if (mealCommentCounterMap) {
+      mealCommentCountersMap.set(mealId, mealCommentCountersMap)
+    }
+  })
+
+  // Set up realtime
+  supabaseClient
+    .channel("comments-realtime")
+    .on(
+      "postgres_changes",
+      {
+        event: "*",
+        schema: "public",
+        table: "comments",
+      },
+      async (payload) => {
+        const { eventType } = payload
+
+        const internalMealId =
+          eventType === "DELETE" ? payload.old.meal_id : payload.new.meal_id
+
+        const { data } = await supabaseClient
+          .from("meals")
+          .select("api_meal_id")
+          .eq("id", internalMealId)
+          .single()
+
+        if (!data?.api_meal_id) {
+          return
+        }
+
+        const counterElement = mealCommentCountersMap.get(data.api_meal_id)
+        if (!counterElement) {
+          return
+        }
+
+        let count = Number(counterElement.textContent || 0)
+        if (!count) {
+          return
+        }
+
+        if (eventType === "INSERT") {
+          count++
+        }
+        if (eventType === "DELETE") {
+          count = Math.max(count - 1, 0)
+        }
+      },
+    )
+    .subscribe()
+</script>

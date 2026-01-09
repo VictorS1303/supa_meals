@@ -1,6 +1,7 @@
 import { supabaseClient } from "./supabase_client.js"
 import { formatCommentPostDate, formatDate } from "../utils/formatters.js"
 import { hasUserLikedComment, countLikes, fetchSingleComment } from "./supabase_methods.js"
+import { updateStarDisplay } from "../utils/rating_stars.js"
 
 // Create comment card
 export const createCommentCard = async (comment, currentUserId) => {
