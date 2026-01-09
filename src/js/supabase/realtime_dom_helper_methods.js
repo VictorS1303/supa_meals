@@ -182,7 +182,7 @@ const createUsernameContainer = (username, usernameContainerClasses) => {
 // Create date of post container
 const createDateOfPostContainer = (comment, dateOfPostContainerClasses) => {
   const dateOfPostContainer = document.createElement('p')
-  dateOfPostContainer.className = dateOfPostContainerClasses
+  dateOfPostContainer.className = `${dateOfPostContainerClasses} posted-timestamp`
 
   // Format the date
   const formattedDate = formatCommentPostDate(comment.created_at)
@@ -307,27 +307,62 @@ const createCommentCardFooter = async (comment, currentUserId, hasLiked, isOwnCo
   const commentCardFooter = document.createElement('footer')
   commentCardFooter.className = commentCardFooterClasses
 
-  const likesAndRatingsContainer = await createLikesAndRatingsContainer(comment, currentUserId, hasLiked, isOwnComment, 'likes-and-ratings-container flex items-center justify-between')
+  // Likes & ratings container
+  const likesAndRatingsContainer = await createLikesAndRatingsContainer(
+    comment,
+    currentUserId,
+    hasLiked,
+    isOwnComment,
+    'likes-and-ratings-container flex items-center justify-between'
+  )
 
-  // Create rating container: number + stars
-  const ratingContainer = document.createElement('div')
-  ratingContainer.className = 'flex items-center gap-2 align-center'
+  commentCardFooter.appendChild(likesAndRatingsContainer)
+
+  // Create rating container (number + stars)
+  const ratingContainer = createRatingsContainer('flex items-center gap-2 align-center')
 
   // Rating number
-  const ratingNumber = createRatingNumber(comment.rating, 'text-(--secondary-text-color)')
+  const ratingNumber = createRatingNumber(comment.rating, 'rating-number text-(--secondary-text-color)')
   ratingContainer.appendChild(ratingNumber)
 
-  // Rating stars
-  const starContainer = createRatingStarsContainer(comment.rating, 'flex gap-1', 'text-(--secondary-text-color)')
+  // Rating stars → Create SVG-based stars with proper structure
+  const starContainer = document.createElement('div')
+  starContainer.className = 'rating-star-wrapper flex gap-1'
+  
+  const maxStars = 5
+  for (let i = 0; i < maxStars; i++) {
+    const wrapper = document.createElement('div')
+    wrapper.className = 'star-wrapper relative w-5 h-5'
+    
+    // Empty star (background)
+    const emptyStar = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    emptyStar.setAttribute('viewBox', '0 0 24 24')
+    emptyStar.setAttribute('fill', 'currentColor')
+    emptyStar.classList.add('absolute', 'inset-0', 'w-full', 'h-full', 'star-empty', 'text-gray-300')
+    emptyStar.innerHTML = '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>'
+    
+    // Filled star (foreground with clip-path)
+    const filledStar = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    filledStar.setAttribute('viewBox', '0 0 24 24')
+    filledStar.setAttribute('fill', 'currentColor')
+    filledStar.classList.add('absolute', 'inset-0', 'w-full', 'h-full', 'star-filled', 'text-yellow-400')
+    filledStar.style.clipPath = 'inset(0 100% 0 0)'
+    filledStar.innerHTML = '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>'
+    
+    wrapper.appendChild(emptyStar)
+    wrapper.appendChild(filledStar)
+    starContainer.appendChild(wrapper)
+  }
+  
+  // Set initial star display
+  updateStarDisplay(starContainer.querySelectorAll('.star-wrapper'), comment.rating)
+  
   ratingContainer.appendChild(starContainer)
-
-  // Append rating container to likes and ratings container
   likesAndRatingsContainer.appendChild(ratingContainer)
-
-  commentCardFooter.append(likesAndRatingsContainer)
 
   return commentCardFooter
 }
+
 
 // Create likes and ratings container
 const createLikesAndRatingsContainer = async (comment, currentUserId, hasLiked, isOwnComment, likesAndRatingsContainerClasses) => {
@@ -408,16 +443,7 @@ const createRatingsContainer = (ratingsContainerClasses) => {
 }
 
 // Create rating stars container
-const createRatingStarsContainer = (rating, ratingStarsContainerClasses, starColorClasses = 'text-(--secondary-text-color)') => {
-  const ratingStarsContainer = document.createElement('div')
-  ratingStarsContainer.className = ratingStarsContainerClasses
 
-  // Append rating stars
-  const ratingStars = createRatingStars(rating, 5, starColorClasses)
-  ratingStarsContainer.append(...ratingStars)
-
-  return ratingStarsContainer
-}
 
 // Create rating number
 const createRatingNumber = (ratingValue, ratingNumberClasses) => {
@@ -450,6 +476,44 @@ const createRatingStars = (rating, maxStars = 5, starColorClasses = '') => {
   return stars
 }
 
+const createRatingStarsContainer = (rating, containerClasses = 'flex gap-1', starColorClasses = '') => {
+  const container = document.createElement('div')
+  container.className = `rating-star-wrapper ${containerClasses}`
+  
+  const maxStars = 5
+
+  for (let i = 0; i < maxStars; i++) {
+    const wrapper = document.createElement('div')
+    wrapper.className = 'star-wrapper relative w-5 h-5'
+    wrapper.setAttribute('data-star-index', i + 1)
+
+    // Empty star
+    const emptyStar = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    emptyStar.setAttribute('viewBox', '0 0 24 24')
+    emptyStar.setAttribute('fill', 'currentColor')
+    emptyStar.classList.add('absolute', 'inset-0', 'w-full', 'h-full', 'star-empty', 'text-gray-300')
+    emptyStar.innerHTML = '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>'
+
+    // Filled star
+    const filledStar = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    filledStar.setAttribute('viewBox', '0 0 24 24')
+    filledStar.setAttribute('fill', 'currentColor')
+    filledStar.classList.add('absolute', 'inset-0', 'w-full', 'h-full', 'star-filled', starColorClasses || 'text-yellow-400')
+    filledStar.style.clipPath = 'inset(0 100% 0 0)'
+    filledStar.innerHTML = '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>'
+
+    wrapper.appendChild(emptyStar)
+    wrapper.appendChild(filledStar)
+    container.appendChild(wrapper)
+  }
+
+  // Set initial fill based on rating
+  const starWrappers = container.querySelectorAll('.star-wrapper')
+  updateStarDisplay(starWrappers, rating)
+
+  return container
+}
+
 // Create "No comments" message
 const createNoCommentsMessage = (noCommentsText, noCommentsClasses) =>
 {
@@ -465,28 +529,64 @@ export const updateCommentInDOM = (comment) => {
   const commentCard = document.querySelector(`.comment-card[data-id="${comment.id}"]`)
   if (!commentCard)
   {
+    console.log('Comment card not found')
     return
   }
+
+  console.log('Updating comment: ', comment.id, 'Rating: ', comment.rating)
 
   // Update dataset attributes
   commentCard.dataset.commentTitle = comment.title
   commentCard.dataset.commentBodyText = comment.body
   commentCard.dataset.commentRating = comment.rating
 
+  // Update rating number
+  const ratingNumber = commentCard?.querySelector('.rating-number')
+  if(ratingNumber)
+  {
+    ratingNumber.textContent = `${comment.rating} / 5`
+    console.log('Updated rating number')
+  }
+
+  // Update rating stars
+  const starContainer = commentCard?.querySelector('.rating-star-wrapper')
+
+  console.log('Star container found: ', !!starContainer)
+
+  if(starContainer) {
+    const starWrappers = starContainer.querySelectorAll('.star-wrapper')
+    console.log('Star wrappers found:', starWrappers.length)
+
+    if (starWrappers.length) {
+      updateStarDisplay(starWrappers, comment.rating)
+    }
+  }
+
   // Update title
   const titleElement = commentCard.querySelector("h3")
-  if (titleElement) titleElement.textContent = comment.title
+  if (titleElement) 
+  {
+titleElement.textContent = comment.title
+  }
 
   // Update body
   const bodyElement = commentCard.querySelector(".comment-card-body-container p")
-  if (bodyElement) bodyElement.textContent = comment.body
+  if (bodyElement)
+  {
+ bodyElement.textContent = comment.body
+  }
 
   // --- EDITED TIMESTAMP ---
   const headerContainer = commentCard.querySelector(".username-and-comment-time")
-  if (!headerContainer) return
+  if (!headerContainer)
+  {
+ return
+  }
 
   // Look for existing edited timestamp
   let editedContainer = headerContainer.querySelector(".edited-timestamp")
+
+headerContainer.querySelectorAll(".edited-timestamp").forEach(el => el.remove())
 
   if (comment.updated_at) {
     const formattedDate = formatDate(comment.updated_at, "short", "numeric", "numeric")
@@ -494,7 +594,11 @@ export const updateCommentInDOM = (comment) => {
     if (editedContainer) {
       // Already exists → just update the span
       const span = editedContainer.querySelector("span")
-      if (span) span.textContent = formattedDate
+      if (span) 
+      {
+        span.textContent = formattedDate
+      }
+
       editedContainer.classList.remove("hidden")
     } else {
       // Create only once if it doesn't exist
@@ -507,7 +611,7 @@ export const updateCommentInDOM = (comment) => {
       newEditedContainer.appendChild(span)
 
       // Append AFTER the "Posted:" container so layout stays correct
-      const postedContainer = headerContainer.querySelector("p")
+      const postedContainer = headerContainer.querySelector(".posted-timestamp")
       if (postedContainer) {
         postedContainer.insertAdjacentElement("afterend", newEditedContainer)
       } else {
@@ -518,6 +622,37 @@ export const updateCommentInDOM = (comment) => {
     // Hide if no updated_at
     editedContainer.classList.add("hidden")
   }
+}
+
+
+const updateCommentStars = (commentCard, rating) => {
+  const starContainer = commentCard.querySelector('.rating-star-wrapper')
+  if (!starContainer)
+  {
+    return
+  }
+
+  const starWrappers = starContainer.querySelectorAll('.star-wrapper')
+  if (!starWrappers.length) 
+  {
+    return
+  }
+
+  // Reset all stars
+  starWrappers.forEach((wrapper) => {
+    const filledStar = wrapper.querySelector('.star-filled')
+    if (filledStar)
+    {
+      filledStar.style.clipPath = 'inset(0 100% 0 0)'
+    }
+  })
+
+  // Force repaint
+  starContainer.offsetHeight
+
+  // Fill stars according to rating
+  updateStarDisplay(starWrappers, rating)
+  console.log('Stars updated to:', comment.rating)
 }
 
 export const addCommentToDOM = async (commentId, commentsSection) => {

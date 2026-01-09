@@ -123,7 +123,12 @@ const { comments = [], mealId } = Astro.props
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
   import { formatCommentPostDate, formatDate } from "../../js/utils/formatters"
-  import { updateStarDisplay } from "../../js/utils/rating_stars"
+  import {
+    updateStarDisplay,
+    attachEventListeners,
+    getMaxStars, // ← add this
+    getCurrentRating, // ← optional, if you use it
+  } from "../../js/utils/rating_stars"
   import {
     createCommentCard,
     updateCommentInDOM,
@@ -243,14 +248,20 @@ const { comments = [], mealId } = Astro.props
 
     function populateRatingStarsUI() {
       const starsContainer = editCommentForm.querySelector(".meal-rating-star")
-      if (starsContainer) {
-        const starWrappers = starsContainer.querySelectorAll(".star-wrapper")
-        const ratingInput = editCommentForm.querySelector(
-          '[name="comment_rating_input"]',
-        )
-        const currentRating = parseFloat(ratingInput.value) || 0
-        updateStarDisplay(starWrappers, currentRating)
-      }
+      if (!starsContainer) return
+
+      const starWrappers = starsContainer.querySelectorAll(".star-wrapper")
+      const ratingInput = editCommentForm.querySelector(
+        '[name="comment_rating_input"]',
+      )
+      const currentRating = parseFloat(ratingInput.value) || 0
+
+      // Render the current rating
+      updateStarDisplay(starWrappers, currentRating)
+
+      // Make the stars interactive inside the edit modal
+      const maxStars = getMaxStars(starsContainer)
+      attachEventListeners(starsContainer, starWrappers, ratingInput, maxStars)
     }
 
     function submitCommentEdit(e) {
