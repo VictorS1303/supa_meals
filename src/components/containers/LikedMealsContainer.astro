@@ -6,7 +6,11 @@ const { class: className, id: id, likedMeals = [] } = Astro.props
 const likedMealsData = await fetchLikedMealsData()
 ---
 
-<div class={`${className} liked-meals-container flex gap-8`} id={id}></div>
+<div
+  class={`${className} liked-meals-container grid grid-cols-1 gap-5 md:grid-cols-[repeat(auto-fill,_minmax(200px,_1fr))]`}
+  id={id}
+>
+</div>
 
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
