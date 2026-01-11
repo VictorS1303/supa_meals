@@ -25,6 +25,11 @@
     --modal-bg-color: #11181c;
 }
 
+html
+{
+    scroll-behavior: smooth;
+}
+
 @font-face
 {
     font-family: 'Circular';
@@ -168,3 +173,42 @@ i
 {
     pointer-events: none;
 }
+
+/* Comments */
+.comment-focus
+{
+    animation: zoomWiggle .3s linear forwards;
+}
+
+@keyframes zoomWiggle
+{
+    0%
+    {
+        transform: scale(1);
+    }
+    50%
+    {
+        transform: scale(1.1) rotateZ(-1deg);
+    }
+    60%
+    {
+        transform: rotate(1deg);
+    }
+    70%
+    {
+        transform: rotate(1deg);
+    }
+    80%
+    {
+        transform: rotate(-1deg);
+    }
+    90%
+    {
+        transform: rotate(1deg);
+    }
+    100%
+    {
+        transform: scale(1) rotate(0);
+    }
+}
+

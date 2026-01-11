@@ -19,15 +19,13 @@ const currentLikesAmount = await countLikes(commentId)
 
 <script>
   import { supabaseClient } from "../../js/supabase/supabase_client"
-  import {
-    countLikes,
-    handleRealtime,
-  } from "../../js/supabase/supabase_methods"
+  import { countLikes } from "../../js/supabase/supabase_methods"
   import {
     likeComment,
     hasUserLikedComment,
     dislikeComment,
   } from "../../js/supabase/supabase_methods"
+  import { createNotification } from "../../js/utils/notifications"
 
   const likesCounterContainers = document.querySelectorAll(
     ".like-counter-container",
@@ -83,23 +81,48 @@ const currentLikesAmount = await countLikes(commentId)
   }
 
   async function handleCommentLike(e, likeCounterContainer) {
-    if (!currentUserId) return
+    // Step 0: Safety check for container
+    if (!likeCounterContainer) return
 
+    // Step 1: Get commentId safely
     const commentId = likeCounterContainer.dataset.commentId
-    const likeIcon = likeCounterContainer.querySelector("i")
-    const hasLiked = await hasUserLikedComment(currentUserId, commentId)
-
-    if (hasLiked) {
-      // DISLIKE
-      await dislikeComment(currentUserId, commentId)
-    } else {
-      // LIKE
-      await likeComment(currentUserId, commentId)
+    if (!commentId) {
+      console.error("No comment data:", likeCounterContainer)
+      return
     }
 
-    // Update count and icon after action
-    await updateLikeCount(likeCounterContainer)
-    await handleCommentLikeCheck(likeCounterContainer)
+    // Step 2: Get the like icon
+    const likeIcon = likeCounterContainer.querySelector("i")
+
+    // Step 3: Check if user has already liked
+    const hasLiked = await hasUserLikedComment(currentUserId, commentId)
+
+    // Step 4: Insert or remove like
+    let likeSuccess = false
+    if (hasLiked) {
+      // DISLIKE
+      const { error } = await dislikeComment(currentUserId, commentId)
+      likeSuccess = !error
+    } else {
+      // LIKE
+      const { error } = await likeComment(currentUserId, commentId)
+      likeSuccess = !error
+    }
+
+    if (!likeSuccess) {
+      console.error("Failed to update like for comment:", commentId)
+      return
+    }
+
+    // Step 5: Re-select container in case DOM changed
+    const container = document.querySelector(
+      `.like-counter-container[data-comment-id="${commentId}"]`,
+    )
+    if (!container) return
+
+    // Step 6: Update the like count and icon in DOM
+    await updateLikeCount(container)
+    await handleCommentLikeCheck(container)
   }
 
   async function updateLikeCount(likeCounterContainer) {

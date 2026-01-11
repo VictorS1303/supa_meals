@@ -22,6 +22,8 @@ try {
 const comments = internalMealId
   ? await fetchCommentsForSingleMeal(internalMealId)
   : []
+
+console.log("Fetched comments: ", comments)
 ---
 
 <Section class={`${className} my-7`} id={id}>

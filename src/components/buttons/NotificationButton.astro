@@ -1,6 +1,10 @@
 ---
 import Button from "./Button.astro"
 const { id: id, popovertarget } = Astro.props
+
+import { fetchNotificationsAmount } from "../../js/supabase/supabase_methods"
+
+const notificationsAmount = await fetchNotificationsAmount()
 ---
 
 <Button
@@ -11,7 +15,7 @@ const { id: id, popovertarget } = Astro.props
 >
   <span
     class="notification-counter grid place-content-center absolute text-xs -right-[5px] -top-[3px] bg-(--notification-button-number-bg-color) h-[20px] w-[20px] p-[5px] rounded-full"
-    id="notification_counter">2</span
+    id="notification_counter">{notificationsAmount}</span
   >
   <i class="fa-solid fa-bell"></i>
 </Button>

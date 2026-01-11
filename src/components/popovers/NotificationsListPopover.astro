@@ -1,28 +1,55 @@
 ---
-const {
-  popovertarget,
-  notifications = [
-    {
-      notificationText: "Sarah liked your comment",
-      notificationTime: "2 minutes ago",
-      resource: "Rock Night — July 14",
-      commentPreview: "I think the venue should add more seating options...",
-      interactionType: "like",
-      isPostLiked: true,
-    },
-    {
-      notificationText: "Sarah liked your comment",
-      notificationTime: "2 minutes ago",
-      resource: "Rock Night — July 14",
-      commentPreview: "I think the venue should add more seating options...",
-      interactionType: "like",
-      isPostLiked: true,
-    },
-  ],
-  isPostLiked,
-} = Astro.props
-
 import Popover from "./Popover.astro"
+import { fetchNotifications } from "../../js/supabase/supabase_methods.js"
+import { createSupabaseServerClient } from "../../js/supabase/supabase_server_client.js"
+import { formatDate } from "../../js/utils/formatters"
+
+const supabaseServerClient = createSupabaseServerClient(Astro.cookies)
+
+const {
+  data: { session },
+  error: sessionError,
+} = await supabaseServerClient.auth.getSession()
+
+const currentUserId = session?.user?.id
+
+const notifications = currentUserId
+  ? await fetchNotifications(supabaseServerClient, currentUserId)
+  : []
+
+// Add this debug log
+console.log(
+  "Raw notification with comment:",
+  notifications.find((n) => n.target_object_type === "comment"),
+)
+
+console.log("🔹 Step 8: Notifications:", notifications)
+
+const getNotificationText = (type, objectType) => {
+  const messages = {
+    like: `liked your ${objectType}`,
+    comment: `comment on your ${objectType}`,
+  }
+
+  return messages[type] || `interacted with your ${objectType}`
+}
+
+const getNotificationLink = (notification) => {
+  console.log("Building link for:", notification)
+  console.log("Comment data:", notification.comment)
+  const { target_object_type, target_object_id } = notification
+
+  switch (target_object_type) {
+    case "comment":
+      // target_object_id is the comment ID
+      // notification.comment.meal_id is the meal ID
+      return `/meals/${notification.comment.meal.api_meal_id}#comment-${target_object_id}`
+    case "meal":
+      return `/meals/${target_object_id}`
+    default:
+      return "/dashboard"
+  }
+}
 ---
 
 <Popover popovertarget="notifications_list" class="notifications-list">
@@ -34,42 +61,82 @@ import Popover from "./Popover.astro"
         notifications.map((notification, index) => (
           <li
             key={index}
-            class="flex items-start gap-3 p-3 cursor-pointer border-b-2 border-(--secondary-text-color) last:border-0 hover:bg-gray-50/10"
+            class="notification flex items-start gap-3 p-3 cursor-pointer border-b-2 border-(--secondary-text-color) last:border-0 hover:bg-white/10"
           >
-            <div class="flex-1 min-w-0">
-              <div class="flex items-start justify-between mb-3">
-                <p
-                  class={`${isPostLiked ? "text-red-700" : "text-(--secondary-text-color)"} text-sm font-medium mb-3 `}
-                >
-                  {notification.notificationText}
-                </p>
-                <div class="flex flex-col items-start gap-1">
-                  <span class="text-xs text-gray-400">
-                    {notification.notificationTime}
-                  </span>
+            <a
+              href={getNotificationLink(notification)}
+              class="flex items-start gap-3 p-3 cursor-pointer block"
+              data-notification-id={notification.id}
+            >
+              <div class="flex flex-col gap-2">
+                <div class="flex flex-col items-start justify-between mb-3">
+                  <p
+                    class={`${!notification.is_read ? "text-(--secondary-text-color)" : ""} text-sm font-medium  whitespace-nowrap`}
+                  >
+                    {notification.actor.user_name}
+                    {getNotificationText(
+                      notification.interaction_type,
+                      notification.target_object_type,
+                    )}
+                  </p>
+                  <div class="flex flex-col items-start gap-1">
+                    <span class="text-xs text-gray-400">
+                      {formatDate(notification.created_at)}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="flex justify-between w-full">
+                  <div class="flex-1">
+                    {notification.target_object_type === "comment" ? (
+                      <p class="text-sm text-gray-500 truncate overflow-hidden text-ellipsis whitespace-normal mt-2">
+                        <q class="block italic">{notification.comment.body}</q>
+                      </p>
+                    ) : null}
+                  </div>
+
+                  {!notification.is_read ? (
+                    <span class="self-center shrink-0 w-2 h-2 bg-(--secondary-text-color) rounded-full" />
+                  ) : null}
                 </div>
               </div>
-
-              <div class="flex justify-between w-full">
-                <div class="flex-1">
-                  <p class="text-xs text-gray-400">
-                    On: {notification.resource}
-                  </p>
-                  <p class="text-sm text-gray-500 truncate overflow-hidden text-ellipsis whitespace-normal mt-2">
-                    <q class="block italic">{notification.commentPreview}</q>
-                  </p>
-                </div>
-
-                {!notification.read && (
-                  <span class="self-center shrink-0 w-2 h-2 bg-(--secondary-text-color) rounded-full" />
-                )}
-              </div>
-            </div>
+            </a>
           </li>
-        )) // <-- closes notifications.map
+        ))
       ) : (
         <li class="p-3 text-center text-sm text-gray-400">No notifications</li>
       )
     }
   </ul>
 </Popover>
+
+<script>
+  import { supabaseClient } from "../../js/supabase/supabase_client"
+  import { updateIsRead } from "../../js/supabase/supabase_methods"
+
+  const notificationsList = document.querySelector(
+    ".notifications-list-popover",
+  )
+
+  console.log("Notifications list found:", notificationsList)
+
+  notificationsList?.addEventListener("click", (e) => handleIsRead(e))
+
+  async function handleIsRead(e) {
+    console.log("Click detected:", e.target)
+
+    const target = e.target.closest("a[data-notification-id]")
+    console.log("Link target:", target)
+
+    if (!target) {
+      console.log("No notification link found")
+      return
+    }
+
+    const notificationId = target.dataset.notificationId
+    console.log("Updating notification ID:", notificationId)
+
+    const result = await updateIsRead(supabaseClient, notificationId)
+    console.log("Update result:", result)
+  }
+</script>

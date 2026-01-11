@@ -21,3 +21,32 @@ if (!singleMeal) {
   target="_blank"
   meal={singleMeal}
 />
+
+<script>
+  import { supabaseClient } from "../../js/supabase/supabase_client"
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const urlHash = window.location.hash.slice(1)
+
+    if (urlHash) {
+      const targetComment = document.getElementById(urlHash)
+
+      if (targetComment) {
+        console.log("Found target comment: ", urlHash)
+
+        window.addEventListener(
+          "scrollend",
+          () => {
+            targetComment.classList.add("comment-focus")
+          },
+          { once: true },
+        )
+
+        // Ensure scroll to comment (even though the browser should automatically do this)
+        targetComment.scrollIntoView({ behavior: "smooth", block: "center" })
+      } else {
+        console.log("Comment not found: ", urlHash)
+      }
+    }
+  })
+</script>

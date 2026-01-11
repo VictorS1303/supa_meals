@@ -24,6 +24,7 @@ const { comments = [], mealId } = Astro.props
               variant="comment"
               class="comment-card group relative"
               key={index}
+              id={`comment-${comment.id}`}
               data-id={comment.id}
               data-comment-title={comment.title}
               data-comment-body-text={comment.body}

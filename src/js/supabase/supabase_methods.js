@@ -518,55 +518,67 @@ export const fetchCommentsCountForMeal = async () =>
 }
 
 // Like Comment
-export const likeComment = async (userId, commentId) =>
-{
-
-  if(!userId || !commentId)
-  {
-    throw new Error('No user or no comment')
+export const likeComment = async (userId, commentId) => {
+  if (!userId || !commentId) {
+    return { data: null, error: new Error('No user or no comment') }
   }
 
-  const {data: likeCommentData, error: likeCommentError} = await supabaseClient
-    .from('likes')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('comment_id', commentId)
-  
-
-  if(likeCommentData && likeCommentData.length === 0)
-  {
-    await supabaseClient
+  try {
+    // Check if like already exists
+    const { data: likeCommentData, error: likeCommentError } = await supabaseClient
       .from('likes')
-      .insert({user_id: userId, comment_id: commentId})
-      .select()
-  }
+      .select('*')
+      .eq('user_id', userId)
+      .eq('comment_id', commentId)
 
-  if(!likeCommentData || likeCommentError)
-  {
-    console.error('Could not like the comment', likeCommentError.message, likeCommentError.hint)
-  }
+    if (likeCommentError) {
+      console.error('Could not check existing like:', likeCommentError)
+      return { data: null, error: likeCommentError }
+    }
 
-  return likeCommentData
+    // If no existing like, insert one
+    if (likeCommentData.length === 0) {
+      const { data: insertData, error: insertError } = await supabaseClient
+        .from('likes')
+        .insert({ user_id: userId, comment_id: commentId })
+        .select()
+
+      if (insertError) {
+        console.error('Could not insert like:', insertError)
+        return { data: null, error: insertError }
+      }
+
+      return { data: insertData, error: null }
+    }
+
+    // Like already exists
+    return { data: likeCommentData, error: null }
+  } catch (error) {
+    console.error('Error in likeComment:', error)
+    return { data: null, error }
+  }
 }
 
+
 // Dislike comment
-export const dislikeComment = async (userId, commentId) =>
-{
-  if(!userId || !commentId)
-  {
-    return
+export const dislikeComment = async (userId, commentId) => {
+  if (!userId || !commentId) {
+    return { data: null, error: new Error('No user or no comment') }
   }
 
-  const {data: dislikeCommentData, error: dislikeCommentError} = await supabaseClient
+  const { data: dislikeCommentData, error: dislikeCommentError } = await supabaseClient
     .from('likes')
     .delete()
     .eq('user_id', userId)
     .eq('comment_id', commentId)
+    .select()  // Add .select() to get the deleted data back
 
-  if(!dislikeCommentData || dislikeCommentError)
-  {
-    console.log('Error disliking comment: ', dislikeCommentError)
+  if (dislikeCommentError) {
+    console.error('Error disliking comment:', dislikeCommentError)
+    return { data: null, error: dislikeCommentError }
   }
+
+  return { data: dislikeCommentData, error: null }
 }
 
 // Count Likes
@@ -643,25 +655,58 @@ export const fetchSingleComment = async (commentId) =>
   return commentData
 }
 
-// REAL TIME //
-export const handleRealtime = ({
-  supabaseClient,
-  channelName,
-  schema = "public",
-  table,
-  event = "*",
-  getTargetFromPayload,
-  onChange,
-} = {}) => {
-  return supabaseClient
-    .channel(channelName)
-    .on(
-      "postgres_changes",
-      { event, schema, table },
-      async (payload) => {
-        const target = getTargetFromPayload(payload) ?? null
-        await onChange({ payload, target })
-      }
-    )
-    .subscribe()
+// Fetch notifications
+export const fetchNotifications = async (supabaseClient, userId) => {
+
+   if (!userId) {
+    return []
+  }
+
+  const { data: notificationData, error: notificationError } = await supabaseClient
+    .from('notifications')
+    .select(`
+      *,
+      actor:users!actor_id(user_name),
+      comment:comments!target_object_id(
+        body,
+        meal:meals!meal_id(api_meal_id)
+      )
+    `)
+    .eq('recipient_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (notificationError) {
+    console.error('Error getting notifications:', notificationError)
+    throw new Error(`Error getting notification(s): ${notificationError.message}`)
+  }
+
+  return notificationData || []
+}
+
+// Update is_read
+export const updateIsRead = async (supabaseClient, notificationId) => 
+{
+  const {data: notificationData, error: notificationError} = await supabaseClient
+    .from('notifications')
+    .update({is_read: true})
+    .eq('id', notificationId)
+    .select()
+  
+  if(!notificationData || notificationError)
+  {
+    console.error('Error marking notification as read: ', notificationError)
+    return {data: null, error}
+  }
+
+  return { data, error: null }
+}
+
+// Fetch amount of notifications
+export const fetchNotificationsAmount = async () =>
+{
+  const {count: notificationsCount, error: notificationsCountError} = await supabaseClient
+    .from('notifications')
+    .select('*', {count: 'exact', head: true})
+
+  return notificationsCount || 0
 }
