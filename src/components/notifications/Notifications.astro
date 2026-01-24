@@ -1,18 +1,27 @@
 ---
 import NotificationButton from "../buttons/NotificationButton.astro"
 import NotificationsListPopover from "../popovers/NotificationsListPopover.astro"
-const {
-  class: className,
-  notifications
-} = Astro.props
+
+const { class: className, notifications } = Astro.props
+const session = Astro.locals.session
+const supabaseServerClient = Astro.locals.supabaseServerClient
 ---
-<article class={`${className} md:order-1`}>
+
+<article class=`${className} notifications-wrapper md:order-1`>
   <NotificationButton
     id="notifications_button"
     popovertarget="notifications_list"
+    session={session}
+    supabaseServerClient={supabaseServerClient}
   />
   <NotificationsListPopover
     popovertarget="notifications_list"
     notifications={notifications}
   />
 </article>
+
+<script>
+  import { createNotifications } from "../../js/supabase/realtime_dom_helper_methods.js"
+  const notification = await createNotifications()
+  console.log("Notification: ", notification)
+</script>

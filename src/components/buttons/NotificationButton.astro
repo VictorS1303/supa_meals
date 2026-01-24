@@ -1,10 +1,23 @@
 ---
+// @ts-nocheck
 import Button from "./Button.astro"
-const { id: id, popovertarget } = Astro.props
-
 import { fetchNotificationsAmount } from "../../js/supabase/supabase_methods"
 
-const notificationsAmount = await fetchNotificationsAmount()
+const { id, popovertarget, supabaseServerClient } = Astro.props
+
+const session = Astro.locals.session
+const currentUserId = session?.user?.id
+
+console.log("SERVER - User ID:", currentUserId)
+console.log("SERVER - Has server client:", !!supabaseServerClient)
+
+const notificationsAmount =
+  currentUserId && supabaseServerClient
+    ? await fetchNotificationsAmount(currentUserId, supabaseServerClient)
+    : 0
+
+console.log("SERVER - Initial notifications amount:", notificationsAmount)
+console.log("SERVER - User ID:", currentUserId)
 ---
 
 <Button
@@ -22,6 +35,9 @@ const notificationsAmount = await fetchNotificationsAmount()
 
 <script>
   import { createPopper } from "@popperjs/core"
+  import { supabaseClient } from "../../js/supabase/supabase_client"
+  import { updateNotificationsCounter } from "../../js/supabase/realtime_dom_helper_methods.js"
+  import { fetchNotificationsAmount } from "../../js/supabase/supabase_methods"
 
   document.addEventListener("DOMContentLoaded", () => {
     const notificationsButton = document.querySelector("[popovertarget]")

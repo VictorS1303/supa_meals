@@ -563,22 +563,22 @@ export const likeComment = async (userId, commentId) => {
 // Dislike comment
 export const dislikeComment = async (userId, commentId) => {
   if (!userId || !commentId) {
-    return { data: null, error: new Error('No user or no comment') }
+    return { data: null, error: new Error("Missing data") }
   }
 
-  const { data: dislikeCommentData, error: dislikeCommentError } = await supabaseClient
-    .from('likes')
-    .delete()
-    .eq('user_id', userId)
-    .eq('comment_id', commentId)
-    .select()  // Add .select() to get the deleted data back
+  const { data, error } = await supabaseClient
+    .from("notifications")
+    .update({ is_read: true })
+    .eq("recipient_id", userId)          // ✅ FIX
+    .eq("target_object_id", commentId)
+    .eq("interaction_type", "like")
 
-  if (dislikeCommentError) {
-    console.error('Error disliking comment:', dislikeCommentError)
-    return { data: null, error: dislikeCommentError }
+  if (error) {
+    console.error("Error disliking comment:", error)
+    return { data: null, error }
   }
 
-  return { data: dislikeCommentData, error: null }
+  return { data, error: null }
 }
 
 // Count Likes
@@ -683,6 +683,28 @@ export const fetchNotifications = async (supabaseClient, userId) => {
   return notificationData || []
 }
 
+// Fetch single notification
+export const fetchSingleNotification = async (supabaseClient, notificationId) =>
+{
+  const {data: notificationData, error: notificationError} = await supabaseClient
+    .from('notifications')
+    .select(`
+      *,
+      actor:users!actor_id(user_name),
+      comment:comments!target_object_id(body, meal:meals!meal_id(api_meal_id))
+    `)
+    .eq('id', notificationId)
+    .single()
+
+  if(notificationError)
+  {
+    console.error('Error fetching notification: ', notificationError)
+    throw new Error(`Error fetching notification: ${notificationError.message, notificationError.hint}`)
+  }
+
+  return notificationData
+}
+
 // Update is_read
 export const updateIsRead = async (supabaseClient, notificationId) => 
 {
@@ -702,11 +724,28 @@ export const updateIsRead = async (supabaseClient, notificationId) =>
 }
 
 // Fetch amount of notifications
-export const fetchNotificationsAmount = async () =>
-{
-  const {count: notificationsCount, error: notificationsCountError} = await supabaseClient
-    .from('notifications')
-    .select('*', {count: 'exact', head: true})
+export const fetchNotificationsAmount = async (userId, supabaseClient) => {
+  if (!userId)
+  {
+    return 0
+  }
 
-  return notificationsCount || 0
+  if (!supabaseClient) {
+    throw new Error(
+      "fetchNotificationsAmount: supabase client was not provided"
+    )
+  }
+
+  const { count, error } = await supabaseClient
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("recipient_id", userId)
+    .eq("is_read", false)
+
+  if (error) {
+    console.error("Failed to fetch notifications count:", error)
+    return 0
+  }
+
+  return count ?? 0
 }

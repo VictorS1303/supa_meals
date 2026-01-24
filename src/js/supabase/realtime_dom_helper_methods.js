@@ -1,7 +1,7 @@
 import { supabaseClient } from "./supabase_client.js"
+import { fetchNotificationsAmount } from "./supabase_methods.js"
 import { formatCommentPostDate, formatDate } from "../utils/formatters.js"
 import { hasUserLikedComment, countLikes, fetchSingleComment } from "./supabase_methods.js"
-
 // Create comment card
 export const createCommentCard = async (comment, currentUserId) => {
   const commentCard = document.createElement('article')
@@ -699,4 +699,258 @@ export const deleteCommentFromDOM = (commentId) => {
     )
     commentSection.appendChild(noCommentsMessage)
   }
+}
+
+
+// NOTIFICATIONS //
+export const createNotifications = async () =>
+{
+  // Get current user
+  const { data: { session } } = await supabaseClient.auth.getSession()
+  const currentUserId = session?.user?.id
+  
+  if (!currentUserId) {
+    console.log("No user logged in")
+    return
+  }
+  
+  const notificationsButton = document.getElementById('notifications_button')
+  
+  
+  // Target the EXISTING Astro-rendered popover
+  const notificationsListPopover = document.querySelector('.notifications-list')
+  const notificationsListUL = notificationsListPopover?.querySelector('.notifications-list-popover')
+  
+  if (!notificationsListPopover || !notificationsListUL) {
+    console.error("Notifications elements not found")
+    return
+  }
+  
+  // Setup Popper instance with the existing popover
+  const popperInstance = Popper.createPopper(notificationsButton, notificationsListPopover, {
+    placement: 'bottom-end',
+    modifiers: [
+      {
+        name: 'offset',
+        options: {
+          offset: [0, 8],
+        }
+      },
+    ]
+  })
+  
+  // Handle popover toggle
+  notificationsListPopover.addEventListener('toggle', (e) => {
+    if(e.newState === 'open')
+    {
+      popperInstance.update()
+      console.log("Notifications popover opened")
+    }
+  })
+}
+
+export function createNotificationsCounter(notificationsCounterClasses, notificationsCounterId, notificationsCount)
+{
+  const notificationsCounter = document.createElement('span')
+  notificationsCounter.className = notificationsCounterClasses
+  notificationsCounter.id = notificationsCounterId
+  notificationsCounter.textContent = notificationsCount
+  return notificationsCounter
+}
+
+// Update notifications counter
+export const updateNotificationsCounter = (newCount) => {
+  const counter = document.getElementById("notification_counter")
+  if (!counter)
+  {
+    return
+  }
+  const count = Number(newCount) || 0
+  counter.textContent = count
+  counter.style.display = count > 0 ? "grid" : "none"
+}
+
+// NOTIFICATIONS LIST //
+
+// Create Notifications List Wrapper
+const createNotificationsListWrapper = (notificationsListWrapperClasses, notificationsListWrapperId) =>
+{
+  const notificationsListWrapper = document.createElement('article')
+  notificationsListWrapper.className = notificationsListWrapperClasses
+  notificationsListWrapper.id = notificationsListWrapperId
+  return notificationsListWrapper
+}
+
+// Create notifications list li
+export const createNotificationsListLI = (classes, id, notification) =>
+{
+  const li = document.createElement('li')
+  li.className = classes
+  li.id = id
+
+  const link =
+    createNotificationsListLiLink(
+      'flex flex-col items-start gap-1 p-3 block',
+      notification
+    )
+
+  
+
+  li.append(link)
+
+  return li
+}
+
+// Create notification date wrapper
+const createNotificationDateWrapper = (notificationDateWrapperClasses, notification) =>
+{
+  const notificationDateWrapper = document.createElement('div')
+  notificationDateWrapper.className = notificationDateWrapperClasses
+
+  const notificationDate =
+    createNotificationDate(
+      'text-xs text-gray-400',
+      notification.created_at
+    )
+
+  notificationDateWrapper.appendChild(notificationDate)
+  return notificationDateWrapper
+}
+
+// Create notification date
+const createNotificationDate = (notificationDateClasses, dateValue) =>
+{
+  const notificationDate = document.createElement('span')
+  notificationDate.className = notificationDateClasses
+  notificationDate.textContent = formatDate(dateValue) // ✅ formatted once
+
+  return notificationDate
+}
+
+// Create is read marker
+const createIsNotificationReadMarker = (classes, isNotificationRead) =>
+{
+  const isNotificationReadMarker = document.createElement('span')
+  isNotificationReadMarker.className = classes
+
+  if (!isNotificationRead) {
+    isNotificationReadMarker.classList.add('block', 'text-(--secondary-text-color)')
+  } else {
+    isNotificationReadMarker.classList.add('hidden')
+  }
+
+  return isNotificationReadMarker
+}
+
+// Create notifications list li link
+import { getNotificationLink } from "../utils/notifications_content_helper_methods.js"
+
+const createNotificationsListLiLink = (notificationsListLiLinkClasses, notification) =>
+{
+  const notificationListLiLink = document.createElement('a')
+  notificationListLiLink.className = notificationsListLiLinkClasses
+  notificationListLiLink.setAttribute('href', getNotificationLink(notification))
+  notificationListLiLink.setAttribute('data-notification-id', notification.id)
+
+  // Append - pass full notification object
+  const notificationsListLiLinkContentWrapper = createNotificationsListLiLinkContentWrapper('flex flex-col gap-2', notification)
+
+  notificationListLiLink.append(notificationsListLiLinkContentWrapper)
+
+  return notificationListLiLink
+}
+
+
+
+// Create notifications list li link content wrapper
+const createNotificationsListLiLinkContentWrapper = (notificationsListLiLinkContentWrapperClasses, notification) =>
+{
+  const notificationsListLiLinkContentWrapper = document.createElement('div')
+  notificationsListLiLinkContentWrapper.className = notificationsListLiLinkContentWrapperClasses
+
+  // Append
+  const notificationsListLiLinkContentHeadingWrapper = createNotificationsListLiLinkContentHeadingWrapper('flex flex-col items-start justify-between mb-3')
+  const notificationDateWrapper = createNotificationDateWrapper('flex flex-col items-start gap-1', notification)
+  const notificationContentAndIsReadMarkerContainer = createNotificationContentAndIsReadMarkerContainer('flex justify-between w-full')
+  const notificationsHeadingMessageText = createNotificationsHeadingMessageText('text-(--secondary-text-color) text-sm font-medium whitespace-nowrap', notification.type, notification.target_object_type)
+  const notificationContentWrapper = createNotificationContentWrapper('flex-1')
+  const notificationParagraph = createNotificationParagraph('text-sm text-gray-500 truncate overflow-hidden text-ellipsis whitespace-normal mt-2', notification.comment)
+  const isReadMarker =
+    createIsNotificationReadMarker(
+      'self-center shrink-0 w-2 h-2 bg-(--secondary-text-color) rounded-full',
+      notification.is_read
+    )
+
+  notificationsListLiLinkContentWrapper.append(notificationsListLiLinkContentHeadingWrapper, notificationsHeadingMessageText, notificationContentAndIsReadMarkerContainer)
+  notificationsListLiLinkContentHeadingWrapper.append(notificationsHeadingMessageText, notificationDateWrapper)
+  notificationContentAndIsReadMarkerContainer.append(notificationContentWrapper, isReadMarker)
+  notificationContentWrapper.append(notificationParagraph)
+
+  return notificationsListLiLinkContentWrapper
+}
+
+// Create ntoification paragraph
+const createNotificationParagraph = (notificationParagraphClasses, comment) =>
+{
+  const notificationParagraph = document.createElement('p')
+  notificationParagraph.className = notificationParagraphClasses
+
+  // Append
+  const notificationQuote = createNotificationQuote('block italic', comment.body)
+
+  console.log('Comment body: ', comment.body)
+
+  notificationParagraph.append(notificationQuote)
+
+  return notificationParagraph
+}
+
+// Create notification quote
+const createNotificationQuote = (notificationQuoteClasses, notificationCommentText) =>
+{
+  const notificationQuote = document.createElement('q')
+  notificationQuote.className = notificationQuoteClasses
+  notificationQuote.textContent = notificationCommentText
+
+  return notificationQuote
+}
+
+
+// Create nofitication content and is read marker container
+const createNotificationContentAndIsReadMarkerContainer = (notificationContentAndIsReadMarkerContainerClasses) =>
+{
+  const notificationContentAndIsReadMarkerContainer = document.createElement('div')
+  notificationContentAndIsReadMarkerContainer.className = notificationContentAndIsReadMarkerContainerClasses
+  return notificationContentAndIsReadMarkerContainer
+}
+
+// Create notification content wrapper
+const createNotificationContentWrapper = (notificationContentWrapperClasses) =>
+{
+  const notificationContentWrapper = document.createElement('div')
+  notificationContentWrapper.className = notificationContentWrapperClasses
+
+  return notificationContentWrapper
+}
+
+// Create notifications heading message text
+import { getNotificationText } from "../utils/notifications_content_helper_methods.js"
+
+const createNotificationsHeadingMessageText = (notificationsHeadingMessageTextClasses, notificationType, notificationObjectType) =>
+{
+  const notificationsHeadingMessageText = document.createElement('p')
+  notificationsHeadingMessageText.className = notificationsHeadingMessageTextClasses
+  notificationsHeadingMessageText.textContent = getNotificationText(notificationType, notificationObjectType)
+
+  return notificationsHeadingMessageText
+}
+
+
+// Create notifications list li link content heading wrapper
+const createNotificationsListLiLinkContentHeadingWrapper = (notificationsListLiLinkContentHeadingWrapperClasses) =>
+{
+  const notificationsListLiLinkContentHeadingWrapper = document.createElement('div')
+  notificationsListLiLinkContentHeadingWrapper.className = notificationsListLiLinkContentHeadingWrapperClasses
+
+  return notificationsListLiLinkContentHeadingWrapper
 }
