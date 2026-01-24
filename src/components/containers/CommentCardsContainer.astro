@@ -184,16 +184,25 @@ const { comments = [], mealId } = Astro.props
       deleteMealCommentConfirmationDialog?.close()
       return
     }
-    const deleteButtonId = e.target.dataset.id
-    const { data: deleteCommentData, error: deleteCommentError } =
-      await deleteMealComment(deleteButtonId)
 
-    if (!deleteCommentData || deleteCommentError) {
-      console.error("Error deleting comment: ", deleteCommentError)
-    } else {
+    const deleteButton = e.target.closest("[data-id]")
+    if (!deleteButton) return
+
+    const deleteButtonId = deleteButton.dataset.id
+
+    try {
+      const { error } = await deleteMealComment(deleteButtonId)
+
+      if (error) {
+        console.error("Error deleting comment:", error)
+        return
+      }
+
       document.querySelector(`[data-comment-id="${deleteButtonId}"]`)?.remove()
+    } catch (err) {
+      console.error("Delete failed:", err)
+    } finally {
+      deleteMealCommentConfirmationDialog?.close()
     }
-
-    deleteMealCommentConfirmationDialog?.close()
   }
 </script>
