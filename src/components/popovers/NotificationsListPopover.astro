@@ -121,8 +121,9 @@ const notifications = currentUserId
       return
     }
 
-    const notificationsChannel = supabaseClient
-      .channel("notifications-channel")
+    // INSERT
+    const notificationsInsertChannel = supabaseClient
+      .channel("notifications-insert-channel")
       .on(
         "postgres_changes",
         {
@@ -136,9 +137,27 @@ const notifications = currentUserId
         },
       )
       .subscribe()
+
+    // DELETE
+    const notificationsDeleteChannel = supabaseClient
+      .channel("notifications-delete-channel")
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "notifications",
+          filter: `recipient_id=eq.${currentUserId}`,
+        },
+        (payload) => {
+          console.log("Notification deleted: ", payload.old)
+          handleDeleteNotification(payload.old)
+        },
+      )
+      .subscribe()
   }
 
-  async function handleNewNotification(notificationFromRealtime) {
+  async function handleDeleteNotification(notificationFromRealtime) {
     if (!notificationsList) {
       return
     }
@@ -167,6 +186,31 @@ const notifications = currentUserId
       updateNotificationsCounter(notificationCounterValue + 1)
     } catch (error) {
       console.error("Error handling notification: ", error)
+    }
+  }
+
+  const handleNotificationDelete = (deletedNotification) => {
+    if (!notificationsList) {
+      return
+    }
+
+    // Remove the corresponding notification
+    const notificationLi = document.querySelector(
+      `notification-${deletedNotification.id}`,
+    )
+
+    if (notificationLi) {
+      console.log("Removing notification from DOM: ", deletedNotification.id)
+
+      notificationLi.remove()
+
+      // Update notifications counter
+      const notificationCounterValue = parseInt(
+        notificationsCounter?.textContent || "0",
+      )
+      updateNotificationsCounter(notificationCounterValue - 1)
+    } else {
+      console.warn("Notification LI not found in DOM: ", deletedNotification)
     }
   }
 

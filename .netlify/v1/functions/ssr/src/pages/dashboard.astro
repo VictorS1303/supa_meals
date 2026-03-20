@@ -1,0 +1,84 @@
+---
+import { supabaseClient } from "../js/supabase/supabase_client"
+import {
+  fetchLikedMealData,
+  fetchLikedMealsData,
+} from "../js/supabase/supabase_methods.js"
+
+import UserInfoAndNotificationSection from "../components/sections/UserInfoAndNotificationSection.astro"
+import LikedMealsSection from "../components/sections/LikedMealsSection.astro"
+import Link from "../components/links/Link.astro"
+import Layout from "../layouts/Layout.astro"
+import AuthenticateLockOverlayLayout from "../layouts/AuthenticateLockOverlayLayout.astro"
+import DislikeMeal from "../components/dislike_meal/DislikeMeal.astro"
+
+const {
+  data: { session },
+} = await supabaseClient.auth.getSession()
+
+const user = session?.user
+const isUserAuthenticated = !!user
+
+const authOptionLinks = [
+  { buttonText: "Sign up", href: "/register/sign-up" },
+  { buttonText: "Login", href: "/register/login" },
+]
+
+const likedMeals = await fetchLikedMealsData()
+
+const dialogActionButtons = [
+  {
+    buttonText: "Delete meal",
+    isDeleteDialogButton: true,
+    id: "confirm_delete_meal_button", // required
+    dataAction: "delete", // optional but expected
+  },
+]
+---
+
+<Layout title="Dashboard">
+  <!-- HIDDEN BY DEFAULT — JS will decide -->
+  <div id="dashboard_content_wrapper" style="display:none;">
+    <UserInfoAndNotificationSection />
+    <div class="mt-12 flex flex-col gap-20">
+      <LikedMealsSection likedMeals={likedMeals} />
+    </div>
+  </div>
+
+  <!-- VISIBLE BY DEFAULT — JS will hide if user is logged in -->
+  <div id="dashboard_lock_overlay_wrapper" style="display:block;">
+    <AuthenticateLockOverlayLayout
+      slot="dashboard-lock"
+      id="dashboard_authenticate_overlay_layout"
+      authOptionLinks={authOptionLinks}
+    />
+  </div>
+
+  <DislikeMeal dialogActionButtons={dialogActionButtons} />
+</Layout>
+
+<script>
+  import { supabaseClient } from "../js/supabase/supabase_client"
+  import { updateAuthOverlayDisplayState } from "../js/utils/auth_overlay_display.js"
+  import { formatGreeting } from "../js/utils/formatters"
+
+  const pageTitle = document.querySelector("#page_title")
+  const dashboardContentWrapper = document.querySelector(
+    "#dashboard_content_wrapper",
+  )
+  const dashboardLockOverlayWrapper = document.querySelector(
+    "#dashboard_lock_overlay_wrapper",
+  )
+
+  const {
+    data: { session },
+  } = await supabaseClient.auth.getSession()
+
+  updateAuthOverlayDisplayState({
+    user: session?.user,
+    pageTitleElement: pageTitle,
+    contentWrapperElement: dashboardContentWrapper,
+    overlayWrapperElement: dashboardLockOverlayWrapper,
+    formatGreeting,
+  })
+</script>

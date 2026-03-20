@@ -1,0 +1,24 @@
+---
+import Layout from "../../layouts/Layout.astro"
+import LoginForm from "../../components/forms/LoginForm.astro"
+import Link from "../../components/links/Link.astro"
+---
+
+<Layout title="Log In">
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="flex flex-col gap-5">
+      <Link
+        slot="backlink"
+        href="/meals"
+        class="self-start text-white text-xl transition-text duration-150 ease-in hover:text-(--secondary-text-color)"
+      >
+        <i class="fas fa-arrow-left"></i>
+      </Link>
+      <LoginForm />
+      <h4 class="text-white mt-4 text-center">
+        Not already a user? Register
+        <Link variant="register_link" href="/register/sign-up">here.</Link>
+      </h4>
+    </div>
+  </div>
+</Layout>

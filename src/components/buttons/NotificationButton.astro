@@ -38,6 +38,7 @@ console.log("SERVER - User ID:", currentUserId)
   import { supabaseClient } from "../../js/supabase/supabase_client"
   import { updateNotificationsCounter } from "../../js/supabase/realtime_dom_helper_methods.js"
   import { fetchNotificationsAmount } from "../../js/supabase/supabase_methods"
+  import { initializeNotificationsRealtime } from "../../js/utils/updaters"
 
   document.addEventListener("DOMContentLoaded", () => {
     const notificationsButton = document.querySelector("[popovertarget]")
@@ -70,5 +71,7 @@ console.log("SERVER - User ID:", currentUserId)
       notificationsListPopover.classList.toggle("hidden")
       popperInstance.update()
     }
+
+    initializeNotificationsRealtime()
   })
 </script>

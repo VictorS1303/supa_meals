@@ -1,0 +1,35 @@
+---
+const { class: className, id: id } = Astro.props
+import Heading from "../components/headings/Heading.astro"
+import Hero from "../components/heroes/Hero.astro"
+import Layout from "../layouts/Layout.astro"
+import MealsSection from "../components/sections/MealsSection.astro"
+import Overlay from "../components/overlays/Overlay.astro"
+import Pagination from "../components/paginations/Pagination.astro"
+---
+
+<Layout title="Meals">
+  <Hero variant="default">
+    <!-- Background slot -->
+    <img
+      slot="background"
+      src="https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg"
+      alt="meal"
+      class="absolute inset-0 w-full h-full object-cover rounded-md"
+    />
+
+    <!-- Overlay slot -->
+    <Overlay
+      slot="overlay"
+      class="absolute inset-0 bg-dark/50 opacity-25 rounded-md"
+    />
+
+    <!-- Centered content -->
+    <h1 class="text-white text-4xl md:text-6xl z-40 text-center">
+      Delicious Meals
+    </h1>
+  </Hero>
+
+  <!-- Sections outside the hero -->
+  <MealsSection />
+</Layout>

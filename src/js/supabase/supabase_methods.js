@@ -657,29 +657,25 @@ export const fetchSingleComment = async (commentId) =>
 
 // Fetch notifications
 export const fetchNotifications = async (supabaseClient, userId) => {
-
-   if (!userId) {
+  if (!userId) {
     return []
   }
-
   const { data: notificationData, error: notificationError } = await supabaseClient
     .from('notifications')
     .select(`
       *,
       actor:users!actor_id(user_name),
-      comment:comments!target_object_id(
+      comment:comments!notifications_target_object_id_fkey(
         body,
         meal:meals!meal_id(api_meal_id)
       )
     `)
     .eq('recipient_id', userId)
     .order('created_at', { ascending: false })
-
   if (notificationError) {
     console.error('Error getting notifications:', notificationError)
     throw new Error(`Error getting notification(s): ${notificationError.message}`)
   }
-
   return notificationData || []
 }
 
