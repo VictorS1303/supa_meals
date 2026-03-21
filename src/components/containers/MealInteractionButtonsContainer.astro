@@ -248,7 +248,10 @@ const dialogLinks = [
       return
     }
 
+    // console.log("mealIdFromURL:", mealIdFromURL)
+    await fetchLikedMealData(mealIdFromURL)
     const internalMealId = await resolveApiMealIdToInternalMealId(mealIdFromURL)
+    console.log("internalMealId:", internalMealId)
 
     try {
       await commentMeal(internalMealId, {
