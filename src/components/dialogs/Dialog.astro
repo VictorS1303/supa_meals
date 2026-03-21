@@ -14,7 +14,10 @@ const baseDialogClasses = `
   fixed top-1/2 left-1/2
   -translate-x-1/2 -translate-y-1/2
   bg-(--modal-bg-color)
-  min-w-[320px] max-w-[500px]
+  h-fit
+  max-h-[85vh]
+  overflow-y-auto
+  w-full max-w-[500px] mx-4
   px-8 py-4
   rounded-md border-2
   z-[10000000]
@@ -25,11 +28,6 @@ const borderVariants = {
   danger: "border-red-400",
   borderless: "border-0",
 }
-
-const openStateClasses = `
-  [open]:top-[100%]
-  [open]:left-1/2
-`
 
 const dialogVariants = {
   liked_meal_dialog: "text-white",
@@ -52,7 +50,6 @@ const dialogClasses = variants
   class={`
     ${baseDialogClasses}
     ${borderClasses}
-    ${openStateClasses}
     ${dialogClasses}
     ${className}
   `}
@@ -68,14 +65,14 @@ const dialogClasses = variants
     ) : null
   }
 
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col">
     <!-- HEADING - stays at top -->
     <Heading variant="dialog_heading">
       <slot name="title" />
     </Heading>
 
     <!-- BODY -->
-    <div class="flex-1 flex items-center justify-center w-full h-full my-8">
+    <div class="flex items-center justify-center w-full my-8">
       <slot name="form" />
       <Paragraph variant="dialog_paragraph">
         <slot name="dialog-body-text" />
