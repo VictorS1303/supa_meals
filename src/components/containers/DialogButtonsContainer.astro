@@ -1,18 +1,28 @@
 ---
-const {class: className, id: id, dialogActionButtons = [], dislikeMealButtonId, buttonText} = Astro.props
+const {
+  class: className,
+  id: id,
+  dialogActionButtons = [],
+  dislikeMealButtonId,
+  buttonText,
+  href,
+} = Astro.props
 import Button from "../buttons/Button.astro"
 ---
 
-<div class="flex gap-4  justify-center">
-  {dialogActionButtons.length > 0 &&
-    dialogActionButtons.map((dialogButton) => (
-      <Button
-        isDialogActionButton={true}
-        isDeleteDialogButton={dialogButton.isDeleteDialogButton}
-        buttonText={dialogButton.buttonText}
-        id={dialogButton.id}
-        dataAction={dialogButton.dataAction}
-      />
-    ))
+<div class="flex gap-4 justify-center">
+  {
+    dialogActionButtons.length > 0 &&
+      dialogActionButtons.map((dialogButton) => (
+        <Button
+          isDialogActionButton={true}
+          isDeleteDialogButton={dialogButton.isDeleteDialogButton}
+          id={dialogButton.id}
+          dataAction={dialogButton.dataAction}
+          href={dialogButton.href}
+        >
+          {dialogButton.buttonText}
+        </Button>
+      ))
   }
 </div>

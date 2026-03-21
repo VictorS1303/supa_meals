@@ -1,4 +1,5 @@
 ---
+import DialogLinksContainer from "../containers/DialogLinksContainer.astro"
 import Button from "../buttons/Button.astro"
 import Dialog from "../dialogs/Dialog.astro"
 import Form from "../forms/Form.astro"
@@ -15,6 +16,19 @@ const {
   dataAction,
 } = Astro.props
 const { isLoggedIn } = Astro.props
+
+const dialogLinks = [
+  {
+    href: "/register/sign-up",
+    buttonText: "Sign up",
+    variant: "dialog_action_button",
+  },
+  {
+    href: "/register/login",
+    buttonText: "Login",
+    variant: "dialog_action_button",
+  },
+]
 ---
 
 <article class="flex items-center justify-center gap-12 mt-4 md:justify-start">
@@ -69,6 +83,22 @@ const { isLoggedIn } = Astro.props
   </Paragraph>
 </Dialog>
 
+<!-- Login to like dialog -->
+<Dialog variant="danger" id="like_login_auth_dialog">
+  <Heading variant="dialog_heading" slot="title">
+    <h2>You must be logged in to like this meal</h2>
+  </Heading>
+  <DialogLinksContainer slot="actions" dialogLinks={dialogLinks} />
+</Dialog>
+
+<!-- Login to comment dialog -->
+<Dialog variant="danger" id="comment_login_auth_dialog">
+  <Heading variant="dialog_heading" slot="title">
+    <h2>You must be logged in to comment this meal</h2>
+  </Heading>
+  <DialogLinksContainer slot="actions" dialogLinks={dialogLinks} />
+</Dialog>
+
 <!-- Comment Dialog -->
 <Dialog variant="success" isClosableDialog={true} id="comment_meal_dialog">
   <Form
@@ -93,6 +123,11 @@ const { isLoggedIn } = Astro.props
     resolveApiMealIdToInternalMealId,
   } from "../../js/supabase/supabase_methods.js"
 
+  const likeLoginAuthDialog = document.querySelector("#like_login_auth_dialog")
+  const commentLoginAuthDialog = document.querySelector(
+    "#comment_login_auth_dialog",
+  )
+
   const likedMealSuccessDialog = document.querySelector<HTMLDialogElement>(
     "#liked_meal_success_dialog",
   )
@@ -100,8 +135,6 @@ const { isLoggedIn } = Astro.props
   const alreadyLikedMealDialog = document.querySelector<HTMLDialogElement>(
     "#already_liked_meal_dialog",
   )
-
-  // createCommentCard()
 
   const commentMealDialog = document.querySelector("#comment_meal_dialog")
   const commentMealForm = document.querySelector("form#comment_meal_form")
@@ -141,7 +174,11 @@ const { isLoggedIn } = Astro.props
     } = await supabaseClient.auth.getSession()
 
     if (!session?.user) {
-      alert("You must be logged in to interact with meals")
+      const authDialogs = {
+        like: likeLoginAuthDialog,
+        comment: commentLoginAuthDialog,
+      }
+      authDialogs[action]?.showModal()
       return
     }
 

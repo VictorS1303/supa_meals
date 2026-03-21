@@ -1,0 +1,19 @@
+---
+const {class: className, id: id, dialogLinks = []} = Astro.props
+---
+
+<div class="flex flex-wrap gap-4 justify-center md:flex-nowrap">
+  {
+    dialogLinks.length > 0 ?
+    dialogLinks.map((dialogLink) => (
+      <a
+        href={dialogLink.href}
+        class="cursor-pointer dialog-action-button w-full px-4 py-2 rounded-md bg-red-400 text-white text-center"
+      >
+        {dialogLink.buttonText}
+      </a>
+    )) : (
+      ''
+    )
+  }
+</div>

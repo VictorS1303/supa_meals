@@ -10,14 +10,18 @@ const greetingText = formatGreeting()
 
 <article class={`${className}`} id={id}>
   <div class="flex items-center gap-6">
-    <img
-      src={src}
-      class="h-[100px] w-[100px] object-cover rounded-full"
-      id="user_profile_image"
-    />
+    <div class="flex gap-4">
+      <img
+        src={src}
+        class="h-[100px] w-[100px] object-cover rounded-full"
+        id="user_profile_image"
+      />
+      <Button variant="sign_out_button" class="self-center" id="sign_out_btn"
+        >Sign out</Button
+      >
+    </div>
     <div class="flex flex-col gap-3">
       <Heading isDashboardHeading={true} id="dashboard_heading" />
-      <Button isSignOutButton={true} buttonText="Sign out" id="sign_out_btn" />
     </div>
   </div>
 </article>

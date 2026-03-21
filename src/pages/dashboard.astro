@@ -81,4 +81,35 @@ const dialogActionButtons = [
     overlayWrapperElement: dashboardLockOverlayWrapper,
     formatGreeting,
   })
+
+  // Set up realtime
+  async function setupRealtimeMealLikes() {
+    const {
+      data: { session },
+    } = await supabaseClient.auth.getSession()
+
+    const currentUserId = session?.user?.id
+
+    if (!currentUserId) {
+      return
+    }
+
+    // INSERT
+    const likeMealsInsertChannel = supabaseClient
+      .channel("like-meals-insert-channel")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "liked_meals",
+        },
+        (payload) => {
+          handleMealLike(payload.new)
+        },
+      )
+      .subscribe()
+  }
+
+  setupRealtimeMealLikes()
 </script>

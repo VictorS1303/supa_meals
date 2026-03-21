@@ -127,7 +127,6 @@ video
 
 .disabled-interaction-button
 {
-    cursor: not-allowed;
     opacity: .4;
 }
 

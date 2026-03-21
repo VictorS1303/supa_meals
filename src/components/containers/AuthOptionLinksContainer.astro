@@ -3,11 +3,11 @@ const { authOptionLinks = [] } = Astro.props
 import Link from "../links/Link.astro"
 ---
 
-<div class="flex-gap-6">
+<div class="flex gap-6">
   {
     authOptionLinks.length > 0 ? (
       authOptionLinks.map((authOptionLink) => (
-        <Link variant="dashboard_overlay_link" href={authOptionLink.href}>
+        <Link variant="auth_overlay_link" href={authOptionLink.href}>
           {authOptionLink.buttonText}
         </Link>
       ))

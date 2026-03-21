@@ -146,6 +146,7 @@ export const login = async (email, password) =>
 // Sign Out
 export const signOutUser = async () =>
 {
+  console.log('Sign out')
   await supabaseClient.auth.signOut()
 }
 
@@ -163,11 +164,11 @@ export const storeUsersInUsersTable = async (name, email, profileImage) => {
   const { data: insertUserData, error: insertUserError } = await supabaseClient
     .from('users')
     .upsert({
-      id: userId,             // ✅ Must match Auth user ID
+      id: userId,
       user_name: name,
       user_email: email,
       user_profile_image: profileImage
-    }, { onConflict: 'id' }) // avoids duplicates if user already exists
+    }, { onConflict: 'id' })
     .select()
     .single();
 
@@ -177,7 +178,8 @@ export const storeUsersInUsersTable = async (name, email, profileImage) => {
   }
 
   return insertUserData;
-};
+}
+
 // Like meal
 export const likeMeal = async (userId, apiMealId) => {
   if (!userId)
@@ -286,7 +288,6 @@ export const fetchLikedMealData = async (apiMealId) =>
 }
 
 // Fetch liked meals
-
 export const fetchLikedMealsData = async () => {
   const { data: { session } } = await supabaseClient.auth.getSession();
 
