@@ -8,12 +8,19 @@ const pathname =
 
 const hiddenClass =
   hideOnRoutes.some((routes) => routes.test(pathname)) && "hidden"
+
+const currentPath =
+  typeof window !== "undefined" ? window.location.pathname : Astro.url.pathname
+
+const isHome = "/"
+
+const basePositionClasses = `
+  h-[30px] w-[30px] fixed cursor-pointer group ${hiddenClass} group-hover
+  ${currentPath === isHome ? "top-4 right-4" : "top-12 right-12"}
+`
 ---
 
-<Button
-  class={`h-[30px] w-[30px] fixed top-12 right-12 cursor-pointer group ${hiddenClass} group-hover`}
-  id="nav_toggle_button"
->
+<Button class={`${basePositionClasses}`} id="nav_toggle_button">
   <span
     class="absolute left-0 right-0 mx-auto block h-[5px] w-full rounded-md bg-white
          -translate-y-[9px] transform

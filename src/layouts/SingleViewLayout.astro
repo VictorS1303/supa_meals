@@ -44,7 +44,7 @@ const mealInteractionButtons = [
     />
 
     <!-- Overlay -->
-    <Overlay slot="overlay" class="absolute inset-0 opacity-25 bg-dark/50" />
+    <Overlay slot="overlay" />
 
     <!-- Backlink -->
     <Link
@@ -56,9 +56,9 @@ const mealInteractionButtons = [
     </Link>
 
     <!-- Centered heading/content -->
-    <h2 class="text-white text-3xl md:text-4xl z-40 text-center">
+    <Heading variant="hero">
       {headingText}
-    </h2>
+    </Heading>
   </Hero>
 
   <CookingInstructionSection

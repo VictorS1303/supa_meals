@@ -1,9 +1,15 @@
 ---
-const { class: className, id: id, variants } = Astro.props
+const { class: className, id, variants } = Astro.props
 
-const baseOverlayClasses = `h-full w-full absolute bg-black/50 z-[1000] rounded-md`
+const currentPath = Astro.url.pathname
+const isHome = "/"
+
+const baseOverlayClasses = `
+  h-full w-full absolute bg-black/50
+  ${currentPath !== isHome ? "rounded-md" : ""}
+`
 ---
 
-<article class="absolute inset-0 bg-black/50 z-10 rounded-md">
+<article class={baseOverlayClasses}>
   <slot />
 </article>

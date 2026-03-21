@@ -7,7 +7,7 @@ const {
 
 const variantClasses = {
   default: "",
-  hero: "text-white text-4xl md:text-6xl whitespace-nowrap",
+  hero: "text-white text-4xl md:text-6xl whitespace-nowrap z-[100000]",
   card: "text-[var(--primary-text-color)] text-lg uppercase font-semibold tracking-wide mt-3 mb-2",
   meal_card: "text-[var(--primary-text-color)] text-xl my-2 font-bold",
   single_view_hero_heading:
@@ -31,7 +31,7 @@ const variantClasses = {
 }
 ---
 
-<header class={`${variantClasses[variant]} ${className}`} id={id}>
+<header class={`relative ${variantClasses[variant]} ${className}`} id={id}>
   <slot name="leading" />
   <slot name="title" />
   <slot name="trailing" />
