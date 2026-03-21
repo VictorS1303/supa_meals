@@ -84,7 +84,7 @@ const dialogLinks = [
 </Dialog>
 
 <!-- Login to like dialog -->
-<Dialog variant="danger" id="like_login_auth_dialog">
+<Dialog variant="danger" isClosableDialog={true} id="like_login_auth_dialog">
   <Heading variant="dialog_heading" slot="title">
     <h2>You must be logged in to like this meal</h2>
   </Heading>
@@ -92,7 +92,7 @@ const dialogLinks = [
 </Dialog>
 
 <!-- Login to comment dialog -->
-<Dialog variant="danger" id="comment_login_auth_dialog">
+<Dialog variant="danger" isClosableDialog={true} id="comment_login_auth_dialog">
   <Heading variant="dialog_heading" slot="title">
     <h2>You must be logged in to comment this meal</h2>
   </Heading>
